@@ -1,0 +1,53 @@
+clients:
+  - slug: inside-out
+    name: Inside Out Iowa
+    bucket: paying
+    projects:
+      - slug: inside-out-website
+        name: Website redesign
+        status: active
+        contract: $400/mo Bonsai
+  - slug: wild-rose
+    name: Wild Rose Corporate
+    bucket: paying
+    projects:
+      - slug: wild-rose-redesign
+        name: Wild Rose redesign
+        status: active
+      - slug: thermal-kitchen
+        name: Thermal Kitchen redesign
+        status: active
+  - slug: tonequest
+    name: ToneQuest Report
+    bucket: paying
+    projects:
+      - slug: tonequest-replatform
+        name: Replatforming
+        status: active
+  - slug: terraplex
+    name: Terraplex
+    bucket: paying
+    projects:
+      - slug: terraplex-hub
+        name: Hub + dealer migrations
+        status: active
+  - slug: revolution
+    name: Revolution Drones
+    bucket: prospects
+    projects:
+      - slug: brandos-phase1
+        name: BrandOS Phase 1 hub
+        status: active
+  - slug: bgd-hq
+    name: BGD HQ
+    bucket: internal
+    projects:
+      - slug: productize
+        name: Productize 18-month offering
+        status: active
+      - slug: business-plan
+        name: 12-month business plan
+        status: active
+      - slug: brandos
+        name: BrandOS productization
+        status: active
