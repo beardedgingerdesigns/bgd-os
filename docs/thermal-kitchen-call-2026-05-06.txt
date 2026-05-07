@@ -1,0 +1,191 @@
+Thermal Kitchen Website Redesign Standing Call-20260506_135906UTC-Meeting Recording
+May 6, 2026, 1:59PM
+27m 10s
+ Aaron Harn   1:06 Yeah. Yeah. Okay. Here, Deann.
+ Deann   1:51 Good morning.
+ Aaron Harn   1:52 How are you?
+ Deann   1:53 Great, how are you doing?
+ Aaron Harn   1:55 Not bad. Have you met Justin before?
+ Deann   2:04 I have, yes. It's been a while, but...
+ Aaron Harn   2:05 Okay, good. Yeah, yeah. Cool, cool. Hey, Justin.
+ Deann   2:09 Hello, Justin.
+ Aaron Harn   2:13 We, I'm not sure if John is jumping on. I know he was traveling. Mostly we can go ahead and get started. Scott is also probably driving, so he's just listening in. But I just wanted to get everyone together and talk through Deann's proposal to the website with you, Justin, and make sure you don't have any questions and you can hit the ground running and kind of establish a timetable and get those updates buckled up.
+ Deann   2:25 Okay.
+ Justin   2:32 Perfect.
+ Aaron Harn   2:40 So I'll just turn it over to you, Justin, if that's okay with any questions you might have after you've reviewed all that info.
+ Justin   2:40 Yeah. Yeah, perfect. So, first off, does everybody hear me just fine?
+ Aaron Harn   2:50 Yep.
+ Justin   2:51 Okay, good. Thank you so much for all the documentation. It was very well thought through and gave me a good starting point to work on those. So some of the, I read through everything. I kind of have a good overview of what is it you're looking for, but I don't know if you want to spend just 5 minutes in your own words, just kind of talking through.
+ Deann   3:00 You're welcome.
+ Justin   3:10 What's initiating this and the overall direction?
+ Deann   3:14 Yeah, so what's initiating this is twofold. One, the website's outdated because there are some services that were documented in the design guidance that we no longer offer, beverage, R&D services, and thermal process authority. And then also,
+ Justin   3:26 Yep.
+ Deann   3:34 Now that we're into our third full year of production, we are now migrating where we're really not concentrating on emerging brands, where our focus is really more mid to large size companies, as well as we continue to grow, that's also going to require us to you know, naturally have more staff. And so we want to attract and retain the right candidates.
+ Justin   4:01 Okay, perfect. And so when we're talking about like the updated service lines moving forward, it's just report, spot pouch filling, and then shelf state liquids.
+ Deann   4:11 Exactly. So what we're really trying to do, Justin, is highlight and showcase our core competency, which is retort thermal process and spouted pouches as far as the packaging format that our equipment lines can handle.
+ Justin   4:17 The. And we're still with the. Human nutrition and pet nutrition as well, too, as far as we.
+ Deann   4:31 Yes, but you'll notice in some of the content that was written, we're also showcasing that we're a human grade facility first. That's what our certifications are all under. And because that is a big marketing push, whether we're, of course, human consumption,
+ Justin   4:40 Yep, yep.
+ Deann   4:50 but also because our portfolio is heavy pet topper consumption. That is a marketing message that is very attractive to that pet space, human grade.
+ Justin   4:55 Mhm. Okay. OK, and that's the main message we're leading with for first. The pet support is a secondary message, what you're secondary.
+ Deann   5:11 That support is secondary, yes.
+ Justin   5:13 Yeah, perfect. One of the big things that I kind of got out of the documents was showcasing actual facility imagery, footage, and using actual assets of the facility. Is there a plan in place to get those assets kind of in time for... a end of May launch.
+ Deann   5:40 We can. The end of May launches a new timeline to me, so we certainly can do that. I would keep the video on there for now, but let me go ahead and we can make arrangements to get
+ Justin   5:54 The.
+ Deann   5:58 actual photos. And let me first of all, I'm just kind of talking out loud here. I apologize.
+ Justin   6:02 Yep.
+ Aaron Harn   6:02 I.
+ Justin   6:04 Okay.
+ Deann   6:06 I know within the website we have a gallery of photos and I'm not sure that they were all used that of our retort vessel, but now we do have a couple so it wouldn't hurt to.
+ Justin   6:12 Yeah.
+ Deann   6:18 send that. Let me go through our current library because some of those maybe we may be able to push to the top and use those.
+ Justin   6:19 Yeah, great. Wait. That the library that's already contains in the website.
+ Deann   6:31 Yes.
+ Justin   6:31 Okay, I was gonna say, because I can also just sort of export everything for you. We can start to build a Dropbox folder of, hey, here's what we have. If you want to add anything more to it or stuff that I should be aware of, we can just all put it inside the one spot. And then that way we can be spotted something from a singular source.
+ Deann   6:48 Yep, I love that idea. Let's do that.
+ Justin   6:51 Okay, so I will go ahead and get, I'll get a Dropbox link started with all the assets that we currently have. We'll dump all new assets into it. Um, and start, you know, working from Aaron.
+ Aaron Harn   7:06 And, Justin, there are quite a few aspects.
+ Scott   7:07 We, Deann, do we have any pictures that show both retorts yet?
+ Deann   7:13 We do not.
+ Scott   7:16 I don't know if that matters, but sort of like... You know, it creates a perception, right? But maybe we're... Scaling or something, I don't know, I don't know if that helps.
+ Brian Diver   7:24 I think it, I think it actually does, I think it does matter, Scott, to show, it just shows capacity and...
+ Deann   7:27 Yeah.
+ Brian Diver   7:31 and redundancy and I think those are all good things you want to get out in the marketing message. Hi, Justin, by the way. Sorry, sorry to join late.
+ Deann   7:37 Yeah.
+ Justin   7:39 How's it going? You're good.
+ Aaron Harn   7:41 I have a couple of comments, questions with that. So there are just in this, you know, there are a lot of assets on the website that I don't believe like the endset are actually in play on the live website, but they're there.
+ Brian Diver   7:45 But.
+ Justin   7:53 I.
+ Aaron Harn   7:55 And then just to circle back on the May launch time, or the end of May, that was my direction. So if you need to have a discussion about something different, I just kind of wanted to get this expedited. So if we need to take a little bit more time, if that's okay with everyone, that's fine. But so that's where that came from. And then.
+ Brian Diver   8:14 I think it's probably okay, right Deann? We got time to get it the way we want it.
+ Deann   8:20 Yes, yeah.
+ Aaron Harn   8:20 I think so, yeah, yeah. Um, Justin, does that bother you? I mean, are you, does that raise any concerns for you?
+ Brian Diver   8:21 Okay.
+ Justin   8:27 So, can you clarify what we um was it end of May is good or we haven't hit more time?
+ Aaron Harn   8:32 In May is good if you are good, yeah.
+ Justin   8:34 Okay. That's what I was anticipating and kind of what I started working back from. So whether it's end of May, early June launch, I kind of want to be within that time frame.
+ Aaron Harn   8:36 Oh. Okay. Yep. Okay, okay. And then if we need new photography, Deann, do you have a source down there? Is that something you need me to help you with? I don't know if we want to go through the expense of sending someone I know here or down there, but.
+ Justin   8:49 Yeah.
+ Deann   8:58 Yeah, we do have a photographer that we used out of Orlando for a grand opening, so I can always reach out to them. They were reasonable and also did great work, you know, for what we were looking for.
+ Justin   8:59 Yeah.
+ Aaron Harn   9:01 Okay. Okay. Okay, just let me know if you need help with that. Okay, sorry. Back to you guys.
+ Justin   9:10 Rick. I think the design document mentioned that the current homepage kind of background video is okay, but does that showcase any? I'm not familiar with the context of like the machines inside the video, the services that the video is showing. Is it still in line with kind of update with services that we have and we continue to use that video both as a design element?
+ Deann   9:34 Um...
+ Justin   9:35 And as I kind of like pop up, or...
+ Deann   9:36 Let me revisit the video. The only thing I think it does showcase that wouldn't apply would be, well, it does show thermal process authority and we are hiring for a thermal process specialist. So let me revisit the video and respond back to the team.
+ Justin   9:38 Yeah. Um... One thing that we've kind of incorporated at the tail end of the lifecycle current site, and I actually know are we carrying it over, is... How much use of the blog are we using? And we can always call it anything different, but that's something that I need to bring to more prominence. Do we have any plans or anything to?
+ Deann   10:16 Is he?
+ Justin   10:17 Promote that, or even it's just like a monthly cadence of of content, you can certainly.
+ Deann   10:18 You. Yes, that wasn't, yeah, I'd like to activate the blog. That actually was not activated through because we currently use HubSpot. And so it wasn't, the connectivity was not there in order to push.
+ Justin   10:24 Bring more prominence. Okay.
+ Deann   10:42 anything coming through HubSpot out to the website. So certainly would like to.
+ Justin   10:46 Okay.
+ Deann   10:50 Have a have the blog activated.
+ Justin   10:51 Sue. So when you talk about the connectivity between HubSpot, are you talking about like a recurring newsletter of content that's coming from the website to an emailing list inside HubSpot? Or...
+ Deann   11:06 Well, if we were going to do a monthly cadence of some kind of educational, what's up and coming, regulatory, whatever it is, that's how that would be utilized. So it would actually go to all of our leads in HubSpot and then be able to push it out to the website for other audience.
+ Justin   11:09 Yep. Yep. Okay, let's, in terms of like creating kind of like an MVP version of the product here, so something that just at least covers what our initial ask is and adding new things like that, let's table the integration with HubSpot for maybe like a reconnect when we get closer to launch time about planning out sort of like what is this now.
+ Deann   11:42 Mhm.
+ Justin   11:45 CRM integration look like? How can we make the most use of what we're doing with HubSpot? Because right now there's nothing going on with HubSpot on the current site. So if you're utilizing HubSpot, I'd like to explore that with you kind of like in June about how can we now make the most out of the HubSpot and the website working together to qualify leads, send you, send content through to existing customers and through.
+ Deann   11:52 Wright.
+ Justin   12:06 prospects and really develop that lifecycle for you. But we can, I would say, let's certainly keep a focused scope on in May to let's work on in the site to at least reflect proper services and update design, leveraging blog content, even if it's just not in a state where we're writing the content just yet, where at least have the mechanisms at the back end of it.
+ Deann   12:30 Okay.
+ Justin   12:31 And also, and also creating kind of like the... the top of the funnel entry points for qualifying leads. And then, and then in in.
+ Deann   12:40 Yeah, yeah, that's great. We've...
+ Justin   12:42 And then, in June time, let's talk through now, just let's get the entire funnel, how that works with how that works with your HubSpot, how that how the website facilitating that kind of ongoing communications after somebody is a prospect, and seeing the seeing the areas in which we can. Create the opportunities between the husband and the husband website.
+ Deann   13:05 Okay.
+ Justin   13:05 Okay, so the overall process is going to be not too different from when I first went through it, where I'll work through just some rough couple designs here, a few key pages, homepage being the biggest one, but then also we need to rework some, just if we are kind of like changing our overall design architecture, we're at least reflecting that on some of the interior pages as well too. So. Is there anything on the service pages that you think I should be aware of? Are they doing anything that you, and I'll go through a UX audit kind of in preparation for this as well too, to start to identify what are some things that like now that we're X amount of years passing this and launch of this, but is there anything in your own words as far as like... pages past the homepage that you think need addressed, re-looked at, or at least looked at in a kind of a different lens.
+ Deann   14:08 Well. And with regards to the current services page?
+ Justin   14:12 Play. Like if we look at like the retort, the retort page.
+ Deann   14:17 Are you? Let me go, I've got the design document up. Let me go over to the website real quick on my other screen here. Bear with me one minute.
+ Justin   14:26 Yeah.
+ Deann   14:45 We don't have a on the current website; we don't have a services page.
+ Justin   14:51 I was, I sorry, I meant the specific retort page.
+ Deann   15:05 Oh, I see it up here.
+ Justin   15:07 As far as content goes, is there anything that we...
+ Deann   15:07 Yeah.
+ Justin   15:11 We'll obviously add, I mean, we'll add on to these pages kind of like more unique entryways into the top of the funnel so that we can then.
+ Deann   15:19 I mean, the content that I wrote into the document provided really kind of, you know, it takes the place of the current opening content under retort processing because it right on the website it says we collaborate with both startups and established national brands. So we definitely want to use the new language and new.
+ Justin   15:29 Okay. Yep, yep.
+ Deann   15:38 New content that's been written, and you know, once I see it, we may.
+ Justin   15:43 Okay.
+ Deann   15:43 you know, modify it a little bit as far as...
+ Justin   15:45 Sure.
+ Deann   15:48 The photos. Yeah, we'll update a couple of those photos, having a photo of both retorts. We do have a second filling line coming in.
+ Justin   16:02 OK.
+ Deann   16:17 under the what is retort processing that. I don't see anything challenging. Oh, we don't offer the toothpaste style caps.
+ Justin   16:31 Give me one second, I think I have 4.
+ Deann   16:55 Just let me know when you're ready, Justin, because I have one other comment on that as well. Oh. I guess we lost him. Okay.
+ Brian Diver   17:30 I just clicked the wrong button.
+ Deann   17:34 Yeah.
+ Brian Diver   17:35 Happen to me.
+ Deann   17:37 Yeah. Hmm.
+ Brian Diver   17:39 Where is he located, Aaron? Is he in Des Moines? Blanket. Must be doubt. Looks like he's in an urban area in Des Moines. Hello, Justin.
+ Justin   18:02 Hey, you guys still hear me?
+ Deann   18:03 Yes.
+ Brian Diver   18:03 Yep. Did I offend you?
+ Justin   18:05 All right, hopefully. Hopefully this is a bit better. I'm not sure what happened there. But I think I got a...
+ Brian Diver   18:14 Hope we lost Scott, too.
+ Justin   18:19 I think I... Got. high level what we're talking about on the retort page, just broken up a bit. We'll be doing kind of a overall reworking of the content. Some imaging may be updated and some content is going to be shifted around basically. I want to focus next on just.
+ Deann   18:37 Wright.
+ Justin   18:42 So, I guess kind of in terms of moving forward, there's just some... Some more specific things that will happen with your website update, I think currently you're on Kraft Three, we're going to upgrade it to Kraft Five, which will be just the latest iteration of it. There shouldn't be anything in, there shouldn't be any issue with doing the update, especially since we're reworking a lot of the content already, but you'll get kind of like... extra functionality and capabilities within the Kraft update and I'll outline that when we kind of go through. some documentation as we get closer to launch.
+ Deann   19:16 Paige.
+ Justin   19:20 We'll build everything on a dev site so that the current site just stays in production. If you do make any updates to it that you think need to be carried over to the new site, we'll address that during one of these check-in meetings. And we'll just make sure that content is carried over too, but I don't anticipate too much. conflicts between existing versus what we're doing new. Do you have any questions for do you have any questions for me regarding the overall process? What and what I'll do next after this is I'll kind of get work up a loose project plan. They'll identify here's where here's our current state, here's where we here's where we want to be doing and things we're doing to address that and then give you what it takes to kind of accomplish those those things and.
+ Deann   19:44 Okay.
+ Justin   20:02 Right now, right now, we're targeting end of May, early June, as far as the launch date.
+ Deann   20:03 Okay.
+ Justin   20:09 Is there any other questions you have for me or anything you guys should be aware of as we go through this process?
+ Deann   20:17 Not just yet, once I see your timeline.
+ Justin   20:20 Yep.
+ Deann   20:21 And the details behind each section or phase of the timeline, that'll help that will help prompt any questions that I might have.
+ Justin   20:30 Okay. What about as far as anything you think that in conversations you've been having that you think I should be aware of as I go through this process?
+ Deann   20:42 With regards to what, Justin? What do you mean conversations?
+ Justin   20:45 Is there any any context to anything that you think may not be in the documentation, but or if you think I have everything that I need? I feel like I have a lot to get started and I'll have questions as they go through it, but I just didn't know if there's any any additional context you want to provide with anything that we're they were going forward with, but if not, that's totally fine. That may that may be the answer, I just didn't. Didn't know if there's any.
+ Deann   21:05 Yeah, the only thing I did notice, and we lost you, so I'm not sure if you heard me, is on the what is retort processing section. Just as a side note, we do not offer toothpaste style caps, and our systems do not handle any particulate. So to remove that language,
+ Justin   21:12 Yep. Yeah.
+ Deann   21:26 we'd want to remove that language or anything related to that.
+ Justin   21:31 Okay, that's fine. Aaron, any questions or anything on your end? Brian, anything that you think I should be aware of? Or as you go through this process, any questions about how things will start to work and flow through?
+ Brian Diver   21:52 No, I want you to make it pet friendly so pets can navigate the website. No, just kidding. But the, no, it's, I think we show well. So this is probably a little bit long overdue for us to update our content and get a little bit more modern as to who Thermal Kitchen is today.
+ Justin   21:58 Yeah. Mm.
+ Brian Diver   22:12 And I think it's exciting, you know, if you think about the way... And Deann, you can comment on this a little bit too. The way we do business development, besides the traditional way, is we work a lot of shows. With the website, you know, Deann, I think this opens up our ability to do more mail campaigns and other things to try to get some folks in the net. So making it a modern,
+ Justin   22:27 Yeah.
+ Deann   22:35 Mhm.
+ Brian Diver   22:40 good website. And Deann, you're probably more mindful of the competition. I know you're more mindful of the competition than I am. And just making sure that we look good compared to any other co-packers out there. And I know we have a nice website. So again, I think the facility shows well. I think the product shows well. The question, Deann, is how much
+ Deann   22:59 Mhm.
+ Brian Diver   23:01 Do we want to use or how much can we use on the website? customers we currently have, their logos or mentioning them. You know, some people might be sensitive to that. So I'm used to doing, I'm used to doing a, if I can do it with them, I'd love to. If I can't do it with them, it's not the end of the world, because then I'll cover it when you do presentations and you talk to people live, right? But those are just some of the things of
+ Deann   23:14 Yeah. Is he?
+ Brian Diver   23:27 You know, I think Deann, he built this how long now, three years, four years.
+ Deann   23:33 Two and a half up, yeah.
+ Brian Diver   23:34 Like I said, 2 1/2 years. But she's gotten four years of work done, Justin, in those 2 1/2 years. And so I think we really got our message down at home now. So I think Dan will be a great voice for the website.
+ Justin   23:38 English.
+ Deann   23:39 Yeah. Okay.
+ Justin   23:50 Perfect.
+ Deann   23:52 I... Yeah, I'll wait to get your timeline. I will share, Brian, I did send kind of knowing we were going to be looking at this at some point, marketing release forms to our customers to try to see if we could put their logos on a website or any other kind of digital assets and not just a verbal who we work with. And we only had one customer who agreed to that. So overall, the consensus is
+ Brian Diver   24:04 Yeah. Yeah.
+ Deann   24:17 We don't want it out there.
+ Brian Diver   24:18 Yeah, generally, yeah, people are generally.
+ Deann   24:19 Which? It it, yes.
+ Brian Diver   24:22 Yeah. And the bigger the company, the harder it is to get them to do it because they've been asked to go up into a legal and a market approval and they just soon not deal with it. So we can work around that by just mentioning, you know, the profiles of the type of customers that we work for without mentioning the names.
+ Deann   24:23 Yeah.
+ Justin   24:24 Yeah.
+ Deann   24:30 Exactly. Yeah.
+ Brian Diver   24:41 So.
+ Justin   24:42 It.
+ Deann   24:42 But I do love your comment because our competitor websites are not anything, in my opinion, great, but having something that's modern and sleek and using the real estate wisely. We do want to get you new pictures of pouches to use since we've expanded our pouch capability and sizes to kind of line those up and get something over to you on that, Justin, because that would be important to share because what I do know is we're one of five.
+ Justin   25:05 Kraft. Okay, perfect.
+ Deann   25:17 retort companies in the US and our competitors, a couple of them can only do up to an A down. Couple different sizes, so for us to really showcase that will matter.
+ Justin   25:29 Okay. That's it. In terms of, is there, when you go to trade shows or when you send information to any prospects or anything, do you have any kind of literature, PDFs, leave behinds, or anything, marketing materials that you can send over to me and that way I can get kind of a larger, broader picture of everything that's going on?
+ Deann   25:53 Yes, yeah, we've got a couple things. I can, I'll send over to you.
+ Justin   25:56 Yeah. That'd be great. So kind of my next action items is I'll get Dropbox up and running with here's everything that we currently have on the website. Anything new you want to put into it, just put that there and I'll go through it and see what we have access to. And if you can, delete out any photos from the Dropbox that may not be applicable because they may showcase the service that.
+ Deann   26:10 Okay.
+ Justin   26:19 isn't used anymore. And so just kind of like, let's get a clean audit of the assets that we currently have, marketing materials, and I'll work on kind of project plan, time frame, and we'll hit the ground running with the design of it. And then from there, design will go into development, and then we'll go into launch prep kind of for the end of the month.
+ Deann   26:20 Paige. Okay, sounds great.
+ Justin   26:42 So, Aaron, anything else from you?
+ Brian Diver   26:47 He said, no, I'm good even though he's on mute.
+ Justin   26:48 Perfect.
+ Aaron Harn   26:52 Sorry, just let me know if you need anything from me. I am good. Just here to help if you need me to jump in, so...
+ Justin   26:59 Fantastic. It was great talking to you again, Deann, Brian, always good seeing you. And we'll get started on this, and I'm excited for it.
+ Brian Diver   27:02 Thanks, Justin. Okay. Great. Thanks, guys. Bye-bye.
+ Deann   27:07 Perfect. Thanks so much. Bye.
+ Justin   27:08 We going everybody.
+ Aaron Harn   27:09 Bye.
+ Aaron Harn stopped transcription
