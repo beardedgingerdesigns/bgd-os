@@ -26,6 +26,7 @@ export function DailyIngestModal({ initialCache }: DailyIngestModalProps) {
   const [running, setRunning] = useState(false)
   const [liveOutput, setLiveOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [elapsedMs, setElapsedMs] = useState(0)
 
   useEffect(() => {
     if (!open) return
@@ -34,6 +35,16 @@ export function DailyIngestModal({ initialCache }: DailyIngestModalProps) {
       setCache(data)
     })
   }, [open])
+
+  useEffect(() => {
+    if (!running) {
+      setElapsedMs(0)
+      return
+    }
+    const startedAt = Date.now()
+    const id = setInterval(() => setElapsedMs(Date.now() - startedAt), 500)
+    return () => clearInterval(id)
+  }, [running])
 
   async function runIngest() {
     setRunning(true)
@@ -103,7 +114,10 @@ export function DailyIngestModal({ initialCache }: DailyIngestModalProps) {
         {running && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Running the skill — output streams below as it generates.
+            <span>
+              Running the skill — <strong>{Math.floor(elapsedMs / 1000)}s</strong> elapsed.
+              {liveOutput ? ' Streaming live output.' : ' Waiting for first chunk…'}
+            </span>
           </div>
         )}
 
