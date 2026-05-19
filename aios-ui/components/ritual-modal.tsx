@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,13 @@ export function RitualModal({
   const [liveOutput, setLiveOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [elapsedMs, setElapsedMs] = useState(0)
+  const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => { setCache(initialCache) }, [initialCache])
+
+  useEffect(() => {
+    if (!open) abortRef.current?.abort()
+  }, [open])
 
   useEffect(() => {
     if (!running) {
@@ -48,11 +55,13 @@ export function RitualModal({
   }, [running])
 
   async function runRitual() {
+    const controller = new AbortController()
+    abortRef.current = controller
     setRunning(true)
     setLiveOutput('')
     setError(null)
     try {
-      const res = await fetch(`/api/admin/${slug}`, { method: 'POST' })
+      const res = await fetch(`/api/admin/${slug}`, { method: 'POST', signal: controller.signal })
       if (!res.body) throw new Error('No response body')
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -78,9 +87,9 @@ export function RitualModal({
               setCache({
                 ritual: slug,
                 ranAt: new Date().toISOString(),
-                output: p.output as string,
-                exitCode: p.exitCode as number,
-                durationMs: p.durationMs as number,
+                output: typeof p.output === 'string' ? p.output : '',
+                exitCode: typeof p.exitCode === 'number' ? p.exitCode : -1,
+                durationMs: typeof p.durationMs === 'number' ? p.durationMs : 0,
               })
             } else {
               setError((p.error as string) ?? `Ritual ${p.status as string}`)
@@ -89,9 +98,11 @@ export function RitualModal({
         }
       }
     } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') return
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setRunning(false)
+      abortRef.current = null
     }
   }
 
