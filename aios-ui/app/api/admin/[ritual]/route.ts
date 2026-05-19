@@ -1,6 +1,6 @@
 import { runRitual } from '@/lib/skills/ritual'
 import { writeRitualCache } from '@/lib/cache/rituals'
-import { RITUAL_SLUGS, type RitualSlug } from '@/lib/types'
+import { RITUAL_SLUGS, type RitualRunResult, type RitualSlug } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -33,10 +33,23 @@ export async function POST(
 
       send('start', { at: new Date().toISOString() })
 
-      const result = await runRitual({
-        slug: ritual,
-        onStdout: chunk => send('chunk', { text: chunk }),
-      })
+      let result: RitualRunResult
+      try {
+        result = await runRitual({
+          slug: ritual,
+          onStdout: chunk => send('chunk', { text: chunk }),
+        })
+      } catch (err) {
+        send('done', {
+          status: 'failed',
+          output: '',
+          exitCode: -1,
+          durationMs: 0,
+          error: err instanceof Error ? err.message : String(err),
+        })
+        try { controller.close() } catch { /* already closed */ }
+        return
+      }
 
       send('done', result)
 
