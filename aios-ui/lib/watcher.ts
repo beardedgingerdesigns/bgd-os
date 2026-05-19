@@ -48,19 +48,25 @@ export function scopeForPath(absPath: string, args: ScopeArgs): InvalidationScop
   return { kind: 'global' }
 }
 
-function pathsForScope(scope: InvalidationScope): string[] {
+type RevalidateTarget = readonly [path: string, type?: 'page' | 'layout']
+
+function pathsForScope(scope: InvalidationScope): RevalidateTarget[] {
   switch (scope.kind) {
     case 'global':
-      return ['/', `/clients/[client]`, `/clients/[client]/projects/[project]`]
+      return [
+        ['/', undefined],
+        ['/clients/[client]', 'page'],
+        ['/clients/[client]/projects/[project]', 'page'],
+      ]
     case 'client':
-      return [`/clients/${scope.clientSlug}`]
+      return [[`/clients/${scope.clientSlug}`, undefined]]
     case 'project':
       return [
-        `/clients/${scope.clientSlug}`,
-        `/clients/${scope.clientSlug}/projects/${scope.projectSlug}`,
+        [`/clients/${scope.clientSlug}`, undefined],
+        [`/clients/${scope.clientSlug}/projects/${scope.projectSlug}`, undefined],
       ]
     case 'admin':
-      return ['/admin']
+      return [['/admin', undefined]]
   }
 }
 
@@ -105,8 +111,14 @@ export async function startWatcher(): Promise<WatcherHandle> {
         reason: `${eventName}: ${path.relative(CLAUDE_OS_ROOT, changedPath) || changedPath}`,
         at: new Date().toISOString(),
       }
-      for (const p of pathsForScope(scope)) {
-        try { revalidatePath(p) } catch (_) { /* revalidatePath may noop outside request scope */ }
+      for (const [p, type] of pathsForScope(scope)) {
+        try {
+          if (type) {
+            revalidatePath(p, type)
+          } else {
+            revalidatePath(p)
+          }
+        } catch (_) { /* revalidatePath may noop outside request scope */ }
       }
       invalidationBus.publish(msg)
     } catch (err) {
