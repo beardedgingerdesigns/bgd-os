@@ -40,19 +40,19 @@ interface RunRitualOptions {
 export async function runRitual(opts: RunRitualOptions): Promise<RitualRunResult> {
   const claudeBin = opts.claudeBin ?? 'claude'
   const command = RITUAL_COMMANDS[opts.slug]
-  const args = opts.args ?? [
+  // Base flags for the production path. Tests can override the flag list via
+  // opts.args (e.g. ['--fail'] / ['--slow']). Either way, the ritual command
+  // is always appended last so the subprocess + fixture can detect which
+  // ritual is running.
+  const baseArgs = [
     '--print',
     '--permission-mode', 'bypassPermissions',
     '--output-format', 'stream-json',
     '--include-partial-messages',
     '--verbose',
-    command,
   ]
+  const effectiveArgs = [...(opts.args ?? baseArgs), command]
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
-
-  // If caller passed custom args (e.g. --fail / --slow in tests), still append
-  // the command so the fixture can detect which ritual.
-  const effectiveArgs = opts.args ? [...opts.args, command] : args
 
   const start = Date.now()
   return new Promise<RitualRunResult>(resolve => {
