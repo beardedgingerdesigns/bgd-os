@@ -1,3 +1,16 @@
+# Canonical client/project registry. Consumed by /load-project, /weekly-project-status,
+# /daily-inbox-triage, and future skills.
+#
+# Convention: project slugs should be globally unique within this file. /load-project
+# will prompt for the compound `client-slug/project-slug` form on collision.
+#
+# Per-project fields:
+#   - slug, name, status (required)
+#   - contract (optional, free-form recurring revenue label)
+#   - docs_paths: [] — file or directory paths (relative to claude-os root, or absolute).
+#       Directories walked recursively with manifest-tiering by depth. .md/.mdx/.txt/.rst/.adoc only.
+#   - contacts: [] — specific emails OR @domain.com patterns. Used for Gmail + Calendar context.
+
 clients:
   - slug: inside-out
     name: Inside Out Iowa
@@ -7,47 +20,252 @@ clients:
         name: Website redesign
         status: active
         contract: $400/mo Bonsai
-  - slug: wild-rose
-    name: Wild Rose Corporate
+        mrr_monthly: 400
+        docs_paths:
+          - references/insideout-project.md
+        contacts:
+          - mdennis@insideoutiowa.org
+          - sbundy@insideoutiowa.org
+          - kmckillip@insideoutiowa.org
+          - sallen@insideoutiowa.org
+          - dnielsen@insideoutiowa.org
+          - "@insideoutiowa.org"
+
+  - slug: kirk-financial
+    name: Kirk Financial
     bucket: paying
     projects:
       - slug: wild-rose-redesign
         name: Wild Rose redesign
         status: active
+        contract: $1000/mo Bonsai
+        mrr_monthly: 1000
+        docs_paths:
+          - references/wild-rose-project.md
+        contacts:
+          - aaron.harn@wildrosecorporate.com
+          - krystal.light@wildrosecorporate.com
+          - john.carlson@wildrosecorporate.com
+          - scott.ivers@wildrosecorporate.com
+          - "@wildrosecorporate.com"
+          - jon@lieblmg.com
       - slug: thermal-kitchen
         name: Thermal Kitchen redesign
         status: active
+        contract: $300/mo Bonsai
+        mrr_monthly: 300
+        docs_paths:
+          - references/thermal-kitchen-project-plan.md
+          - references/thermal-kitchen-call-2026-05-06.md
+        contacts:
+          - deann@thermalkitchen.com
+          - briandiver@thermalkitchen.com
+          - "@thermalkitchen.com"
+          - aaron.harn@wildrosecorporate.com
+          - scott.ivers@wildrosecorporate.com
+          - BDiver@kirkellc.com
+          - aaron.hub@kirkellc.com
+          - jon@lieblmg.com
+
   - slug: tonequest
     name: ToneQuest Report
     bucket: paying
     projects:
       - slug: tonequest-replatform
-        name: Replatforming
+        name: Replatforming + Pelcro integration
+        contract: $400/mo Bonsai
+        mrr_monthly: 400
         status: active
+        docs_paths:
+          - references/tonequest-project.md
+        contacts:
+          - lwilson3grace@gmail.com
+          - thetonequestreport@gmail.com
+          - tmulherngilroy@yahoo.com
+          - galal@pelcro.com
+          - ahmed.soliman@pelcro.com
+          - tyler@delsack.me
+
+  - slug: iowaeverywhere
+    name: IowaEverywhere
+    bucket: paying
+    projects:
+      - slug: iowaeverywhere-maintenance
+        name: Site maintenance + hosting ($250/mo)
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        docs_paths:
+          - references/iowaeverywhere-project.md
+          - /Users/justinlobaito/repos/iowa-everywhere/docs/
+        contacts:
+          - matt@iowaeverywhere.com
+          - aiden@iowaeverywhere.com
+          - jon@iowaeverywhere.com
+          - "@iowaeverywhere.com"
+          - ChrisMWilliams@cyclonefanatic.com
+          - lawrencecunningham@bpcdm.com
+      - slug: iowaeverywhere-v2
+        name: V2 Planning
+        status: active
+        docs_paths:
+          - references/iowaeverywhere-project.md
+          - /Users/justinlobaito/repos/iowa-everywhere/docs/
+        contacts:
+          - matt@iowaeverywhere.com
+          - aiden@iowaeverywhere.com
+          - jon@iowaeverywhere.com
+          - "@iowaeverywhere.com"
+          - ChrisMWilliams@cyclonefanatic.com
+          - jon@lieblmg.com
+
+  - slug: nps-media-group
+    name: NPS Media Group
+    bucket: paying
+    notes: Agency. Justin's work flows from NPS; project-internal contacts live at the underlying nonprofit.
+    projects:
+      - slug: partners-for-sight
+        name: Partners For Sight (RDPFS) — site maintenance
+        status: active
+        contract: $200/mo Bonsai (billed to NPS)
+        mrr_monthly: 200
+        docs_paths:
+          - references/partners-for-sight-project.md
+        contacts:
+          # RDPFS (Partners For Sight) — day-to-day project contacts
+          - elizabeth@partnersforsight.org
+          - soja@partnersforsight.org
+          - matt@partnersforsight.org
+          - "@partnersforsight.org"
+          # NPS Media Group — where the work comes from
+          - nsorge@npsmediagroup.com
+          - lmasaoay@npsmediagroup.com
+          # Note: deliberately NOT using "@npsmediagroup.com" catch-all — Frank Lama and Jamie Fallon
+          # are NPS-wide noise, not Partners For Sight contacts. Add specific NPS people only.
+
   - slug: terraplex
     name: Terraplex
     bucket: paying
+    notes: BrandOS platform participant network. Terraplex Ag is the distributor (hub); the dealers below are spokes running on the BrandOS platform.
     projects:
       - slug: terraplex-hub
-        name: Hub + dealer migrations
+        name: Terraplex Ag — distributor subscription
         status: active
+        contract: $600/mo Bonsai
+        mrr_monthly: 600
+        docs_paths:
+          - references/terraplex-platform.md
+          - references/brandos-roadmap.md
+          - /Users/justinlobaito/repos/site-builder-phase2/hubs/terraplex
+        contacts:
+          - jon@lieblmg.com
+          - CherityS@terraplexag.com
+          - "@terraplexag.com"
+          # TODO: add Jack and Josh emails — surfaced from memory but not confirmed
+
+      # BrandOS dealer subscriptions ($1,100/mo combined). Each dealer is its own
+      # Project so MRR rolls up cleanly. Migration status (per 2026-05-11 memory):
+      # Pyro + Black Knight are live on platform; New Heights + Great River are
+      # scaffolded but still serving from Base 44; Truss is scaffolded but blocked
+      # on domain transfer. Contacts to be filled in via /onboard-client.
+      - slug: pyro-ag
+        name: Pyro Ag — dealer subscription
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        docs_paths: []
+        contacts:
+          # TODO: confirm Kelcey Piroutek's email; next monthly check-in Fri 2026-06-05 2pm CT
+
+      - slug: black-knight-drones
+        name: Black Knight Drones — dealer subscription
+        status: active
+        contract: $100/mo Bonsai (legacy rate; standard tier is $250)
+        mrr_monthly: 100
+        docs_paths: []
+        contacts: []
+          # TODO: add Black Knight contact email
+
+      - slug: new-heights-ag
+        name: New Heights Ag — dealer subscription
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        docs_paths: []
+        contacts:
+          # TODO: confirm Josh's email; New Heights still serving from Base 44, needs platform launch
+
+      - slug: great-river
+        name: Great River — dealer subscription
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        docs_paths: []
+        contacts: []
+          # TODO: add Great River contact email; still serving from Base 44, needs platform launch
+
+      - slug: truss-services
+        name: Truss Services LLC — dealer subscription
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        docs_paths: []
+        contacts:
+          - jamesmccurry@trussservicesllc.com
+          # Status: scaffolded on platform but blocked on previous vendor releasing the domain.
+          # June 5 follow-up scheduled with James per inbox triage 2026-05-19.
+
   - slug: revolution
-    name: Revolution Drones
+    name: Revolution Drones (GTEEX / AgSoilRegen — Russell Hedrick)
     bucket: prospects
     projects:
       - slug: brandos-phase1
-        name: BrandOS Phase 1 hub
+        name: BrandOS Phase 1 hub (founding manufacturer)
         status: active
+        docs_paths:
+          - references/revolution-drones-project.md
+          - references/revolution-leave-behind.md
+          - references/jon-russell-brief.md
+          - references/manufacturer-tiers.md
+        contacts:
+          - russell@agsoilregen.com
+          - jon@lieblmg.com
+
   - slug: bgd-hq
     name: BGD HQ
     bucket: internal
     projects:
       - slug: productize
-        name: Productize 18-month offering
+        name: Productize 18-month offering (Q2 priority #1)
         status: active
+        docs_paths:
+          - references/channel-platform-product.md
+          - references/brandos-roadmap.md
+        contacts:
+          - jon@lieblmg.com
       - slug: business-plan
-        name: 12-month business plan
+        name: 12-month business plan (Q2 priority #3)
         status: active
+        docs_paths:
+          - references/brandos-roadmap.md
+          - references/channel-platform-product.md
+        contacts:
+          - jon@lieblmg.com
+          # TODO: add Nel + Alex emails when partnership formalized
       - slug: brandos
-        name: BrandOS productization
+        name: BrandOS productization (cross-cutting platform play)
         status: active
+        docs_paths:
+          - references/jon-brandos-brief.md
+          - references/channel-platform-product.md
+          - references/hub-and-spoke-thesis.md
+          - references/brandos-roadmap.md
+          - references/manufacturer-tiers.md
+          - references/terraplex-platform.md
+          - references/site-manager.md
+          - /Users/justinlobaito/repos/site-builder-phase2/docs/
+        contacts:
+          - jon@lieblmg.com
+          - russell@agsoilregen.com
+          # TODO: add dealer contacts (Pyro, Black Knight, New Heights, Great River, Truss, Superior Drone)
+          # on next /load — confirmed domains/emails surfaced from Gmail history
