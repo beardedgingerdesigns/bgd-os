@@ -7,9 +7,9 @@ Test fixture. Real format mirrors `claude-os/decisions/log.md`.
 
 ## 2026-05-18 — Inside Out content wrap-up
 
-**Decision:** Inside Out content wrap-up scheduled for Fri 5/15.
+**Decision:** Inside Out Iowa content wrap-up scheduled for Fri 5/15.
 
-**Why:** Standard sequencing.
+**Why:** Standard sequencing for Inside Out Iowa website redesign.
 
 ---
 
