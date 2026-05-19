@@ -98,3 +98,43 @@ export interface TriageRunResult {
   durationMs: number
   error?: string
 }
+
+// ---------- v2: chat panel ----------
+
+export interface ChatSession {
+  clientSlug: string
+  projectSlug: string
+  sessionId: string                       // captured from claude stream-json session_id field
+  startedAt: string                       // ISO timestamp
+}
+
+export interface ChatSessionsFile {
+  // key shape: `${clientSlug}/${projectSlug}` — flat map keyed by compound slug.
+  sessions: Record<string, ChatSession>
+}
+
+export type ChatRole = 'user' | 'assistant'
+
+export interface ChatMessage {
+  role: ChatRole
+  content: string
+  status?: 'streaming' | 'done' | 'error'
+  error?: string
+}
+
+export interface ChatLoadResult {
+  status: 'success' | 'failed' | 'timeout'
+  sessionId: string | null                // captured from stream-json; null on failure
+  output: string                          // aggregated assistant text from the /load run
+  exitCode: number
+  durationMs: number
+  error?: string
+}
+
+export interface ChatMessageResult {
+  status: 'success' | 'failed' | 'timeout'
+  output: string                          // aggregated assistant text
+  exitCode: number
+  durationMs: number
+  error?: string
+}
