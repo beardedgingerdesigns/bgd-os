@@ -1,0 +1,50 @@
+# aios-ui/tests/fixtures/claude-os/clients.yaml
+clients:
+  - slug: inside-out
+    name: Inside Out Iowa
+    bucket: paying
+    projects:
+      - slug: inside-out-website
+        name: Website redesign
+        status: active
+        contract: $400/mo Bonsai
+        mrr_monthly: 400
+        docs_paths:
+          - references/inside-out-project.md
+        contacts:
+          - mdennis@insideoutiowa.org
+
+  - slug: kirk-financial
+    name: Kirk Financial
+    bucket: paying
+    projects:
+      - slug: wild-rose
+        name: Wild Rose redesign
+        status: active
+        contract: $1000/mo Bonsai
+        mrr_monthly: 1000
+        contacts:
+          - aaron.harn@wildrosecorporate.com
+      - slug: paused-project
+        name: A paused project
+        status: paused
+        mrr_monthly: 500
+
+  - slug: revolution
+    name: Revolution Drones
+    bucket: prospects
+    projects:
+      - slug: brandos-phase1
+        name: BrandOS Phase 1 hub
+        status: active
+
+  - slug: with-wiki
+    name: Test Client With Wiki
+    bucket: paying
+    projects:
+      - slug: project-with-wiki
+        name: Project that has an LLM-wiki
+        status: active
+        mrr_monthly: 200
+        docs_paths:
+          - /WILL_BE_REPLACED_AT_TEST_TIME
