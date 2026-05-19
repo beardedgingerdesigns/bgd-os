@@ -138,3 +138,33 @@ export interface ChatMessageResult {
   durationMs: number
   error?: string
 }
+
+// ---------- v3: capture box + admin rituals ----------
+
+export interface CaptureRunResult {
+  status: 'success' | 'failed' | 'timeout'
+  output: string                          // aggregated assistant text from /capture
+  exitCode: number
+  durationMs: number
+  error?: string
+}
+
+export type RitualSlug = 'level-up' | 'weekly-status' | 'audit'
+
+export const RITUAL_SLUGS: readonly RitualSlug[] = ['level-up', 'weekly-status', 'audit'] as const
+
+export interface RitualRunResult {
+  status: 'success' | 'failed' | 'timeout'
+  exitCode: number
+  output: string                          // aggregated assistant text
+  durationMs: number
+  error?: string
+}
+
+export interface RitualCacheEntry {
+  ritual: RitualSlug
+  ranAt: string                           // ISO timestamp
+  output: string                          // raw Markdown produced by the skill
+  exitCode: number
+  durationMs: number
+}
