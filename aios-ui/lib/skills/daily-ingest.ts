@@ -12,7 +12,11 @@ const DEFAULT_TIMEOUT_MS = 60_000
 
 export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunResult> {
   const claudeBin = opts.claudeBin ?? 'claude'
-  const args = opts.args ?? ['--print', '/daily-inbox-triage']
+  // `--permission-mode bypassPermissions` is load-bearing: in `--print` mode
+  // the skill cannot answer the MCP permission prompt interactively, so without
+  // this flag Claude returns "I need permission to access Gmail..." instead of
+  // running /daily-inbox-triage. The user clicking the button IS authorization.
+  const args = opts.args ?? ['--print', '--permission-mode', 'bypassPermissions', '/daily-inbox-triage']
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
 
   const start = Date.now()
