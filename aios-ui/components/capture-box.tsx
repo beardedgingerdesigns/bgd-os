@@ -47,9 +47,9 @@ export function CaptureBox({ clientSlug, projectSlug, projectName }: CaptureBoxP
           const eventLine = event.split('\n').find(l => l.startsWith('event: '))
           const dataLine = event.split('\n').find(l => l.startsWith('data: '))
           if (!dataLine) continue
-          let payload: unknown
-          try { payload = JSON.parse(dataLine.slice(6)) } catch { continue }
-          const p = payload as Record<string, unknown>
+          let data: unknown
+          try { data = JSON.parse(dataLine.slice(6)) } catch { continue }
+          const p = data as Record<string, unknown>
           if (eventLine?.includes('chunk') && typeof p.text === 'string') {
             aggregated += p.text
           }
