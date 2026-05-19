@@ -8,3 +8,10 @@ node_modules/
 audits/
 .superpowers/
 .aios-cache/
+
+# AIOS UI build artifacts
+aios-ui/node_modules/
+aios-ui/.next/
+aios-ui/out/
+aios-ui/.env*.local
+aios-ui/coverage/
