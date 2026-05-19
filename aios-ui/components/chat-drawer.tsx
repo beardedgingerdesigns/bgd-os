@@ -169,23 +169,51 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
     }
   }
 
+  const initialLoading = loading && messages.length <= 1 && !session
+
   return (
     <Card className={expanded ? '' : 'border-dashed'}>
-      <CardHeader className="cursor-pointer" onClick={() => setExpanded(v => !v)}>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base">Chat — {projectName}</CardTitle>
-          <Button variant="ghost" size="icon">
-            {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
-          </Button>
-        </div>
-      </CardHeader>
+      <button
+        type="button"
+        onClick={() => setExpanded(v => !v)}
+        aria-expanded={expanded}
+        aria-controls="chat-drawer-body"
+        className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t-xl"
+      >
+        <CardHeader>
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-base font-medium">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mr-2">
+                Chat
+              </span>
+              {projectName}
+            </CardTitle>
+            <span
+              className="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+              aria-hidden
+            >
+              {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+            </span>
+          </div>
+        </CardHeader>
+      </button>
       {expanded && (
-        <CardContent>
+        <CardContent id="chat-drawer-body">
           <div className="max-h-[60vh] overflow-y-auto space-y-4 mb-4">
-            {messages.length === 0 && !loading && (
-              <p className="text-sm text-muted-foreground">Expanding for the first time — loading project context…</p>
+            {initialLoading && (
+              <div className="space-y-3" aria-live="polite" aria-busy="true">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Loading project context
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-2/3 rounded-sm bg-muted/60 animate-pulse" />
+                  <div className="h-3 w-5/6 rounded-sm bg-muted/60 animate-pulse" />
+                  <div className="h-3 w-1/2 rounded-sm bg-muted/60 animate-pulse" />
+                </div>
+              </div>
             )}
-            {messages.map((m, i) => <ChatMessageView key={i} message={m} />)}
+            {!initialLoading && messages.map((m, i) => <ChatMessageView key={i} message={m} />)}
             <div ref={messagesEndRef} />
           </div>
           <div className="border-t border-border pt-3">
@@ -194,12 +222,13 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={onInputKeyDown}
-                placeholder={session ? 'Ask anything — Cmd+Enter to send' : 'Loading context…'}
+                placeholder={session ? 'Ask anything · Cmd+Enter to send' : 'Loading context…'}
                 disabled={loading && !session}
                 rows={2}
-                className="flex-1 rounded border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                aria-label={`Message ${projectName}`}
+                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 placeholder:text-muted-foreground/70 disabled:opacity-60"
               />
-              <Button onClick={sendMessage} disabled={loading || !input.trim()}>
+              <Button onClick={sendMessage} disabled={loading || !input.trim()} aria-label="Send message">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>

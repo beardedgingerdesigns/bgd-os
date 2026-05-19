@@ -1,8 +1,7 @@
 // aios-ui/components/recent-activity-feed.tsx
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FileText, BookOpen, Lightbulb } from 'lucide-react'
 import { formatRelativeDate } from '@/lib/format'
-import type { ActivityEntry } from '@/lib/types'
+import type { ActivityEntry, ActivityKind } from '@/lib/types'
 
 interface RecentActivityFeedProps {
   entries: ActivityEntry[]
@@ -10,10 +9,16 @@ interface RecentActivityFeedProps {
   emptyMessage?: string
 }
 
-const kindIcon = {
+const kindIcon: Record<ActivityKind, typeof FileText> = {
   decision: Lightbulb,
   'wiki-log': BookOpen,
   'memory-update': FileText,
+}
+
+const kindLabel: Record<ActivityKind, string> = {
+  decision: 'decision',
+  'wiki-log': 'wiki',
+  'memory-update': 'memory',
 }
 
 export function RecentActivityFeed({
@@ -22,38 +27,51 @@ export function RecentActivityFeed({
   emptyMessage = 'Nothing in the last 30 days.',
 }: RecentActivityFeedProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-        <CardDescription>Filesystem-derived. Last 30 days.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {entries.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
-        ) : (
-          <ul className="space-y-3">
-            {entries.map((e, i) => {
-              const Icon = kindIcon[e.kind]
-              return (
-                <li key={i} className="flex items-start gap-3">
-                  <Icon className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{e.title}</div>
-                    {e.description && (
-                      <div className="text-xs text-muted-foreground truncate">
-                        {e.description}
-                      </div>
-                    )}
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {formatRelativeDate(e.date)} · {e.source}
-                    </div>
+    <section>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+          {title}
+        </h2>
+        <span className="text-xs text-muted-foreground">Last 30 days · filesystem</span>
+      </div>
+
+      {entries.length === 0 ? (
+        <div className="border-y border-border py-8 text-center text-sm text-muted-foreground">
+          {emptyMessage}
+        </div>
+      ) : (
+        <ul className="divide-y divide-border border-y border-border">
+          {entries.map((e, i) => {
+            const Icon = kindIcon[e.kind]
+            return (
+              <li key={i} className="flex items-start gap-3 py-3">
+                <span
+                  className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted/60 text-muted-foreground"
+                  aria-hidden
+                >
+                  <Icon className="h-3 w-3" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium shrink-0">
+                      {kindLabel[e.kind]}
+                    </span>
+                    <span className="text-sm font-medium truncate">{e.title}</span>
                   </div>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+                  {e.description && (
+                    <div className="text-xs text-muted-foreground truncate mt-0.5">
+                      {e.description}
+                    </div>
+                  )}
+                  <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
+                    {formatRelativeDate(e.date)} · {e.source}
+                  </div>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </section>
   )
 }
