@@ -6,6 +6,7 @@ import { MRRWidget } from '@/components/mrr-widget'
 import { ClientCard } from '@/components/client-card'
 import { AdminCard } from '@/components/admin-card'
 import { RecentActivityFeed } from '@/components/recent-activity-feed'
+import { DailyIngestButton } from '@/components/daily-ingest-button'
 
 export default async function Home() {
   const clients = await loadClients()
@@ -31,8 +32,9 @@ export default async function Home() {
         <div className="lg:col-span-2">
           <MRRWidget total={totalMRR} paidClientCount={paidClientCount} />
         </div>
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 flex flex-col gap-4">
           <AdminCard />
+          <DailyIngestButton />
         </div>
       </div>
 
