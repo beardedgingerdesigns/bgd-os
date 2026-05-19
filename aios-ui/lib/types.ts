@@ -149,14 +149,14 @@ export interface CaptureRunResult {
   error?: string
 }
 
-export type RitualSlug = 'level-up' | 'weekly-status' | 'audit'
+export const RITUAL_SLUGS = ['level-up', 'weekly-status', 'audit'] as const
 
-export const RITUAL_SLUGS: readonly RitualSlug[] = ['level-up', 'weekly-status', 'audit'] as const
+export type RitualSlug = (typeof RITUAL_SLUGS)[number]
 
 export interface RitualRunResult {
   status: 'success' | 'failed' | 'timeout'
-  exitCode: number
   output: string                          // aggregated assistant text
+  exitCode: number
   durationMs: number
   error?: string
 }
