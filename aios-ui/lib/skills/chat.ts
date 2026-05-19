@@ -28,6 +28,14 @@ function extractSessionId(line: string): string | null {
   if (!trimmed) return null
   try {
     const parsed = JSON.parse(trimmed) as Record<string, unknown>
+    const type = parsed?.type
+    // Skip `system` hook events — they emit session_ids tied to the SessionStart
+    // hook lifecycle (a daemon-level session), NOT the conversation session that
+    // --resume can pick up. Only trust session_id from real conversation events:
+    //   - "stream_event" (per-token streaming envelope)
+    //   - "result" (final summary at end of --print run)
+    //   - "assistant" (complete assistant message envelope)
+    if (type !== 'stream_event' && type !== 'result' && type !== 'assistant') return null
     const sid = parsed?.session_id
     return typeof sid === 'string' ? sid : null
   } catch {
@@ -118,7 +126,12 @@ function runStreamingClaude(
       }
     }
 
-    const child = spawn(claudeBin, args, { shell: false })
+    // stdio: ignore stdin so claude doesn't print "no stdin data received in 3s"
+    // when run from Next.js. Pipe stdout + stderr so we can capture both.
+    const child = spawn(claudeBin, args, {
+      shell: false,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
 
     const timer = setTimeout(() => {
       if (settled) return

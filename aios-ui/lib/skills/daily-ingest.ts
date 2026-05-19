@@ -63,7 +63,12 @@ export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunRe
       }
     }
 
-    const child = spawn(claudeBin, args, { shell: false })
+    // stdio: ignore stdin so claude doesn't print "no stdin data received in 3s"
+    // when run from Next.js. Pipe stdout + stderr so we can capture both.
+    const child = spawn(claudeBin, args, {
+      shell: false,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
 
     const timer = setTimeout(() => {
       if (settled) return
