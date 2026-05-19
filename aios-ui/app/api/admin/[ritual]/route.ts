@@ -1,6 +1,7 @@
 import { runRitual } from '@/lib/skills/ritual'
 import { writeRitualCache } from '@/lib/cache/rituals'
 import { RITUAL_SLUGS, type RitualRunResult, type RitualSlug } from '@/lib/types'
+import { revalidatePath } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -61,6 +62,7 @@ export async function POST(
           exitCode: result.exitCode,
           durationMs: result.durationMs,
         })
+        revalidatePath('/admin')
       }
 
       try { controller.close() } catch { /* already closed */ }
