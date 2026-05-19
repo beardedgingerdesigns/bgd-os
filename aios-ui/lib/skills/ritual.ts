@@ -72,6 +72,7 @@ export async function runRitual(opts: RunRitualOptions): Promise<RitualRunResult
     const child = spawn(claudeBin, effectiveArgs, {
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: process.env.CLAUDE_OS_ROOT ?? process.cwd(),
     })
 
     const timer = setTimeout(() => {

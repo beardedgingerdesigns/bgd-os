@@ -68,6 +68,7 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
     const child = spawn(claudeBin, args, {
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: process.env.CLAUDE_OS_ROOT ?? process.cwd(),
     })
 
     const timer = setTimeout(() => {
