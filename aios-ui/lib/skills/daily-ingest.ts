@@ -8,7 +8,7 @@ interface RunOptions {
   onStdout?: (chunk: string) => void                   // optional streaming callback
 }
 
-const DEFAULT_TIMEOUT_MS = 60_000
+const DEFAULT_TIMEOUT_MS = 300_000 // 5min default — most skills that hit MCP servers need real time
 
 export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunResult> {
   const claudeBin = opts.claudeBin ?? 'claude'

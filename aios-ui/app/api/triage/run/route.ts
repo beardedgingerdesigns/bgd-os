@@ -4,7 +4,7 @@ import type { TriageCacheEntry } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
-export const maxDuration = 120
+export const maxDuration = 360
 
 export async function POST() {
   const stream = new ReadableStream({
@@ -19,7 +19,7 @@ export async function POST() {
       send('start', { at: new Date().toISOString() })
 
       const result = await runDailyIngest({
-        timeoutMs: 90_000,
+        timeoutMs: 300_000, // 5min — /daily-inbox-triage pulls 50 threads and scores each
         onStdout: chunk => send('stdout', { chunk }),
       })
 
