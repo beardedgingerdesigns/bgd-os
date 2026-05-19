@@ -69,3 +69,32 @@ export interface ActivityEntry {
   source: string                // human-readable source label, e.g. "decisions/log.md" or "Iowa Everywhere wiki"
   href?: string                 // optional clickable target (path or anchor)
 }
+
+// ---------- v1: file watcher + daily-ingest ----------
+
+export type InvalidationScope =
+  | { kind: 'global' }                                 // applies to every page
+  | { kind: 'client'; clientSlug: string }             // applies to one client + its projects
+  | { kind: 'project'; clientSlug: string; projectSlug: string }
+  | { kind: 'admin' }                                  // reserved for v3
+
+export interface InvalidationMessage {
+  scope: InvalidationScope
+  reason: string                                       // human-readable, e.g. "decisions/log.md changed"
+  at: string                                           // ISO timestamp
+}
+
+export interface TriageCacheEntry {
+  ranAt: string                                        // ISO timestamp the skill ran
+  output: string                                       // raw Markdown produced by /daily-inbox-triage
+  exitCode: number                                     // 0 if subprocess succeeded
+  durationMs: number                                   // wall-clock runtime
+}
+
+export interface TriageRunResult {
+  status: 'success' | 'failed' | 'timeout'
+  exitCode: number
+  output: string
+  durationMs: number
+  error?: string
+}
