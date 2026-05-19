@@ -35,6 +35,7 @@ interface RunRitualOptions {
   args?: string[]
   timeoutMs?: number
   onStdout?: (chunk: string) => void
+  signal?: AbortSignal
 }
 
 export async function runRitual(opts: RunRitualOptions): Promise<RitualRunResult> {
@@ -87,6 +88,27 @@ export async function runRitual(opts: RunRitualOptions): Promise<RitualRunResult
         error: `Subprocess exceeded ${timeoutMs}ms`,
       })
     }, timeoutMs)
+
+    const onAbort = () => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      child.kill('SIGKILL')
+      resolve({
+        status: 'failed',
+        output: aggregatedText,
+        exitCode: -1,
+        durationMs: Date.now() - start,
+        error: 'Aborted by client',
+      })
+    }
+    if (opts.signal) {
+      if (opts.signal.aborted) {
+        onAbort()
+        return
+      }
+      opts.signal.addEventListener('abort', onAbort, { once: true })
+    }
 
     child.stdout.on('data', d => {
       lineBuffer += d.toString()

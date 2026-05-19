@@ -12,7 +12,7 @@ function isRitualSlug(value: string): value is RitualSlug {
 }
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ ritual: string }> },
 ) {
   const { ritual } = await params
@@ -39,6 +39,7 @@ export async function POST(
         result = await runRitual({
           slug: ritual,
           onStdout: chunk => send('chunk', { text: chunk }),
+          signal: req.signal,
         })
       } catch (err) {
         send('done', {
