@@ -11,6 +11,7 @@ import { RecentActivityFeed } from '@/components/recent-activity-feed'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatMRR } from '@/lib/format'
+import { SidebarProjects } from '@/components/sidebar-projects'
 
 export default async function ClientPage(props: PageProps<'/clients/[client]'>) {
   const { client: clientSlug } = await props.params
@@ -47,7 +48,10 @@ export default async function ClientPage(props: PageProps<'/clients/[client]'>) 
   )
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-8">
+    <div className="flex h-screen overflow-hidden">
+      <SidebarProjects client={client} />
+      <div className="flex-1 overflow-y-auto">
+        <main className="max-w-6xl mx-auto px-6 py-8">
       <Breadcrumb crumbs={[{ label: client.name }]} />
 
       <header className="mb-8 flex items-start justify-between gap-4">
@@ -105,6 +109,8 @@ export default async function ClientPage(props: PageProps<'/clients/[client]'>) 
       <section>
         <RecentActivityFeed entries={activity} title={`Recent activity — ${client.name}`} />
       </section>
-    </main>
+        </main>
+      </div>
+    </div>
   )
 }
