@@ -11,6 +11,7 @@ import { RecentActivityFeed } from '@/components/recent-activity-feed'
 import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { BookOpen, FileText } from 'lucide-react'
 import { ChatDrawer } from '@/components/chat-drawer'
+import { CaptureBox } from '@/components/capture-box'
 
 export default async function ProjectPage({
   params,
@@ -193,6 +194,14 @@ export default async function ProjectPage({
               </ul>
             </section>
           )}
+
+          <section className="mb-10">
+            <CaptureBox
+              clientSlug={client.slug}
+              projectSlug={project.slug}
+              projectName={project.name}
+            />
+          </section>
 
           <section className="mb-10">
             <RecentActivityFeed
