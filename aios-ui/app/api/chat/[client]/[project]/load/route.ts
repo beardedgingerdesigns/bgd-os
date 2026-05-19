@@ -1,5 +1,7 @@
 import { runChatLoad } from '@/lib/skills/chat'
+import { buildProjectBrief } from '@/lib/skills/chat-brief'
 import { writeChatSession } from '@/lib/cache/sessions'
+import { getClient, getProject } from '@/lib/data/clients'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -22,8 +24,39 @@ export async function POST(
 
       send('start', { at: new Date().toISOString() })
 
+      // Build the brief from the data layer (clients.yaml, memory, references,
+      // decisions, wiki). This is what previously came from `/load-project` —
+      // but doing it in JS avoids the slash-command-breaks-resumability bug.
+      let brief: string
+      let projectLabel: string
+      try {
+        const clientObj = await getClient(client)
+        const projectObj = await getProject(client, project)
+        projectLabel = clientObj && projectObj
+          ? `${clientObj.name} — ${projectObj.name}`
+          : `${client}/${project}`
+        brief = await buildProjectBrief(client, project)
+      } catch (err) {
+        send('done', {
+          status: 'failed',
+          sessionId: null,
+          output: '',
+          exitCode: -1,
+          durationMs: 0,
+          error: `Failed to build brief: ${err instanceof Error ? err.message : String(err)}`,
+        })
+        try { controller.close() } catch { /* already closed */ }
+        return
+      }
+
+      // Stream the brief itself to the UI first so the user sees the context
+      // before Claude's response. Followed by a separator + Claude's reply.
+      send('chunk', { text: brief })
+      send('chunk', { text: '\n\n---\n\n' })
+
       const result = await runChatLoad({
-        projectSlug: project,
+        brief,
+        projectLabel,
         onStdout: chunk => send('chunk', { text: chunk }),
       })
 

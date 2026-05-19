@@ -9,7 +9,8 @@ describe('runChatLoad', () => {
   it('captures session_id from stream-json + aggregates assistant text', async () => {
     const result = await runChatLoad({
       claudeBin: FAKE_CHAT,
-      projectSlug: 'inside-out-website',
+      brief: '# Inside Out Iowa\n\nTest brief.',
+      projectLabel: 'Inside Out — Website redesign',
       timeoutMs: 10_000,
     })
     expect(result.status).toBe('success')
@@ -21,7 +22,8 @@ describe('runChatLoad', () => {
   it('returns failed status on subprocess error', async () => {
     const result = await runChatLoad({
       claudeBin: FAKE_CHAT,
-      projectSlug: 'inside-out-website',
+      brief: '# X\n\nTest brief.',
+      projectLabel: 'X',
       args: ['--fail'],
       timeoutMs: 10_000,
     })

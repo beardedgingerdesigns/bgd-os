@@ -45,22 +45,39 @@ function extractSessionId(line: string): string | null {
 
 interface RunChatLoadOptions {
   claudeBin?: string
-  projectSlug: string
+  /** Pre-built markdown brief (use lib/skills/chat-brief.ts). Passed as the seed user message. */
+  brief: string
+  /** Human-readable label for the project (used in prompt phrasing). */
+  projectLabel: string
   args?: string[]
   timeoutMs?: number
   onStdout?: (chunk: string) => void
 }
 
+/**
+ * Start a resumable chat session by sending the project brief as the first
+ * user message. We deliberately do NOT use `claude --print "/load <slug>"`
+ * because slash commands invoked via --print create non-resumable sessions.
+ * Plain text prompts with the brief embedded create normal sessions that
+ * `--resume` can pick up for subsequent turns.
+ */
 export async function runChatLoad(opts: RunChatLoadOptions): Promise<ChatLoadResult> {
   const claudeBin = opts.claudeBin ?? 'claude'
-  const slashCmd = `/load ${opts.projectSlug}`
+  const seedPrompt = `I'm working on ${opts.projectLabel}. Here is the context I have on the project so far:
+
+${opts.brief}
+
+---
+
+Please briefly orient yourself: confirm what you see, flag anything that looks load-bearing or at-risk, and offer to help. Keep your initial response short — I'll ask follow-ups.`
+
   const args = opts.args ?? [
     '--print',
     '--permission-mode', 'bypassPermissions',
     '--output-format', 'stream-json',
     '--include-partial-messages',
     '--verbose',
-    slashCmd,
+    seedPrompt,
   ]
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
   return runStreamingClaude(claudeBin, args, timeoutMs, opts.onStdout, true)
