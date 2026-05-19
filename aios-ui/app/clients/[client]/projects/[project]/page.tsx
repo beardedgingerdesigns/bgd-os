@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { BookOpen, FileText } from 'lucide-react'
+import { ChatDrawer } from '@/components/chat-drawer'
 
 export default async function ProjectPage({
   params,
@@ -158,19 +159,11 @@ export default async function ProjectPage({
           </section>
 
           <section className="mt-8">
-            <Card className="border-dashed">
-              <CardHeader>
-                <CardTitle className="text-base">Chat panel</CardTitle>
-                <CardDescription>Coming in v2</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  The project chat with auto-loaded `/load-project` context ships in v2.
-                  For now, run <code className="text-xs">/load {project.slug}</code> in
-                  terminal Claude Code for full chat context.
-                </p>
-              </CardContent>
-            </Card>
+            <ChatDrawer
+              clientSlug={client.slug}
+              projectSlug={project.slug}
+              projectName={project.name}
+            />
           </section>
         </main>
       </div>
