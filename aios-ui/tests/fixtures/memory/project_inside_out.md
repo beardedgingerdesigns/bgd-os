@@ -1,5 +1,5 @@
 ---
-name: inside-out-test
+name: Inside Out — test fixture
 description: Test memory file for Inside Out.
 metadata:
   type: project

@@ -5,7 +5,7 @@ describe('memory loader', () => {
   it('returns memory files matching client + project slugs', async () => {
     const matches = await loadMemoryForProject('inside-out', 'inside-out-website')
     expect(matches.length).toBe(1)
-    expect(matches[0].name).toBe('inside-out-test')
+    expect(matches[0].name).toBe('Inside Out — test fixture')
     expect(matches[0].client).toBe('inside-out')
     expect(matches[0].project).toBe('inside-out-website')
   })
