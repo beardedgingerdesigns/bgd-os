@@ -42,14 +42,24 @@ export async function POST(
 
       send('start', { at: new Date().toISOString() })
 
-      // Resolve human-readable project label for the prompt prefix.
+      // Resolve project. Unknown client/project gets a hard fail (don't silently
+      // capture against a bogus label).
       let projectLabel: string
       try {
         const clientObj = await getClient(client)
         const projectObj = await getProject(client, project)
-        projectLabel = clientObj && projectObj
-          ? `${clientObj.name} — ${projectObj.name}`
-          : `${client}/${project}`
+        if (!clientObj || !projectObj) {
+          send('done', {
+            status: 'failed',
+            output: '',
+            exitCode: -1,
+            durationMs: 0,
+            error: `Unknown project: ${client}/${project}`,
+          })
+          try { controller.close() } catch { /* already closed */ }
+          return
+        }
+        projectLabel = `${clientObj.name} — ${projectObj.name}`
       } catch (err) {
         send('done', {
           status: 'failed',
