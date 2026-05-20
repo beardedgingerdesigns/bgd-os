@@ -8,10 +8,10 @@ import { loadMemoryForProject } from '@/lib/data/memory'
 import { SidebarProjects } from '@/components/sidebar-projects'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { RecentActivityFeed } from '@/components/recent-activity-feed'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { BookOpen, FileText } from 'lucide-react'
+import { ChatDrawer } from '@/components/chat-drawer'
+import { CaptureBox } from '@/components/capture-box'
 
 export default async function ProjectPage({
   params,
@@ -36,7 +36,6 @@ export default async function ProjectPage({
     loadMemoryForProject(clientSlug, projectSlug),
   ])
 
-  // Inspect docs_paths for wiki presence + collect any plain reference files.
   const docsPaths = resolveDocsPaths(project.docs_paths)
   let wikiInfo = null
   const refFiles = []
@@ -50,11 +49,14 @@ export default async function ProjectPage({
     if (ref) refFiles.push(ref)
   }
 
+  const contacts = (project.contacts ?? []).filter(c => !c.startsWith('@'))
+  const hasSourceFiles = wikiInfo !== null || refFiles.length > 0 || memory.length > 0
+
   return (
     <div className="flex h-screen overflow-hidden">
       <SidebarProjects client={client} activeProjectSlug={project.slug} />
       <div className="flex-1 overflow-y-auto">
-        <main className="max-w-6xl mx-auto px-6 py-8">
+        <main className="max-w-5xl mx-auto px-6 py-10">
           <Breadcrumb
             crumbs={[
               { label: client.name, href: `/clients/${client.slug}` },
@@ -62,115 +64,158 @@ export default async function ProjectPage({
             ]}
           />
 
-          <header className="mb-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-3xl font-semibold tracking-tight">{project.name}</h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                  <span className="capitalize">{client.name}</span> · <span className="capitalize">{project.status}</span>
-                  {project.contract && <> · {project.contract}</>}
-                </p>
+          {/* HEADER — integrated status + MRR */}
+          <header className="flex items-end justify-between gap-6 mb-8">
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-3">
+                <h1 className="text-2xl font-semibold tracking-tight truncate">
+                  {project.name}
+                </h1>
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium shrink-0">
+                  {project.status}
+                </span>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-semibold">{formatMRR(project.mrr_monthly)}</div>
+              <p className="text-sm text-muted-foreground mt-2">
+                <span>{client.name}</span>
+                {project.contract && <> · <span>{project.contract}</span></>}
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                MRR
+              </div>
+              <div className="text-2xl font-semibold tabular-nums leading-none mt-1.5">
+                {formatMRR(project.mrr_monthly)}
               </div>
             </div>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <Card className="lg:col-span-1">
-              <CardHeader>
-                <CardTitle className="text-base">Contacts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {(project.contacts ?? []).length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No contacts on file.</p>
-                ) : (
-                  <ul className="space-y-1 text-sm">
-                    {(project.contacts ?? [])
-                      .filter(c => !c.startsWith('@'))
-                      .map(c => (
-                        <li key={c} className="truncate">
-                          <a className="hover:underline" href={`mailto:${c}`}>{c}</a>
-                        </li>
-                      ))}
-                  </ul>
-                )}
-              </CardContent>
-            </Card>
+          {/* CONTACTS — inline strip */}
+          {contacts.length > 0 && (
+            <section className="border-y border-border py-3 mb-10">
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  Contacts
+                </span>
+                <ul className="flex items-baseline gap-x-4 gap-y-1 flex-wrap text-sm">
+                  {contacts.map(c => (
+                    <li key={c}>
+                      <a
+                        className="text-foreground/90 hover:text-foreground hover:underline underline-offset-2 decoration-muted-foreground/40"
+                        href={`mailto:${c}`}
+                      >
+                        {c}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
 
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="text-base">Source files</CardTitle>
-                <CardDescription>`docs_paths` for this project</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!wikiInfo && refFiles.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No docs paths registered.</p>
-                ) : (
-                  <ul className="space-y-2 text-sm">
-                    {wikiInfo && (
-                      <li className="flex items-start gap-2">
-                        <BookOpen className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                        <div>
-                          <div>
-                            <Badge variant="secondary">LLM-wiki</Badge>{' '}
-                            <span className="font-mono text-xs">{wikiInfo.rootPath}</span>
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {wikiInfo.decisionsActive} active · {wikiInfo.decisionsDeferred} deferred decisions ·{' '}
-                            {wikiInfo.recentLogEntries.length} recent log entries
-                          </div>
-                        </div>
-                      </li>
-                    )}
-                    {refFiles.map(ref => (
-                      <li key={ref.path} className="flex items-start gap-2">
-                        <FileText className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                        <div className="min-w-0">
-                          <div className="font-mono text-xs truncate">{ref.path}</div>
-                          <div className="text-xs text-muted-foreground">
-                            Updated {formatRelativeDate(ref.mtime.toISOString().slice(0, 10))}
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                    {memory.map(m => (
-                      <li key={m.path} className="flex items-start gap-2">
-                        <FileText className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                        <div className="min-w-0">
-                          <div className="text-sm">{m.description || m.name}</div>
-                          <div className="font-mono text-xs text-muted-foreground truncate">{m.path}</div>
-                          <div className="text-xs text-muted-foreground">
-                            Updated {formatRelativeDate(m.mtime.toISOString().slice(0, 10))}
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+          {/* SOURCE FILES — inline list, no card */}
+          {hasSourceFiles && (
+            <section className="mb-10">
+              <div className="flex items-baseline justify-between mb-3">
+                <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                  Source files
+                </h2>
+                <span className="text-xs text-muted-foreground">docs_paths · memory</span>
+              </div>
+              <ul className="divide-y divide-border border-y border-border">
+                {wikiInfo && (
+                  <li className="flex items-start gap-3 py-3">
+                    <span
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted/60 text-muted-foreground"
+                      aria-hidden
+                    >
+                      <BookOpen className="h-3 w-3" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium shrink-0">
+                          wiki
+                        </span>
+                        <span className="font-mono text-xs truncate">{wikiInfo.rootPath}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
+                        {wikiInfo.decisionsActive} active · {wikiInfo.decisionsDeferred} deferred · {wikiInfo.recentLogEntries.length} log entries
+                      </div>
+                    </div>
+                  </li>
                 )}
-              </CardContent>
-            </Card>
-          </div>
+                {refFiles.map(ref => (
+                  <li key={ref.path} className="flex items-start gap-3 py-3">
+                    <span
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted/60 text-muted-foreground"
+                      aria-hidden
+                    >
+                      <FileText className="h-3 w-3" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium shrink-0">
+                          ref
+                        </span>
+                        <span className="font-mono text-xs truncate">{ref.path}</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
+                        Updated {formatRelativeDate(ref.mtime.toISOString().slice(0, 10))}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+                {memory.map(m => (
+                  <li key={m.path} className="flex items-start gap-3 py-3">
+                    <span
+                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted/60 text-muted-foreground"
+                      aria-hidden
+                    >
+                      <FileText className="h-3 w-3" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium shrink-0">
+                          memory
+                        </span>
+                        <span className="text-sm font-medium truncate">
+                          {m.description || m.name}
+                        </span>
+                      </div>
+                      <div className="font-mono text-xs text-muted-foreground truncate mt-0.5">
+                        {m.path}
+                      </div>
+                      <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
+                        Updated {formatRelativeDate(m.mtime.toISOString().slice(0, 10))}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-          <section>
-            <RecentActivityFeed entries={activity} title={`Recent activity — ${project.name}`} />
+          <section className="mb-10">
+            <CaptureBox
+              clientSlug={client.slug}
+              projectSlug={project.slug}
+              projectName={project.name}
+            />
           </section>
 
-          <section className="mt-8">
-            <Card className="border-dashed">
-              <CardHeader>
-                <CardTitle className="text-base">Chat panel</CardTitle>
-                <CardDescription>Coming in v2</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  The project chat with auto-loaded `/load-project` context ships in v2.
-                  For now, run <code className="text-xs">/load {project.slug}</code> in
-                  terminal Claude Code for full chat context.
-                </p>
-              </CardContent>
-            </Card>
+          <section className="mb-10">
+            <RecentActivityFeed
+              entries={activity}
+              title={`Recent activity — ${project.name}`}
+            />
+          </section>
+
+          <section>
+            <ChatDrawer
+              clientSlug={client.slug}
+              projectSlug={project.slug}
+              projectName={project.name}
+            />
           </section>
         </main>
       </div>

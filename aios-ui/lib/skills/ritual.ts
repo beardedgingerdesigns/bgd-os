@@ -1,18 +1,14 @@
 import { spawn } from 'child_process'
-import type { TriageRunResult } from '@/lib/types'
+import type { RitualRunResult, RitualSlug } from '@/lib/types'
 
-interface RunOptions {
-  claudeBin?: string                                   // path to claude CLI (default: 'claude')
-  args?: string[]                                      // extra args (default below)
-  timeoutMs?: number                                   // default 300_000
-  onStdout?: (chunk: string) => void                   // streaming callback (text deltas only)
+const DEFAULT_TIMEOUT_MS = 300_000
+
+const RITUAL_COMMANDS: Record<RitualSlug, string> = {
+  'level-up': '/level-up',
+  'weekly-status': '/weekly-project-status',
+  'audit': '/audit',
 }
 
-const DEFAULT_TIMEOUT_MS = 300_000 // 5min default — most skills that hit MCP servers need real time
-
-// Pull out the text from a single line of `claude --print --output-format stream-json`.
-// Returns null if the line isn't a text-delta event (system hooks, tool use, message
-// envelopes, partial-line garbage, etc. all yield null).
 function extractTextDelta(line: string): string | null {
   const trimmed = line.trim()
   if (!trimmed) return null
@@ -33,25 +29,36 @@ function extractTextDelta(line: string): string | null {
   return typeof text === 'string' ? text : null
 }
 
-export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunResult> {
+interface RunRitualOptions {
+  slug: RitualSlug
+  claudeBin?: string
+  args?: string[]
+  timeoutMs?: number
+  onStdout?: (chunk: string) => void
+  signal?: AbortSignal
+}
+
+export async function runRitual(opts: RunRitualOptions): Promise<RitualRunResult> {
   const claudeBin = opts.claudeBin ?? 'claude'
-  // stream-json gives us real per-token streaming; --verbose is required by Claude Code
-  // when combined with --print + stream-json; --permission-mode bypassPermissions lets the
-  // skill call MCP tools without interactive prompts (button click = authorization).
-  const args = opts.args ?? [
+  const command = RITUAL_COMMANDS[opts.slug]
+  // Base flags for the production path. Tests can override the flag list via
+  // opts.args (e.g. ['--fail'] / ['--slow']). Either way, the ritual command
+  // is always appended last so the subprocess + fixture can detect which
+  // ritual is running.
+  const baseArgs = [
     '--print',
     '--permission-mode', 'bypassPermissions',
     '--output-format', 'stream-json',
     '--include-partial-messages',
     '--verbose',
-    '/daily-inbox-triage',
   ]
+  const effectiveArgs = [...(opts.args ?? baseArgs), command]
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
 
   const start = Date.now()
-  return new Promise<TriageRunResult>(resolve => {
-    let lineBuffer = ''      // accumulates partial lines from stdout chunks
-    let aggregatedText = ''  // concatenation of every text-delta — this is what gets cached
+  return new Promise<RitualRunResult>(resolve => {
+    let lineBuffer = ''
+    let aggregatedText = ''
     let stderr = ''
     let settled = false
 
@@ -63,11 +70,10 @@ export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunRe
       }
     }
 
-    // stdio: ignore stdin so claude doesn't print "no stdin data received in 3s"
-    // when run from Next.js. Pipe stdout + stderr so we can capture both.
-    const child = spawn(claudeBin, args, {
+    const child = spawn(claudeBin, effectiveArgs, {
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: process.env.CLAUDE_OS_ROOT ?? process.cwd(),
     })
 
     const timer = setTimeout(() => {
@@ -76,17 +82,38 @@ export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunRe
       child.kill('SIGKILL')
       resolve({
         status: 'timeout',
-        exitCode: -1,
         output: aggregatedText,
+        exitCode: -1,
         durationMs: Date.now() - start,
         error: `Subprocess exceeded ${timeoutMs}ms`,
       })
     }, timeoutMs)
 
+    const onAbort = () => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      child.kill('SIGKILL')
+      resolve({
+        status: 'failed',
+        output: aggregatedText,
+        exitCode: -1,
+        durationMs: Date.now() - start,
+        error: 'Aborted by client',
+      })
+    }
+    if (opts.signal) {
+      if (opts.signal.aborted) {
+        onAbort()
+        return
+      }
+      opts.signal.addEventListener('abort', onAbort, { once: true })
+    }
+
     child.stdout.on('data', d => {
       lineBuffer += d.toString()
       const lines = lineBuffer.split('\n')
-      lineBuffer = lines.pop() ?? ''  // last element may be a partial line; keep buffered
+      lineBuffer = lines.pop() ?? ''
       for (const line of lines) processLine(line)
     })
 
@@ -100,8 +127,8 @@ export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunRe
       clearTimeout(timer)
       resolve({
         status: 'failed',
-        exitCode: -1,
         output: aggregatedText,
+        exitCode: -1,
         durationMs: Date.now() - start,
         error: err.message,
       })
@@ -111,16 +138,15 @@ export async function runDailyIngest(opts: RunOptions = {}): Promise<TriageRunRe
       if (settled) return
       settled = true
       clearTimeout(timer)
-      // Process any remaining buffered line (e.g., final line without trailing newline)
       if (lineBuffer.trim()) processLine(lineBuffer)
       const durationMs = Date.now() - start
       if (code === 0) {
-        resolve({ status: 'success', exitCode: 0, output: aggregatedText, durationMs })
+        resolve({ status: 'success', output: aggregatedText, exitCode: 0, durationMs })
       } else {
         resolve({
           status: 'failed',
-          exitCode: code ?? -1,
           output: aggregatedText,
+          exitCode: code ?? -1,
           durationMs,
           error: stderr.trim() || `exit ${code}`,
         })
