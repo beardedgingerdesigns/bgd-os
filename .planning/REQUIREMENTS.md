@@ -51,6 +51,7 @@ Requirements for the AIOS UI v0+v1+v3 + bidirectional v2 surface area. Each maps
 - [ ] **HUB-06** (DERIVED): Every write emits a Receipt feed entry (timestamp, kind, project, absolute file path, excerpt) visible to the operator on Home and on the relevant Project page
 - [ ] **HUB-07** (DERIVED): A Pending Ingestion section on the relevant page lists `raw/aios/` drops awaiting promotion and surfaces the `llm-wiki` ingest pass as a one-click invocation
 - [ ] **HUB-08** (DERIVED): Wiki content for a Project (resolved via `wiki_path:` + `docs_paths:`) renders as expandable sections on the Project page
+- [ ] **HUB-09** (DERIVED): Daily-inbox-triage Skill consults `aios-ui/.aios-cache/triage-overrides.json` before its Step 2 "Justin owes a reply" filter, skipping threads marked `replied | not_me | dismissed` and `snoozed` while `snooze_until > now`; the Skill also checks Gmail thread participants (not just last sender) for Justin's address on borderline threads. Per-row Replied/Snooze/Not-me actions in the Communications section of each Project page write to that file via `POST /api/triage/override/[threadId]`.
 
 ## v2 Requirements
 
@@ -131,6 +132,7 @@ Which phases cover which requirements. v0/v1/v3 phases are historical (COMPLETE)
 | HUB-06 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-07 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-08 | Phase 4 (v2 Bidirectional Hub) | Pending |
+| HUB-09 | Phase 4 (v2 Bidirectional Hub) | Pending |
 
 **Coverage:**
 - v1 requirements: 26 total

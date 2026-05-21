@@ -58,7 +58,7 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
 ### Phase 4: AIOS UI v2 — Bidirectional Hub
 **Goal**: Justin opens a Project page tomorrow and sees what he captured/decided today; the chat panel hydrates instantly from a pre-built brief; every AIOS write lands in `raw/aios/` staging with a Receipt feed entry; the Pending Ingestion section lets him promote drops to curated wiki form with one click.
 **Depends on**: Phase 3
-**Requirements**: HUB-01, HUB-02, HUB-03, HUB-04, HUB-05, HUB-06, HUB-07, HUB-08
+**Requirements**: HUB-01, HUB-02, HUB-03, HUB-04, HUB-05, HUB-06, HUB-07, HUB-08, HUB-09
 **Success Criteria** (what must be TRUE):
   1. Justin opens any Project page, expands the chat drawer, and the chat surface hydrates from `aios-ui/.aios-cache/briefs/<slug>.md` in under 1 second, showing "Brief loaded (built Nm ago)" and a "Refresh context" button
   2. When Justin edits `clients.yaml`, a `references/*.md` file, a `memory/project_*.md`, a file under a project's resolved `docs_paths`, or a file under the project's `wiki/raw/aios/`, the affected brief rebuilds in the background within ~1s (500ms debounce + `/load-project` subprocess)
@@ -67,7 +67,16 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
   5. Every capture, chat-decision promotion, and chat-session close writes a single immutable file at `{wikiPath}/raw/aios/<kind>-YYYY-MM-DD-<slug>.md` and emits a Receipt feed entry visible on Home and on the relevant Project page
   6. The Pending Ingestion section lists `raw/aios/` drops awaiting promotion and exposes a one-click invocation of the `llm-wiki` ingest pass
   7. Project page wiki sections render content resolved from `wiki_path:` + `docs_paths:` as expandable UI sections
-**Plans**: TBD — to be imported from `/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md` via `/gsd-import` (NOT yet ingested)
+**Plans**: 9 plans
+- [ ] 04-01-PLAN.md — Receipt feed scaffold + raw-drops helper (Wave 1)
+- [ ] 04-02-PLAN.md — wiki.ts extensions: readWikiDecisions + readPendingIngest (Wave 1)
+- [ ] 04-03-PLAN.md — Wiki display layer on Project page (Wave 2)
+- [ ] 04-04-PLAN.md — Triage override skill + per-row actions + Communications section (Wave 2)
+- [ ] 04-05-PLAN.md — Capture wiki-aware routing + receipt emission (Wave 2)
+- [ ] 04-06-PLAN.md — Brief indexer + chokidar watcher + instrumentation bootstrap (Wave 2)
+- [ ] 04-07-PLAN.md — Chat hydration bootstrap: cached brief + live Gmail/calendar + Refresh button (Wave 3)
+- [ ] 04-08-PLAN.md — Chat write-back: Drop to raw + session-close transcript drop (Wave 3)
+- [ ] 04-09-PLAN.md — Pending Ingestion surface + /ingest-aios-drops wrapper skill + per-project receipts slice (Wave 4)
 **UI hint**: yes
 
 ## Progress
@@ -80,4 +89,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. AIOS UI v0 — Read-only Nav & MRR | n/a | Complete | Pre-2026-05-21 (historical) |
 | 2. AIOS UI v1 — Live Sync & Daily Triage | n/a | Complete | Pre-2026-05-21 (historical) |
 | 3. AIOS UI v3 — Capture & Rituals | n/a | Complete | 2026-05-19 (per v3 implementation plan + recent commits) |
-| 4. AIOS UI v2 — Bidirectional Hub | 0/TBD | Not started | - |
+| 4. AIOS UI v2 — Bidirectional Hub | 0/9 | Not started | - |
