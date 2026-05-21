@@ -1,6 +1,11 @@
 import fs from 'fs/promises'
 import path from 'path'
-import type { WikiInfo, WikiLogEntry } from '@/lib/types'
+import type {
+  DecisionSummary,
+  DecisionsBuckets,
+  WikiInfo,
+  WikiLogEntry,
+} from '@/lib/types'
 
 async function pathExists(p: string): Promise<boolean> {
   try {
@@ -128,4 +133,91 @@ export async function readWikiLogEntries(
   collected.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
   const limit = options.limit ?? collected.length
   return collected.slice(0, limit)
+}
+
+// ---------- 04-02: readWikiDecisions ----------
+
+const DECISION_BUCKET_CAP = 20
+
+/**
+ * Parse a decision markdown file body into (title, firstParagraph).
+ *  - Title = first `# H1`; falls back to humanized slug.
+ *  - firstParagraph = first non-empty, non-`#`-prefixed contiguous block
+ *    after the H1, joined with single spaces, capped at 300 chars.
+ *  - YAML frontmatter (`---\n…\n---\n`) is stripped before parsing.
+ */
+function parseDecisionBody(
+  body: string,
+  slug: string
+): { title: string; firstParagraph: string } {
+  let working = body
+  if (working.startsWith('---\n')) {
+    const end = working.indexOf('\n---\n', 4)
+    if (end !== -1) working = working.slice(end + 5)
+  }
+  const lines = working.split('\n')
+  let title = ''
+  let foundH1 = false
+  const paraBuffer: string[] = []
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!foundH1) {
+      const m = trimmed.match(/^#\s+(.+)$/)
+      if (m) {
+        title = m[1].trim()
+        foundH1 = true
+      }
+      continue
+    }
+    if (trimmed.startsWith('#')) continue                  // skip subsequent headers
+    if (trimmed === '') {
+      if (paraBuffer.length > 0) break                     // end of first paragraph
+      continue
+    }
+    paraBuffer.push(trimmed)
+  }
+  const firstParagraph = paraBuffer.join(' ').slice(0, 300)
+  if (!title) {
+    title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  }
+  return { title, firstParagraph }
+}
+
+async function readDecisionDir(dir: string): Promise<DecisionSummary[]> {
+  let entries: string[]
+  try {
+    entries = await fs.readdir(dir)
+  } catch {
+    return []
+  }
+  const mdNames = entries.filter(n => n.endsWith('.md'))
+  const summaries = await Promise.all(
+    mdNames.map(async filename => {
+      const filePath = path.join(dir, filename)
+      const [body, stat] = await Promise.all([
+        fs.readFile(filePath, 'utf-8'),
+        fs.stat(filePath),
+      ])
+      const slug = filename.replace(/\.md$/, '')
+      const { title, firstParagraph } = parseDecisionBody(body, slug)
+      return { slug, title, firstParagraph, filePath, modified: stat.mtime }
+    })
+  )
+  summaries.sort((a, b) => b.modified.getTime() - a.modified.getTime())
+  return summaries.slice(0, DECISION_BUCKET_CAP)
+}
+
+/**
+ * Reads `<wikiPath>/decisions/active/*.md` and `<wikiPath>/decisions/deferred/*.md`,
+ * returning a DecisionSummary per file. Missing directories yield empty arrays.
+ *
+ * Each bucket is sorted by mtime DESC and capped at 20 entries.
+ * Files under `decisions/implemented/` or `decisions/superseded/` are ignored.
+ */
+export async function readWikiDecisions(wikiPath: string): Promise<DecisionsBuckets> {
+  const [active, deferred] = await Promise.all([
+    readDecisionDir(path.join(wikiPath, 'decisions', 'active')),
+    readDecisionDir(path.join(wikiPath, 'decisions', 'deferred')),
+  ])
+  return { active, deferred }
 }

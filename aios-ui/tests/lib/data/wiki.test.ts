@@ -156,9 +156,10 @@ describe('readWikiDecisions', () => {
     )
     const result = await readWikiDecisions(tmpWiki)
     expect(result.active[0].firstParagraph.length).toBe(300)
-    // Cross-line join must use a single space (joined chars before truncation).
-    expect(result.active[0].firstParagraph).toContain('a a')  // last 'a' of line1, single space, first 'a' of nothing... — relax to startsWith
-    expect(result.active[0].firstParagraph.startsWith('a'.repeat(200) + ' ')).toBe(true)
+    // First 200 'a's, then exactly one space, then 'b's — proves single-space join.
+    expect(result.active[0].firstParagraph.startsWith('a'.repeat(200) + ' b')).toBe(true)
+    // And no double-space artifact.
+    expect(result.active[0].firstParagraph).not.toMatch(/  /)
   })
 
   it('sorts entries by mtime descending', async () => {
