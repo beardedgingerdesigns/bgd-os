@@ -6,6 +6,7 @@ import {
   detectWiki,
   readWikiLogEntries,
   readWikiDecisions,
+  readPendingIngest,
 } from '@/lib/data/wiki'
 
 const FIXTURE_WIKI_ROOT = path.resolve(__dirname, '../../fixtures/external-wiki')
@@ -229,5 +230,220 @@ describe('readWikiDecisions', () => {
     const result = await readWikiDecisions(tmpWiki)
     expect(result.active.length).toBe(1)
     expect(result.active[0].slug).toBe('real')
+  })
+})
+
+describe('readPendingIngest', () => {
+  let tmpWiki: string
+
+  beforeEach(async () => {
+    tmpWiki = await mkTmpWiki('readPendingIngest-')
+  })
+
+  afterEach(async () => {
+    await fs.rm(tmpWiki, { recursive: true, force: true })
+  })
+
+  it('returns empty result when raw/aios/ directory is missing', async () => {
+    const result = await readPendingIngest(tmpWiki)
+    expect(result).toEqual({ count: 0, files: [], lastIngestAt: null })
+  })
+
+  it('returns all raw/aios files as pending when log.md is missing', async () => {
+    const earlier = new Date('2026-05-10T12:00:00Z')
+    const later = new Date('2026-05-12T12:00:00Z')
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-10-foo.md'),
+      '# foo\n',
+      earlier
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-12-bar.md'),
+      '# bar\n',
+      later
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.count).toBe(2)
+    expect(result.lastIngestAt).toBeNull()
+    // Sorted by mtime DESC.
+    expect(result.files.map(f => f.filename)).toEqual([
+      'capture-2026-05-12-bar.md',
+      'capture-2026-05-10-foo.md',
+    ])
+  })
+
+  it('returns all raw/aios files as pending when log.md has no ingest headers', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'log.md'),
+      '# Log\n\n## [2026-05-15] schema | bootstrap\n\nsomething else\n'
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-10-foo.md'),
+      '# foo\n',
+      new Date('2026-05-10T12:00:00Z')
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.count).toBe(1)
+    expect(result.lastIngestAt).toBeNull()
+  })
+
+  it('marks only files newer than last ingest header as pending', async () => {
+    // Last ingest = 2026-05-15. End-of-day = 2026-05-15T23:59:59Z.
+    await writeMd(
+      path.join(tmpWiki, 'log.md'),
+      '# Log\n\n## [2026-05-15] ingest | wiki ingest pass\n\nsummary\n'
+    )
+    const before = new Date('2026-05-14T12:00:00Z')
+    const afterDay = new Date('2026-05-20T12:00:00Z')
+    const afterDay2 = new Date('2026-05-21T08:00:00Z')
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-14-foo.md'),
+      '# foo\n',
+      before
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-20-bar.md'),
+      '# bar\n',
+      afterDay
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/chat-decision-2026-05-21-baz.md'),
+      '# baz\n',
+      afterDay2
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.count).toBe(2)
+    expect(result.files.map(f => f.filename)).toEqual([
+      'chat-decision-2026-05-21-baz.md',
+      'capture-2026-05-20-bar.md',
+    ])
+    expect(result.lastIngestAt).not.toBeNull()
+    expect(result.lastIngestAt!.toISOString().startsWith('2026-05-15')).toBe(true)
+  })
+
+  it('picks the most recent ingest header when log.md has multiple', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'log.md'),
+      [
+        '# Log',
+        '',
+        '## [2026-05-01] ingest | first',
+        'body',
+        '',
+        '## [2026-05-15] ingest | second',
+        'body',
+        '',
+        '## [2026-05-10] ingest | out-of-order',
+        'body',
+        '',
+      ].join('\n')
+    )
+    // File between 5/10 and 5/15 — should be pre-ingest.
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-12-foo.md'),
+      '# foo\n',
+      new Date('2026-05-12T12:00:00Z')
+    )
+    // File after 5/15 — should be pending.
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-20-bar.md'),
+      '# bar\n',
+      new Date('2026-05-20T12:00:00Z')
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.count).toBe(1)
+    expect(result.files[0].filename).toBe('capture-2026-05-20-bar.md')
+    expect(result.lastIngestAt!.toISOString().startsWith('2026-05-15')).toBe(true)
+  })
+
+  it('tolerates bare-date and em/en-dash ingest headers', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'log.md'),
+      [
+        '# Log',
+        '',
+        '## 2026-05-01 — ingest first',     // bare date, em-dash
+        'body',
+        '',
+        '## 2026-05-10 - ingest with hyphen',
+        'body',
+        '',
+        '## [2026-05-15] | ingest pipe-separated',
+        'body',
+        '',
+      ].join('\n')
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-20-bar.md'),
+      '# bar\n',
+      new Date('2026-05-20T12:00:00Z')
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.lastIngestAt).not.toBeNull()
+    expect(result.lastIngestAt!.toISOString().startsWith('2026-05-15')).toBe(true)
+    expect(result.count).toBe(1)
+  })
+
+  it('classifies file kinds by filename prefix', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-foo.md'),
+      '#\n',
+      new Date('2026-05-20T12:00:00Z')
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/chat-decision-foo.md'),
+      '#\n',
+      new Date('2026-05-20T12:00:01Z')
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/chat-session-foo.md'),
+      '#\n',
+      new Date('2026-05-20T12:00:02Z')
+    )
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/something-else-foo.md'),
+      '#\n',
+      new Date('2026-05-20T12:00:03Z')
+    )
+    const result = await readPendingIngest(tmpWiki)
+    const byName = Object.fromEntries(result.files.map(f => [f.filename, f.kind]))
+    expect(byName['capture-foo.md']).toBe('capture')
+    expect(byName['chat-decision-foo.md']).toBe('chat-decision')
+    expect(byName['chat-session-foo.md']).toBe('chat-session')
+    expect(byName['something-else-foo.md']).toBe('other')
+  })
+
+  it('ignores non-.md files in raw/aios/', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-2026-05-20-foo.md'),
+      '# foo\n',
+      new Date('2026-05-20T12:00:00Z')
+    )
+    await fs.writeFile(
+      path.join(tmpWiki, 'raw/aios/notes.txt'),
+      'not markdown',
+      'utf-8'
+    )
+    await fs.writeFile(
+      path.join(tmpWiki, 'raw/aios/.DS_Store'),
+      '',
+      'utf-8'
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(result.count).toBe(1)
+    expect(result.files[0].filename).toBe('capture-2026-05-20-foo.md')
+  })
+
+  it('returns absolute file paths', async () => {
+    await writeMd(
+      path.join(tmpWiki, 'raw/aios/capture-foo.md'),
+      '# foo\n',
+      new Date('2026-05-20T12:00:00Z')
+    )
+    const result = await readPendingIngest(tmpWiki)
+    expect(path.isAbsolute(result.files[0].filePath)).toBe(true)
+    expect(result.files[0].filePath).toBe(
+      path.join(tmpWiki, 'raw/aios/capture-foo.md')
+    )
   })
 })
