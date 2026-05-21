@@ -1,6 +1,8 @@
 // aios-ui/components/sidebar-projects.tsx
 import Link from 'next/link'
 import { formatMRR } from '@/lib/format'
+import { Badge } from '@/components/ui/badge'
+import { bucketBadge } from '@/lib/badge-tones'
 import type { Client } from '@/lib/types'
 
 interface SidebarProjectsProps {
@@ -26,9 +28,9 @@ export function SidebarProjects({ client, activeProjectSlug }: SidebarProjectsPr
         >
           {client.name}
         </Link>
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mt-2">
-          {client.bucket}
-        </div>
+        <Badge variant={bucketBadge(client.bucket).variant} className="mt-2">
+          {bucketBadge(client.bucket).label}
+        </Badge>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 pb-4">

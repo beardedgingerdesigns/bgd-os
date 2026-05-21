@@ -66,33 +66,66 @@ interface ReadOptions {
 }
 
 const LOG_FILENAME_DATE = /^(\d{4}-\d{2}-\d{2})-(.+)\.md$/
+// Matches H2 headers like:  ## [2026-05-12] schema | wiki scaffold created
+// Both `[YYYY-MM-DD]` (bracketed) and `YYYY-MM-DD` (bare) are accepted so the
+// parser is forgiving across slight wiki conventions.
+const LOG_H2_HEADER = /^##\s+\[?(\d{4}-\d{2}-\d{2})\]?\s*[-—]?\s*(.*)$/
 
 export async function readWikiLogEntries(
   wikiRoot: string,
   options: ReadOptions = {}
 ): Promise<WikiLogEntry[]> {
+  // Convention A — directory of dated files (`log/YYYY-MM-DD-slug.md`).
   const logDir = path.join(wikiRoot, 'log')
-  let filenames: string[]
   try {
-    filenames = await fs.readdir(logDir)
+    const filenames = await fs.readdir(logDir)
+    const entries: WikiLogEntry[] = filenames
+      .filter(n => n.endsWith('.md'))
+      .map(filename => {
+        const match = filename.match(LOG_FILENAME_DATE)
+        const date = match?.[1] ?? '0000-00-00'
+        const slugFromFilename = match?.[2] ?? filename.replace(/\.md$/, '')
+        return {
+          filename,
+          date,
+          title: slugFromFilename.replace(/-/g, ' '),
+          path: path.join(logDir, filename),
+        }
+      })
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    const limit = options.limit ?? entries.length
+    return entries.slice(0, limit)
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code
+    // Fall through only when the directory doesn't exist or isn't a dir; any
+    // other read error should bubble.
+    if (code !== 'ENOENT' && code !== 'ENOTDIR') throw err
+  }
+
+  // Convention B — single `log.md` with `## [YYYY-MM-DD] …` H2 headers.
+  // Matches wild-rose-style wikis where the log is one append-only file
+  // rather than one-file-per-entry.
+  const logFile = path.join(wikiRoot, 'log.md')
+  let body: string
+  try {
+    body = await fs.readFile(logFile, 'utf-8')
   } catch {
     return []
   }
-  const entries: WikiLogEntry[] = filenames
-    .filter(n => n.endsWith('.md'))
-    .map(filename => {
-      const match = filename.match(LOG_FILENAME_DATE)
-      const date = match?.[1] ?? '0000-00-00'
-      const slugFromFilename = match?.[2] ?? filename.replace(/\.md$/, '')
-      return {
-        filename,
-        date,
-        title: slugFromFilename.replace(/-/g, ' '),
-        path: path.join(logDir, filename),
-      }
+  const collected: WikiLogEntry[] = []
+  for (const line of body.split('\n')) {
+    const m = line.match(LOG_H2_HEADER)
+    if (!m) continue
+    const date = m[1]
+    const title = (m[2] ?? '').trim() || 'untitled'
+    collected.push({
+      filename: 'log.md',
+      date,
+      title,
+      path: logFile,
     })
-    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
-
-  const limit = options.limit ?? entries.length
-  return entries.slice(0, limit)
+  }
+  collected.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+  const limit = options.limit ?? collected.length
+  return collected.slice(0, limit)
 }

@@ -8,7 +8,11 @@ import { resolveDocsPaths } from '@/lib/data/references'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { ProjectRow } from '@/components/project-row'
 import { RecentActivityFeed } from '@/components/recent-activity-feed'
+import { NewProjectDialog } from '@/components/new-project-dialog'
+import { DeleteEntityDialog } from '@/components/delete-entity-dialog'
+import { Badge } from '@/components/ui/badge'
 import { formatMRR } from '@/lib/format'
+import { bucketBadge, statusBadge } from '@/lib/badge-tones'
 import { SidebarProjects } from '@/components/sidebar-projects'
 import type { Project, ProjectStatus } from '@/lib/types'
 
@@ -71,28 +75,42 @@ export default async function ClientPage(props: PageProps<'/clients/[client]'>) 
           {/* HEADER — integrated MRR + bucket */}
           <header className="flex items-end justify-between gap-6 mb-8">
             <div className="min-w-0">
-              <div className="flex items-baseline gap-3">
+              <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-semibold tracking-tight truncate">
                   {client.name}
                 </h1>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium shrink-0">
-                  {client.bucket}
-                </span>
+                <Badge variant={bucketBadge(client.bucket).variant} className="shrink-0">
+                  {bucketBadge(client.bucket).label}
+                </Badge>
               </div>
               {client.notes && (
                 <p className="text-sm text-muted-foreground mt-2 max-w-2xl">{client.notes}</p>
               )}
             </div>
-            <div className="text-right shrink-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                Client MRR
+            <div className="flex items-end gap-6 shrink-0">
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  Client MRR
+                </div>
+                <div className="text-2xl font-semibold tabular-nums leading-none mt-1.5">
+                  {formatMRR(mrr)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1 tabular-nums">
+                  {activeCount} active {activeCount === 1 ? 'project' : 'projects'}
+                </div>
               </div>
-              <div className="text-2xl font-semibold tabular-nums leading-none mt-1.5">
-                {formatMRR(mrr)}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1 tabular-nums">
-                {activeCount} active {activeCount === 1 ? 'project' : 'projects'}
-              </div>
+              <DeleteEntityDialog
+                entityLabel={client.name}
+                confirmSlug={client.slug}
+                entityKind="client"
+                endpoint={`/api/clients/${client.slug}`}
+                redirectTo="/"
+                warning={
+                  client.projects.length > 0
+                    ? `This client has ${client.projects.length} project${client.projects.length === 1 ? '' : 's'}. They will be deleted with the client.`
+                    : undefined
+                }
+              />
             </div>
           </header>
 
@@ -121,15 +139,25 @@ export default async function ClientPage(props: PageProps<'/clients/[client]'>) 
 
           {/* PROJECTS — sectioned by status */}
           <div className="space-y-10 mb-14">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+                Projects
+              </h2>
+              <NewProjectDialog clientSlug={client.slug} clientName={client.name} />
+            </div>
+            {client.projects.length === 0 && (
+              <p className="text-sm text-muted-foreground border-y border-dashed border-border py-4">
+                No projects yet. Add the first one to start tracking work for {client.name}.
+              </p>
+            )}
             {STATUS_ORDER.map(({ key, label }) => {
               const list = byStatus[key]
               if (list.length === 0) return null
+              const tone = statusBadge(key).variant
               return (
                 <section key={key}>
-                  <div className="flex items-baseline justify-between mb-3">
-                    <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                      {label}
-                    </h2>
+                  <div className="flex items-center justify-between mb-3">
+                    <Badge variant={tone}>{label}</Badge>
                     <span className="text-xs text-muted-foreground tabular-nums">
                       {list.length}
                     </span>

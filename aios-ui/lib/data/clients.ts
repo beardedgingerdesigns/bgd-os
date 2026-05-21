@@ -35,3 +35,11 @@ export async function getProject(
   const client = await getClient(clientSlug)
   return client?.projects.find(p => p.slug === projectSlug)
 }
+
+// Used by clients-mutations.ts after a write to force the next loadClients()
+// call to re-read from disk. The mtime check would catch it on the next call,
+// but writing through atomic temp+rename can produce identical mtime values
+// in fast sequences; explicit invalidation is the safer contract.
+export function invalidate(): void {
+  cache = null
+}

@@ -15,13 +15,16 @@ export function resolveDocsPaths(docsPaths: string[] | undefined): string[] {
 
 export async function loadReferenceFile(absPath: string): Promise<ReferenceFile | null> {
   try {
-    const [body, stat] = await Promise.all([
-      fs.readFile(absPath, 'utf-8'),
-      fs.stat(absPath),
-    ])
+    // Stat first so a directory path (a wiki root or other folder in docs_paths
+    // that didn't match detectWiki) returns null instead of crashing the page
+    // with EISDIR. Skipping cleanly here matches the ENOENT contract.
+    const stat = await fs.stat(absPath)
+    if (!stat.isFile()) return null
+    const body = await fs.readFile(absPath, 'utf-8')
     return { path: absPath, body, mtime: stat.mtime }
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null
+    const code = (err as NodeJS.ErrnoException).code
+    if (code === 'ENOENT' || code === 'EISDIR') return null
     throw err
   }
 }

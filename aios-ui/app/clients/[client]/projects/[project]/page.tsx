@@ -5,6 +5,7 @@ import { composeRecentActivity } from '@/lib/data/activity'
 import { detectWiki } from '@/lib/data/wiki'
 import { resolveDocsPaths, loadReferenceFile } from '@/lib/data/references'
 import { loadMemoryForProject } from '@/lib/data/memory'
+import { readTodosCache } from '@/lib/cache/todos'
 import { SidebarProjects } from '@/components/sidebar-projects'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { RecentActivityFeed } from '@/components/recent-activity-feed'
@@ -12,6 +13,10 @@ import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { BookOpen, FileText } from 'lucide-react'
 import { ChatDrawer } from '@/components/chat-drawer'
 import { CaptureBox } from '@/components/capture-box'
+import { DeleteEntityDialog } from '@/components/delete-entity-dialog'
+import { TodoList } from '@/components/todo-list'
+import { Badge } from '@/components/ui/badge'
+import { statusBadge } from '@/lib/badge-tones'
 
 export default async function ProjectPage({
   params,
@@ -24,7 +29,7 @@ export default async function ProjectPage({
   const project = await getProject(clientSlug, projectSlug)
   if (!project) notFound()
 
-  const [activity, memory] = await Promise.all([
+  const [activity, memory, todosCache] = await Promise.all([
     composeRecentActivity({
       scope: 'project',
       clientSlug,
@@ -34,7 +39,20 @@ export default async function ProjectPage({
       days: 30,
     }),
     loadMemoryForProject(clientSlug, projectSlug),
+    readTodosCache(),
   ])
+
+  // Filter the global todo queue down to this project. Skip rendering the
+  // section entirely if nothing matches — project pages shouldn't broadcast
+  // "no todos for today" the way the global dashboard does.
+  const scopedTodos = todosCache
+    ? todosCache.todos.filter(
+        t => t.client_slug === clientSlug && t.project_slug === projectSlug,
+      )
+    : []
+  const projectTodos = scopedTodos.length > 0 && todosCache
+    ? { generatedAt: todosCache.generatedAt, todos: scopedTodos }
+    : null
 
   const docsPaths = resolveDocsPaths(project.docs_paths)
   let wikiInfo = null
@@ -67,26 +85,35 @@ export default async function ProjectPage({
           {/* HEADER — integrated status + MRR */}
           <header className="flex items-end justify-between gap-6 mb-8">
             <div className="min-w-0">
-              <div className="flex items-baseline gap-3">
+              <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-semibold tracking-tight truncate">
                   {project.name}
                 </h1>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium shrink-0">
-                  {project.status}
-                </span>
+                <Badge variant={statusBadge(project.status).variant} className="shrink-0">
+                  {statusBadge(project.status).label}
+                </Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
                 <span>{client.name}</span>
                 {project.contract && <> · <span>{project.contract}</span></>}
               </p>
             </div>
-            <div className="text-right shrink-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                MRR
+            <div className="flex items-end gap-6 shrink-0">
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                  MRR
+                </div>
+                <div className="text-2xl font-semibold tabular-nums leading-none mt-1.5">
+                  {formatMRR(project.mrr_monthly)}
+                </div>
               </div>
-              <div className="text-2xl font-semibold tabular-nums leading-none mt-1.5">
-                {formatMRR(project.mrr_monthly)}
-              </div>
+              <DeleteEntityDialog
+                entityLabel={project.name}
+                confirmSlug={project.slug}
+                entityKind="project"
+                endpoint={`/api/clients/${client.slug}/projects/${project.slug}`}
+                redirectTo={`/clients/${client.slug}`}
+              />
             </div>
           </header>
 
@@ -112,6 +139,8 @@ export default async function ProjectPage({
               </div>
             </section>
           )}
+
+          {projectTodos && <TodoList initial={projectTodos} />}
 
           {/* SOURCE FILES — inline list, no card */}
           {hasSourceFiles && (
@@ -139,7 +168,19 @@ export default async function ProjectPage({
                         <span className="font-mono text-xs truncate">{wikiInfo.rootPath}</span>
                       </div>
                       <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
-                        {wikiInfo.decisionsActive} active · {wikiInfo.decisionsDeferred} deferred · {wikiInfo.recentLogEntries.length} log entries
+                        {(() => {
+                          const parts: string[] = []
+                          // Hide the decisions counts when the wiki doesn't use
+                          // a decisions/active + decisions/deferred convention
+                          // (e.g. single-log.md wikis like wild-rose).
+                          if (wikiInfo.decisionsActive + wikiInfo.decisionsDeferred > 0) {
+                            parts.push(`${wikiInfo.decisionsActive} active`)
+                            parts.push(`${wikiInfo.decisionsDeferred} deferred`)
+                          }
+                          const logCount = wikiInfo.recentLogEntries.length
+                          parts.push(`${logCount} ${logCount === 1 ? 'log entry' : 'log entries'}`)
+                          return parts.join(' · ')
+                        })()}
                       </div>
                     </div>
                   </li>

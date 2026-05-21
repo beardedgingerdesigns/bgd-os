@@ -14,7 +14,7 @@ export function TriageOutput({ markdown }: TriageOutputProps) {
   })
 
   return (
-    <article className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap font-mono text-xs leading-relaxed">
+    <article className="prose prose-invert max-w-none whitespace-pre-wrap font-mono text-sm leading-7 text-foreground/90">
       {enhanced.split('\n').map((line, i) => {
         const linkMatch = line.match(/\[`([^`]+)`\]\((https:\/\/mail\.google\.com[^)]+)\)/)
         if (linkMatch) {
@@ -30,8 +30,8 @@ export function TriageOutput({ markdown }: TriageOutputProps) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-1 text-foreground underline-offset-2 hover:underline"
               >
-                <code className="text-xs">{id}</code>
-                <ExternalLink className="h-3 w-3" />
+                <code className="text-sm">{id}</code>
+                <ExternalLink className="h-3.5 w-3.5" />
               </a>
               {after}
             </div>
