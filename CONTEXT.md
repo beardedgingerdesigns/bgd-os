@@ -73,6 +73,8 @@ A per-project structured knowledge wiki living inside a Project's external repo 
 
 The LLM-wiki is the **durable home for project-internal decisions and knowledge**. The cross-project `claude-os/decisions/log.md` holds only cross-cutting AIOS / business / multi-project decisions.
 
+The AIOS UI writes ONLY to the wiki's `raw/aios/` subfolder (see **Raw drop**, above). Promotion from `raw/aios/` into the wiki's curated structure (`decisions/`, `sources/`, `log.md`, `index.md`) is the responsibility of the LLM-wiki ingest pass, not AIOS. This separation is documented in `docs/adr/0002-staged-ingestion-via-raw-aios.md`.
+
 ## AIOS UI
 
 A local-only Next.js web app (in design as of 2026-05-19) running on `localhost`, reading the claude-os filesystem directly, and providing a clients → projects browsing surface with an embedded Claude Code chat window per Project. Launches Skills as buttons. Computes the MRR rollup. Hosts an Admin section for operator-level rituals (`/level-up`, `/audit`, business-direction work).
@@ -103,7 +105,7 @@ Admin is where operator-level rituals and strategic work live, distinct from per
 
 A persistent Claude Code session associated with the Admin surface (not any one Project). Justin's strategic thought-partner: long-running, with claude-os memory injected, no project lens. Decisions made in the Operator chat land in the relevant Internal Project's wiki or in `claude-os/decisions/log.md` if cross-cutting.
 
-Distinct from **Project chat** — a per-Project persistent session injected with `/load-project` output for that Project. Each Project gets its own Project chat; Admin has one Operator chat.
+Distinct from **Project chat** — a per-Project persistent session hydrated from the cached **Project brief** + live Gmail/calendar at session bootstrap. Each Project gets its own Project chat; Admin has one Operator chat. (Earlier design required a manual `/load-project` CLI call before chat would work — that pattern is retired in AIOS UI v2.)
 
 ## Recent activity
 
@@ -113,7 +115,47 @@ A filesystem-derived feed of file changes + decision-log entries + wiki-log entr
 - Client page: Recent activity feed scoped to all Projects under that Client.
 - Project page: Recent activity feed scoped to one Project.
 
-Always deterministic — no AI synthesis. Not to be confused with the AI-synthesized brief produced by the `/load-project` Skill, which IS AI-generated and lives in chat.
+Always deterministic — no AI synthesis. Not to be confused with the AI-synthesized brief produced by the `/load-project` Skill, which IS AI-generated and lives in chat. Also distinct from the **Receipt feed** (below): Recent activity is a passive time-windowed survey of the filesystem; the Receipt feed is an append-only log of writes the AIOS UI itself initiated.
+
+## Receipt feed
+
+A visible append-only log of every durable write the AIOS UI initiates. Each entry records: timestamp, kind (`capture | todo | triage_override | chat_drop | chat_session_close | wiki_ingest`), project slug, absolute file path written, and an excerpt. Persisted at `aios-ui/.aios-cache/receipts.jsonl`.
+
+The Receipt feed is the AIOS UI's **trust mechanism**: there are no approval gates on writes, so the operator gains confidence from receipts (visibility) rather than from modals (gates). Rendered in two places: a global dock at the bottom-right of every page (collapsible) and a per-project slice on each Project page.
+
+## Triage override
+
+A user-applied mark on a Gmail thread that suppresses the daily-inbox-triage Skill from re-surfacing it. Four states: `replied`, `snoozed` (with `snooze_until`), `not_me`, `dismissed`. Persisted at `aios-ui/.aios-cache/triage-overrides.json` and read by the triage Skill's "Justin owes a reply" filter step before evaluating any thread.
+
+Triage overrides exist because the triage Skill's heuristic (last sender ≠ Justin && >18h old) misclassifies threads where Justin has replied mid-thread. The override gives the operator the final word.
+
+## Project brief
+
+A pre-indexed Markdown file at `aios-ui/.aios-cache/briefs/<project-slug>.md` containing the consolidated static project context — `clients.yaml` metadata, project memory, wiki content, decisions log entries tagged to the project. Built by invoking the `/load-project` Skill as a subprocess. Kept fresh by a background file watcher (`chokidar` on `clients.yaml`, `memory/`, project wiki paths, `raw/aios/`).
+
+Hydrated into Project chat on every session bootstrap. **Live Gmail and calendar data are NOT in the brief** — fetched separately at chat bootstrap so they stay fresh.
+
+## Raw drop
+
+A markdown file the AIOS UI writes into the project wiki's staging inbox at `{wikiPath}/raw/aios/`. Three kinds:
+
+- `capture-YYYY-MM-DD-<slug>.md` — operator capture from the Capture box.
+- `chat-decision-YYYY-MM-DD-<slug>.md` — operator promoted a chat AI turn via "Drop to raw."
+- `chat-session-YYYY-MM-DD-<id>.md` — full chat transcript dropped on session close.
+
+Raw drops are **immutable once written**. The AIOS UI NEVER writes into the wiki's curated structure (`decisions/`, `sources/`, `log.md`, `index.md`). Promotion from `raw/aios/` into curated form is the responsibility of the **LLM-wiki ingest pass**, not AIOS. See `docs/adr/0002-staged-ingestion-via-raw-aios.md`.
+
+## Pending ingestion
+
+The count and list of `raw/aios/*.md` files in a project's wiki whose modification time is newer than the most recent `## [YYYY-MM-DD] ingest |` entry in the wiki's `log.md`. Surfaced on each Project page as a section with a "Run wiki ingest" button that invokes the `llm-wiki` ingest workflow on the pending files.
+
+Pending ingestion is the **visibility layer** for the gap between "AIOS captured something" and "the wiki has incorporated it." A zero count means everything AIOS has dropped has been promoted; a non-zero count means there's curation work to do.
+
+## Communications (UI section)
+
+A per-Project section on the Project page rendering the daily-inbox-triage Skill's output, filtered to that Project's `contacts` from `clients.yaml`. Each row shows thread subject, last-message age, and per-row override actions (Replied / Snooze / Not me).
+
+Communications is **not an email client**. AIOS does not render thread bodies, does not draft replies, does not send. Reading and sending stay in Gmail. AIOS is a triage layer over Gmail.
 
 ---
 
