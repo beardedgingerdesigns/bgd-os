@@ -59,6 +59,34 @@ export interface WikiLogEntry {
   path: string                  // absolute path
 }
 
+// ---------- 04-bidirectional-hub: wiki decision summaries + pending ingest ----------
+
+export interface DecisionSummary {
+  slug: string                  // filename without .md (e.g. "001-use-postgres")
+  title: string                 // first H1 of file, fallback to humanized slug
+  firstParagraph: string        // first non-empty, non-header paragraph; '' if none
+  filePath: string              // absolute path
+  modified: Date                // fs.stat mtime
+}
+
+export interface DecisionsBuckets {
+  active: DecisionSummary[]
+  deferred: DecisionSummary[]
+}
+
+export interface PendingFile {
+  filename: string              // e.g. "capture-2026-05-21-meghan-handoff.md"
+  filePath: string              // absolute
+  mtime: Date
+  kind: 'capture' | 'chat-decision' | 'chat-session' | 'other'  // parsed from filename prefix
+}
+
+export interface PendingIngestResult {
+  count: number
+  files: PendingFile[]          // sorted by mtime DESC
+  lastIngestAt: Date | null     // most recent "## [YYYY-MM-DD] ingest |" header, or null
+}
+
 export type ActivityKind = 'decision' | 'wiki-log' | 'memory-update'
 
 export interface ActivityEntry {
