@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Roboto_Slab } from 'next/font/google'
 import './globals.css'
 import { SSEListener } from '@/components/sse-listener'
+import { ReceiptFeed } from '@/components/receipt-feed'
 
 const robotoSlab = Roboto_Slab({
   subsets: ['latin'],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-background text-foreground antialiased font-sans">
         <SSEListener />
         {children}
+        <ReceiptFeed />
       </body>
     </html>
   )
