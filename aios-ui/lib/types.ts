@@ -99,6 +99,35 @@ export interface TriageRunResult {
   error?: string
 }
 
+// ---------- v3.5: structured daily todos ----------
+
+export type TodoType =
+  | 'email_reply'
+  | 'follow_up'
+  | 'calendar_check'
+  | 'decision_log'
+  | 'generic'
+
+export type TodoStatus = 'open' | 'in_progress' | 'done' | 'dismissed'
+
+export interface Todo {
+  id: string
+  type: TodoType
+  summary: string
+  context?: string
+  thread_id?: string
+  client_slug?: string
+  project_slug?: string
+  suggested_action: string
+  action_params?: Record<string, unknown>
+  status: TodoStatus
+}
+
+export interface TodosCacheEntry {
+  generatedAt: string                                  // ISO timestamp the envelope was extracted
+  todos: Todo[]
+}
+
 // ---------- v2: chat panel ----------
 
 export interface ChatSession {

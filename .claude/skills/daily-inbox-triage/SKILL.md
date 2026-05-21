@@ -112,12 +112,56 @@ After printing the queue, ask Justin: *"Want me to draft a reply to any of these
 
 If yes, draft using the project memory context + `references/voice.md` and show him the draft. Never auto-create a Gmail draft without his nod.
 
+### Step 7 — Emit structured todos envelope
+
+**After** the Markdown brief is complete, append a single JSON envelope so the AIOS UI can render today's queue as actionable todo cards on the admin dashboard. This is additive — the markdown above is unchanged.
+
+Emit exactly this shape, wrapped in the marker tags so the UI can extract it deterministically:
+
+````
+<!-- TODOS_JSON_START -->
+```json
+{
+  "generated_at": "{ISO timestamp now}",
+  "todos": [
+    {
+      "id": "todo-{8-char hex uuid}",
+      "type": "email_reply",
+      "summary": "Reply to {Sender Name} re: {short subject}",
+      "context": "{1-2 sentence project memory snippet from Step 4}",
+      "thread_id": "{Gmail thread/message id from Step 5}",
+      "client_slug": "{matched client slug or null}",
+      "project_slug": "{matched project slug or null}",
+      "suggested_action": "draft_reply",
+      "action_params": { "thread_id": "{same id}" },
+      "status": "open"
+    }
+  ]
+}
+```
+<!-- TODOS_JSON_END -->
+````
+
+**Rules for the envelope:**
+- Include **only** "Reply today" and "Reply this week" threads. Skip FYI + archive candidates — those aren't actionable todos.
+- `type` should match the work the todo represents:
+  - `email_reply` for any inbox thread that needs a reply (the default for this skill).
+  - `follow_up` for a thread where Justin already replied but is waiting on response (use sparingly).
+  - `generic` only as a last resort when the action isn't email-shaped.
+- `client_slug` / `project_slug` should match the slugs in `clients.yaml` exactly when known; use `null` (not an empty string) otherwise.
+- `id` must be unique per todo and stable for the duration of one run — `todo-<8 hex chars>` is fine.
+- Emit valid JSON: no trailing commas, no comments inside the JSON block.
+- If zero threads qualify, still emit the envelope with `"todos": []`.
+
+**Do not** announce the envelope to Justin in the chat — he reads the markdown brief, the UI reads the envelope.
+
 ## Output contract
 
 Every run produces:
 
 1. **One Markdown brief in chat** — ranked queue with project context attached.
-2. **(Optional, on Justin's request)** drafted replies for threads he picks.
+2. **One structured JSON envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; envelope is the machine surface.
+3. **(Optional, on Justin's request)** drafted replies for threads he picks.
 
 That's it. No file writes. No Gmail drafts created without confirmation. No sending — ever.
 

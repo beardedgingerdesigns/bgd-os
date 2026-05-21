@@ -2,7 +2,9 @@
 import Link from 'next/link'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { RitualTile } from '@/components/ritual-tile'
+import { TodoList } from '@/components/todo-list'
 import { readRitualCache } from '@/lib/cache/rituals'
+import { readTodosCache } from '@/lib/cache/todos'
 import type { RitualSlug } from '@/lib/types'
 
 interface RitualConfig {
@@ -30,7 +32,10 @@ const RITUALS: RitualConfig[] = [
 ]
 
 export default async function AdminPage() {
-  const caches = await Promise.all(RITUALS.map(r => readRitualCache(r.slug)))
+  const [caches, todos] = await Promise.all([
+    Promise.all(RITUALS.map(r => readRitualCache(r.slug))),
+    readTodosCache(),
+  ])
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-10">
@@ -42,6 +47,8 @@ export default async function AdminPage() {
           Operator rituals + strategic work.
         </p>
       </header>
+
+      <TodoList initial={todos} />
 
       <section className="mb-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
