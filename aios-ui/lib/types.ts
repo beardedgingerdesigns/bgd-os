@@ -247,3 +247,22 @@ export interface Receipt {
   excerpt: string                         // first 240 chars of body (or summary)
   actor: string                           // e.g. "capture-box", "todo-list", "triage-row-actions"
 }
+
+// ---------- Phase 04 — Plan 04: triage row overrides (HUB-04, HUB-09) ----------
+//
+// Per-thread override state written by the Project-page "Replied / Snooze 2d /
+// Not me" actions. The daily-inbox-triage skill reads this file BEFORE
+// surfacing threads so the operator's manual decision always wins.
+
+export type TriageOverrideStatus = 'replied' | 'snoozed' | 'not_me' | 'dismissed'
+
+export interface TriageOverride {
+  status: TriageOverrideStatus
+  marked_at: string                       // ISO-8601
+  snooze_until?: string                   // ISO-8601, required when status==='snoozed'
+}
+
+// Keyed by Gmail thread ID.
+export interface TriageOverridesFile {
+  [threadId: string]: TriageOverride
+}
