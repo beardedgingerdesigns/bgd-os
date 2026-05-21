@@ -8,6 +8,8 @@ import type {
   WikiInfo,
   WikiLogEntry,
 } from '@/lib/types'
+import { getProject } from '@/lib/data/clients'
+import { resolveDocsPaths } from '@/lib/data/references'
 
 async function pathExists(p: string): Promise<boolean> {
   try {
@@ -306,4 +308,30 @@ export async function readPendingIngest(
   }
   files.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())
   return { count: files.length, files, lastIngestAt }
+}
+
+// ---------- 04-05: resolveProjectWikiPath ----------
+
+/**
+ * resolveProjectWikiPath: given a (clientSlug, projectSlug), look up the
+ * Project's docs_paths and return the absolute rootPath of the first
+ * docs_paths entry that detectWiki() recognizes as a wiki. Returns null when
+ * the project is unknown, has no docs_paths, or none of its docs_paths point
+ * at a wiki.
+ *
+ * Used by lib/skills/capture.ts to decide whether to write directly into
+ * `{wiki}/raw/aios/` (HUB-05) or fall back to the /capture skill subprocess.
+ */
+export async function resolveProjectWikiPath(
+  clientSlug: string,
+  projectSlug: string,
+): Promise<string | null> {
+  const project = await getProject(clientSlug, projectSlug)
+  if (!project) return null
+  const docsPaths = resolveDocsPaths(project.docs_paths)
+  for (const dp of docsPaths) {
+    const wiki = await detectWiki(dp)
+    if (wiki) return wiki.rootPath
+  }
+  return null
 }

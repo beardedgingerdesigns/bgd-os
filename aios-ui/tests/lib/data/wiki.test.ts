@@ -7,7 +7,9 @@ import {
   readWikiLogEntries,
   readWikiDecisions,
   readPendingIngest,
+  resolveProjectWikiPath,
 } from '@/lib/data/wiki'
+import { invalidate as invalidateClients } from '@/lib/data/clients'
 
 const FIXTURE_WIKI_ROOT = path.resolve(__dirname, '../../fixtures/external-wiki')
 
@@ -445,5 +447,68 @@ describe('readPendingIngest', () => {
     expect(result.files[0].filePath).toBe(
       path.join(tmpWiki, 'raw/aios/capture-foo.md')
     )
+  })
+})
+
+describe('resolveProjectWikiPath', () => {
+  // The fixture clients.yaml has a `with-wiki` client / `project-with-wiki`
+  // project whose docs_paths is `/WILL_BE_REPLACED_AT_TEST_TIME`. We patch
+  // the file in-place at test setup, invalidate the in-memory cache, then
+  // restore the original contents on teardown so other suites stay hermetic.
+  const CLIENTS_YAML = path.resolve(
+    __dirname,
+    '../../fixtures/claude-os/clients.yaml',
+  )
+  const PLACEHOLDER = '/WILL_BE_REPLACED_AT_TEST_TIME'
+  let originalYaml: string
+  let tmpWiki: string
+
+  beforeEach(async () => {
+    originalYaml = await fs.readFile(CLIENTS_YAML, 'utf-8')
+    tmpWiki = await fs.mkdtemp(path.join(os.tmpdir(), 'resolve-wiki-'))
+  })
+
+  afterEach(async () => {
+    await fs.writeFile(CLIENTS_YAML, originalYaml, 'utf-8')
+    invalidateClients()
+    await fs.rm(tmpWiki, { recursive: true, force: true })
+  })
+
+  async function pointWithWikiAt(absPath: string): Promise<void> {
+    const patched = originalYaml.replace(PLACEHOLDER, absPath)
+    await fs.writeFile(CLIENTS_YAML, patched, 'utf-8')
+    invalidateClients()
+  }
+
+  it('returns the wiki rootPath when one of the docs_paths is a wiki', async () => {
+    // Make tmpWiki a wiki by dropping a WIKI-CLAUDE.md marker at its root.
+    await fs.writeFile(
+      path.join(tmpWiki, 'WIKI-CLAUDE.md'),
+      '# Wiki\n',
+      'utf-8',
+    )
+    await pointWithWikiAt(tmpWiki)
+
+    const result = await resolveProjectWikiPath('with-wiki', 'project-with-wiki')
+    expect(result).toBe(tmpWiki)
+  })
+
+  it('returns null when docs_paths exists but no entry is a wiki', async () => {
+    // tmpWiki is just an empty directory — no WIKI-CLAUDE.md, no decisions/+log/.
+    await pointWithWikiAt(tmpWiki)
+
+    const result = await resolveProjectWikiPath('with-wiki', 'project-with-wiki')
+    expect(result).toBeNull()
+  })
+
+  it('returns null when the project has no docs_paths', async () => {
+    // The `wild-rose` project in the fixture has no docs_paths field.
+    const result = await resolveProjectWikiPath('kirk-financial', 'wild-rose')
+    expect(result).toBeNull()
+  })
+
+  it('returns null for an unknown client/project slug', async () => {
+    const result = await resolveProjectWikiPath('not-a-client', 'not-a-project')
+    expect(result).toBeNull()
   })
 })
