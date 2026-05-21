@@ -43,11 +43,36 @@ Set `pageSize: 50`. Pull the most recent thread per conversation; don't fetch fu
 
 ### Step 2 — Filter to "Justin owes a reply"
 
+#### 2.0 — Read the override file BEFORE evaluating any thread.
+
+Read `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/triage-overrides.json`. If the file does not exist, treat as `{}`.
+
+Shape: keyed by Gmail thread ID; each value has `status` (one of `replied | snoozed | not_me | dismissed`) and optionally `snooze_until` (ISO-8601 timestamp).
+
+For each candidate thread ID from Step 1, apply these rules **before** the inbound/age heuristic:
+
+- If `overrides[threadId].status === 'replied'` → **SKIP**. Do not surface (operator marked it handled via the UI row action).
+- If `overrides[threadId].status === 'not_me'` → **SKIP**. Do not surface.
+- If `overrides[threadId].status === 'dismissed'` → **SKIP**. Do not surface.
+- If `overrides[threadId].status === 'snoozed'` AND `Date.parse(snooze_until) > Date.now()` → **SKIP**. (Expired snoozes fall through and are evaluated normally by the heuristic below.)
+
+The override file is the operator's final word — it always wins over the heuristic.
+
+#### 2.1 — Gmail thread-participant check for borderline cases.
+
+The "last sender ≠ justin@beardedgingerdesigns.com AND >18h since last activity" heuristic misclassifies threads where Justin has already replied mid-thread (e.g., he answered yesterday, the contact replied this morning, but Justin is still effectively in the loop). For each thread that **passes** the heuristic in 2.2, additionally call `mcp__claude_ai_Gmail__get_thread(thread_id)` and inspect `messages[*].headers.From`.
+
+If `justin@beardedgingerdesigns.com` appears as the sender on **any** message in the thread (not just the last one), downgrade or drop — Justin is already engaged. Only surface as "owes a reply" if the contact has sent something since Justin's most recent reply AND >18h has elapsed.
+
+#### 2.2 — Heuristic (run AFTER 2.0 and feeding 2.1)
+
 A thread qualifies if **all** are true:
 - Last message in the thread is **inbound** (sender ≠ `justin@beardedgingerdesigns.com`).
 - Last message is **>18 hours old** (so same-morning threads don't get nagged).
 - Sender domain is not in the bot/no-reply exclude list (Bonsai notifications, Drive share notifications, Google Calendar invites, etc.).
 - Thread is not labeled `Archived` or `Done` (if such labels exist).
+- The override file (Step 2.0) does not skip this thread.
+- The Gmail thread-participant check (Step 2.1) does not downgrade this thread.
 
 Drop everything else.
 
