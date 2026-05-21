@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 4 of 4 (AIOS UI v2 — Bidirectional Hub)
-Plan: 04-04 complete (per-project triage with per-row override — TriageRowActions + TriageOutput filter + CommunicationsSection + override-aware /daily-inbox-triage Step 2; HUB-04 + HUB-09 satisfied); next plan TBD by orchestrator
-Status: 4/9 plans complete in Phase 4 (Wave 1 partially landed: 04-02 done; 04-01 commits exist on branch but no SUMMARY yet; Wave 2: 04-03 done, 04-04 done, 04-06 done)
-Last activity: 2026-05-21 — Completed Plan 04-04: triage overrides + Communications section + skill Step 2 update + 16 new tests (222/222 repo-wide pass, build clean)
+Plan: 04-05 complete (wiki-aware capture + receipt emission — resolveProjectWikiPath helper + runCapture wiki branch + HUB-06 multi-regex extractor with receipt-suppression; HUB-05 capture branch + HUB-06 capture branch satisfied); next plan TBD by orchestrator
+Status: 5/9 plans complete in Phase 4 (Wave 1 partially landed: 04-02 done; 04-01 commits exist on branch but no SUMMARY yet; Wave 2: 04-03 done, 04-04 done, 04-05 done, 04-06 done)
+Last activity: 2026-05-21 — Completed Plan 04-05: wiki-aware capture + receipts + 8 new tests (230/230 repo-wide pass, build clean)
 
-Progress: [█████████░] ~88% (Phases 1-3 shipped historically; Phase 4: 4/9 plans done)
+Progress: [█████████░] ~90% (Phases 1-3 shipped historically; Phase 4: 5/9 plans done)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [█████████░] ~88% (Phases 1-3 shipped historically
 | 1. AIOS UI v0 | — | — | — |
 | 2. AIOS UI v1 | — | — | — |
 | 3. AIOS UI v3 | 9 tasks (per plan) | — | — |
-| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests | ~17 min | ~17 min |
+| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-05: 2 tasks, ~8 min, 3 commits, 8 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests | ~15 min | ~15 min |
 
 **Recent Trend:**
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
@@ -51,6 +51,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **Plan 04-03** (2026-05-21): Native `<details>`/`<summary>` chosen over `@radix-ui/react-collapsible` — dep isn't installed and details handles open-by-default, accessibility, and no-JS toggle for free. WikiDisplay paragraph clamp uses an inline `-webkit-line-clamp` style instead of a Tailwind class (Tailwind 4 here doesn't ship a stable line-clamp utility). Component tests use `react-dom/server.renderToStaticMarkup` rather than RTL because vitest is configured `environment: 'node'`.
 - **Plan 04-06** (2026-05-21): Memory frontmatter parsed via `gray-matter` not regex — matches `lib/data/memory.ts` and handles both top-level (`client`/`project`) and metadata-nested (`metadata.client`/`metadata.project`) shapes; the regex sketched in the plan would have missed every existing memory file. `buildBriefFor` always WRITES the brief (subprocess on success, JS fallback on failure) so chat hydration in 04-07 always has something to read. Watcher uses dependency-injected builder (`opts.buildBriefFor`) instead of `vi.mock` — keeps tests in plain function-call land. `__test_dispatchChange` returns a Promise so tests can await async frontmatter reads BEFORE advancing fake timers (libuv I/O is not gated by `vi.advanceTimersByTimeAsync`). Untracked changes inside `references/` rebuild ALL projects (conservative — references are routinely cross-cutting).
 - **Plan 04-04** (2026-05-21): Atomic temp+rename used for `triage-overrides.json` (sessions.ts skipped this; overrides need it because a half-written file would surface as a visible UI bug). TriageOutput filter operates on parsed markdown blocks (not individual lines) so the Gmail-link line keeps its surrounding context. No undo control on TriageRowActions — operator re-runs `/daily-inbox-triage` to refresh; adding undo would need a DELETE/clear endpoint. SKILL.md edited at the project-local path inside the phase worktree; main-repo copy will sync on merge. Plan-checker iteration 1 warning about user-global path (`~/.claude/skills/`) verified clean.
+- **Plan 04-05** (2026-05-21): `resolveProjectWikiPath` kept in `lib/data/wiki.ts` — adding `getProject` + `resolveDocsPaths` imports introduced no circular dependency (verified via `tsc --noEmit` clean + 230/230 tests + clean `next build`). HUB-06 absolute-path-required invariant enforced via ordered `PATH_REGEXES` array with explicit receipt-SUPPRESSION when no regex matches (rather than emitting an empty `file_written` field). Subprocess `appendReceipt` is awaited inside the close handler before `resolve()` so callers + tests observe the receipt on disk synchronously. Required (not optional) `clientSlug`/`projectSlug` on `RunCaptureOptions` so stale call sites surface at compile time. Per-test fixture-mutation pattern (`clients.yaml` snapshot → patch placeholder → `invalidateClients()` → restore) is the working answer for injecting tmpdir paths into the shared YAML fixture.
 
 ### Pending Todos
 
@@ -91,5 +92,5 @@ Items acknowledged and carried forward:
 ## Session Continuity
 
 Last session: 2026-05-21
-Stopped at: Completed Plan 04-04 — per-project triage with per-row override shipped on `phase/04-bidirectional-hub` worktree. 4 atomic commits (`676f479` test, `cfbd4e2` feat cache+route, `afbaab0` feat skill, `b866cf6` feat UI). 16 new tests (9 cache + 7 endpoint), 222/222 repo-wide pass, build clean. HUB-04 + HUB-09 satisfied.
-Resume file: `.planning/phases/04-bidirectional-hub/04-04-SUMMARY.md`. Next action: orchestrator picks up the next Phase 4 plan. Phase 4 status: 4/9 plans done (Wave 1: 04-02; Wave 2: 04-03, 04-04, 04-06; 04-01 commits on branch but no SUMMARY yet).
+Stopped at: Completed Plan 04-05 — wiki-aware capture + HUB-06 receipt emission shipped on `phase/04-bidirectional-hub` worktree. 3 atomic commits (`3d5a160` feat helper+tests, `979db09` test RED, `116910b` feat GREEN). 8 new tests (4 wiki + 4 capture), 230/230 repo-wide pass, build clean. HUB-05 (capture branch) + HUB-06 (capture branch) satisfied.
+Resume file: `.planning/phases/04-bidirectional-hub/04-05-SUMMARY.md`. Next action: orchestrator picks up the next Phase 4 plan. Phase 4 status: 5/9 plans done (Wave 1: 04-02; Wave 2: 04-03, 04-04, 04-05, 04-06; 04-01 commits on branch but no SUMMARY yet).
