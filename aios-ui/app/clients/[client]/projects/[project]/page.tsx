@@ -9,8 +9,9 @@ import { readTodosCache } from '@/lib/cache/todos'
 import { SidebarProjects } from '@/components/sidebar-projects'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { RecentActivityFeed } from '@/components/recent-activity-feed'
+import { WikiDisplay } from '@/components/wiki-display'
 import { formatMRR, formatRelativeDate } from '@/lib/format'
-import { BookOpen, FileText } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { ChatDrawer } from '@/components/chat-drawer'
 import { CaptureBox } from '@/components/capture-box'
 import { DeleteEntityDialog } from '@/components/delete-entity-dialog'
@@ -68,7 +69,9 @@ export default async function ProjectPage({
   }
 
   const contacts = (project.contacts ?? []).filter(c => !c.startsWith('@'))
-  const hasSourceFiles = wikiInfo !== null || refFiles.length > 0 || memory.length > 0
+  // Source-files section only renders non-wiki rows now; the wiki gets its
+  // own dedicated WikiDisplay block above this section (04-03).
+  const hasNonWikiSourceFiles = refFiles.length > 0 || memory.length > 0
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -142,8 +145,15 @@ export default async function ProjectPage({
 
           {projectTodos && <TodoList initial={projectTodos} />}
 
-          {/* SOURCE FILES — inline list, no card */}
-          {hasSourceFiles && (
+          {/* WIKI — expandable decision + log sections (04-03 / HUB-08).
+              Replaces the bare counts row that previously lived inside
+              "Source files" when a wiki was detected. */}
+          {wikiInfo && <WikiDisplay wikiPath={wikiInfo.rootPath} />}
+
+          {/* SOURCE FILES — inline list, no card. Wiki row is now rendered
+              by WikiDisplay above; this section only holds ref files +
+              memory rows. */}
+          {hasNonWikiSourceFiles && (
             <section className="mb-10">
               <div className="flex items-baseline justify-between mb-3">
                 <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
@@ -152,39 +162,6 @@ export default async function ProjectPage({
                 <span className="text-xs text-muted-foreground">docs_paths · memory</span>
               </div>
               <ul className="divide-y divide-border border-y border-border">
-                {wikiInfo && (
-                  <li className="flex items-start gap-3 py-3">
-                    <span
-                      className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-muted/60 text-muted-foreground"
-                      aria-hidden
-                    >
-                      <BookOpen className="h-3 w-3" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium shrink-0">
-                          wiki
-                        </span>
-                        <span className="font-mono text-xs truncate">{wikiInfo.rootPath}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground/80 mt-1 tabular-nums">
-                        {(() => {
-                          const parts: string[] = []
-                          // Hide the decisions counts when the wiki doesn't use
-                          // a decisions/active + decisions/deferred convention
-                          // (e.g. single-log.md wikis like wild-rose).
-                          if (wikiInfo.decisionsActive + wikiInfo.decisionsDeferred > 0) {
-                            parts.push(`${wikiInfo.decisionsActive} active`)
-                            parts.push(`${wikiInfo.decisionsDeferred} deferred`)
-                          }
-                          const logCount = wikiInfo.recentLogEntries.length
-                          parts.push(`${logCount} ${logCount === 1 ? 'log entry' : 'log entries'}`)
-                          return parts.join(' · ')
-                        })()}
-                      </div>
-                    </div>
-                  </li>
-                )}
                 {refFiles.map(ref => (
                   <li key={ref.path} className="flex items-start gap-3 py-3">
                     <span
