@@ -14,6 +14,7 @@ import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { FileText } from 'lucide-react'
 import { ChatDrawer } from '@/components/chat-drawer'
 import { CaptureBox } from '@/components/capture-box'
+import { CommunicationsSection } from '@/components/communications-section'
 import { DeleteEntityDialog } from '@/components/delete-entity-dialog'
 import { TodoList } from '@/components/todo-list'
 import { Badge } from '@/components/ui/badge'
@@ -69,6 +70,10 @@ export default async function ProjectPage({
   }
 
   const contacts = (project.contacts ?? []).filter(c => !c.startsWith('@'))
+  // allContacts preserves both plain emails AND '@domain' patterns; the
+  // Communications filter needs both forms to match Gmail thread bodies that
+  // mention senders by domain rather than full address.
+  const allContacts = project.contacts ?? []
   // Source-files section only renders non-wiki rows now; the wiki gets its
   // own dedicated WikiDisplay block above this section (04-03).
   const hasNonWikiSourceFiles = refFiles.length > 0 || memory.length > 0
@@ -212,6 +217,16 @@ export default async function ProjectPage({
               </ul>
             </section>
           )}
+
+          {/* COMMUNICATIONS — per-project triage with row overrides (04-04).
+              Inserted AFTER source files, BEFORE CaptureBox. Future plans
+              (e.g., 04-09 Pending Ingestion) should insert themselves AFTER
+              this node per their own plan. */}
+          <CommunicationsSection
+            clientSlug={client.slug}
+            projectSlug={project.slug}
+            projectContacts={allContacts}
+          />
 
           <section className="mb-10">
             <CaptureBox
