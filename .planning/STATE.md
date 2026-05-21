@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** The UI must render Justin's current operating reality and let him push captures + run rituals from the same page he's looking at, without losing continuity across sessions.
-**Current focus:** Phase 4 — AIOS UI v2 Bidirectional Hub (awaiting plan import)
+**Current focus:** Phase 4 — AIOS UI v2 Bidirectional Hub (Wave 1 — data layer)
 
 ## Current Position
 
 Phase: 4 of 4 (AIOS UI v2 — Bidirectional Hub)
-Plan: TBD — to be imported from `/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md` via `/gsd-import`
-Status: Ready to import plan
-Last activity: 2026-05-21 — `/gsd-new-project` ingest completed; 5 LOCKED ADRs + v3 SPEC + v3 plan synthesized into PROJECT/REQUIREMENTS/ROADMAP
+Plan: 04-02 complete (`readWikiDecisions` + `readPendingIngest` data readers); next plan TBD by orchestrator (likely 04-03 wiki display layer in Wave 2)
+Status: 1/9 plans complete in Phase 4 (Wave 1 partially landed: 04-02 done; 04-01 commits exist on branch but no SUMMARY yet)
+Last activity: 2026-05-21 — Completed Plan 04-02: wiki.ts extensions (readWikiDecisions + readPendingIngest), 20 new tests, 183/183 repo-wide pass
 
-Progress: [████████░░] ~75% (Phases 1-3 shipped historically; Phase 4 not started)
+Progress: [████████▌░] ~78% (Phases 1-3 shipped historically; Phase 4: 1/9 plans done)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [████████░░] ~75% (Phases 1-3 shipped historically
 | 1. AIOS UI v0 | — | — | — |
 | 2. AIOS UI v1 | — | — | — |
 | 3. AIOS UI v3 | 9 tasks (per plan) | — | — |
-| 4. AIOS UI v2 | TBD | — | — |
+| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests | ~25 min | ~25 min |
 
 **Recent Trend:**
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
@@ -47,6 +47,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **ADR 0003** (Phase 4): Bidirectional store model — AIOS UI is the seam between operator inputs and durable storage; two-way pipe; rejected read-only-only views
 - **ADR 0004** (Phase 4): Staged ingestion via `raw/aios/` — AIOS writes only to staging; promotion is `llm-wiki`'s job; three kinds (capture, chat-decision, chat-session); files immutable
 - **ADR 0005** (Phase 4): Chat hydration via pre-built indexed briefs — supersedes ADR 0001 §6 mechanism; background indexer + chokidar; dynamic data (Gmail, calendar) fetched live at bootstrap
+- **Plan 04-02** (2026-05-21): `lastIngestAt` uses end-of-day UTC (`23:59:59Z`) so same-day captures dropped after an ingest header are NOT falsely flagged pending; bucket cap of 20 enforced inside the reader, not the caller; `decisions/implemented/` and `decisions/superseded/` deliberately excluded from hub display.
 
 ### Pending Todos
 
@@ -61,7 +62,7 @@ Pre-v4 follow-ups carried over from ADR 0002:
 
 ### Blockers/Concerns
 
-- **Phase 4 plan not yet imported.** ROADMAP Phase 4 plan list is `TBD`. Next required action: run `/gsd-import` against `/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md` to populate Plans.
+- **Pre-existing tsc errors on baseline.** `app/clients/[client]/layout.tsx` and `page.tsx` reference Next.js 16 typed-route globals `LayoutProps` / `PageProps` that resolve via `.next/types/**`. `tsc --noEmit` standalone flags them; a `next build` materializes the types. Logged in `.planning/phases/04-bidirectional-hub/deferred-items.md` for a later route-types cleanup plan. NOT a 04-02 regression.
 - **v3 risk carries forward into v4.** `/capture` skill behavior is not pinned (could refuse, ask for clarification, or write to unexpected location); the v4 chat → `/capture` pipeline inherits this. Mitigation: UI surfaces whatever the skill outputs and the operator re-submits.
 - **Subprocess concurrency.** A capture + ritual + chat session at the same time all spawn `claude` subprocesses with the same cwd. v3 SPEC notes "should be fine but unverified"; v4 will amplify exposure (chat is long-running).
 
@@ -87,5 +88,5 @@ Items acknowledged and carried forward:
 ## Session Continuity
 
 Last session: 2026-05-21
-Stopped at: `/gsd-new-project` produced PROJECT.md + REQUIREMENTS.md + ROADMAP.md + STATE.md from synthesized intel. Phase 4 plan import is the next action.
-Resume file: None — next step is `/gsd-import /Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md` to populate Phase 4 plans.
+Stopped at: Completed Plan 04-02 — `readWikiDecisions` + `readPendingIngest` shipped on `phase/04-bidirectional-hub` worktree with 20 new tests (183/183 repo-wide pass). 4 atomic commits (`6bd7fc3`, `5ffd368`, `de08169`, `e719f7c`).
+Resume file: `.planning/phases/04-bidirectional-hub/04-02-SUMMARY.md`. Next action: pick up the next Phase 4 plan (likely 04-03 Wiki display layer in Wave 2, which depends on 04-02's `readWikiDecisions`).

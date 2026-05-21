@@ -130,8 +130,8 @@ Which phases cover which requirements. v0/v1/v3 phases are historical (COMPLETE)
 | HUB-04 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-05 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-06 | Phase 4 (v2 Bidirectional Hub) | Pending |
-| HUB-07 | Phase 4 (v2 Bidirectional Hub) | Pending |
-| HUB-08 | Phase 4 (v2 Bidirectional Hub) | Pending |
+| HUB-07 | Phase 4 (v2 Bidirectional Hub) | Data layer complete (04-02 — `readPendingIngest`); UI pending (04-09) |
+| HUB-08 | Phase 4 (v2 Bidirectional Hub) | Data layer complete (04-02 — `readWikiDecisions`); UI pending (04-03) |
 | HUB-09 | Phase 4 (v2 Bidirectional Hub) | Pending |
 
 **Coverage:**
