@@ -75,6 +75,8 @@ export async function POST(
       const result = await runCapture({
         text,
         projectLabel,
+        clientSlug: client,
+        projectSlug: project,
         onStdout: chunk => send('chunk', { text: chunk }),
       })
 

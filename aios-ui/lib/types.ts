@@ -204,6 +204,17 @@ export interface CaptureRunResult {
   exitCode: number
   durationMs: number
   error?: string
+  /**
+   * Absolute path of the markdown file written for this capture, when one is
+   * known. Set by:
+   *   - the wiki-aware branch (always present on success in that branch);
+   *   - the subprocess branch when its stdout exposes a parseable absolute
+   *     `.md` path that the HUB-06 multi-regex extractor matched.
+   * Left undefined when the subprocess branch could not parse a path
+   * (operator-facing: receipt is suppressed to honor HUB-06's absolute-path
+   * requirement) or when the capture failed.
+   */
+  fileWritten?: string
 }
 
 export const RITUAL_SLUGS = ['level-up', 'weekly-status', 'audit'] as const
