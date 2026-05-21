@@ -3,6 +3,8 @@ import path from 'path'
 import type {
   DecisionSummary,
   DecisionsBuckets,
+  PendingFile,
+  PendingIngestResult,
   WikiInfo,
   WikiLogEntry,
 } from '@/lib/types'
@@ -220,4 +222,88 @@ export async function readWikiDecisions(wikiPath: string): Promise<DecisionsBuck
     readDecisionDir(path.join(wikiPath, 'decisions', 'deferred')),
   ])
   return { active, deferred }
+}
+
+// ---------- 04-02: readPendingIngest ----------
+
+/**
+ * Matches log.md H2 headers that mark an ingest pass, e.g.:
+ *   ## [2026-05-15] ingest | wiki ingest
+ *   ## 2026-05-01 — ingest first        (em-dash)
+ *   ## 2026-05-10 - ingest with hyphen
+ *   ## [2026-05-15] | ingest pipe-separated
+ *
+ * Bracketed and bare dates both supported; hyphen, em-dash, en-dash, and
+ * pipe separators are all tolerated before the word "ingest".
+ */
+const INGEST_LOG_HEADER = /^##\s+\[?(\d{4}-\d{2}-\d{2})\]?\s*[-—–|]?\s*ingest\b/i
+
+async function parseLastIngestAt(wikiPath: string): Promise<Date | null> {
+  const logFile = path.join(wikiPath, 'log.md')
+  let body: string
+  try {
+    body = await fs.readFile(logFile, 'utf-8')
+  } catch {
+    return null
+  }
+  const dates: Date[] = []
+  for (const line of body.split('\n')) {
+    const m = line.match(INGEST_LOG_HEADER)
+    if (m) {
+      // End-of-day so files dated the SAME day as the ingest header are
+      // treated as already-ingested. New captures land minutes later.
+      const d = new Date(m[1] + 'T23:59:59Z')
+      if (!isNaN(d.getTime())) dates.push(d)
+    }
+  }
+  if (dates.length === 0) return null
+  dates.sort((a, b) => b.getTime() - a.getTime())
+  return dates[0]
+}
+
+function detectKind(filename: string): PendingFile['kind'] {
+  if (filename.startsWith('capture-')) return 'capture'
+  if (filename.startsWith('chat-decision-')) return 'chat-decision'
+  if (filename.startsWith('chat-session-')) return 'chat-session'
+  return 'other'
+}
+
+/**
+ * Lists `<wikiPath>/raw/aios/*.md` files whose mtime is newer than the
+ * most recent `## [YYYY-MM-DD] ingest |` header in `<wikiPath>/log.md`.
+ *
+ * - If raw/aios/ is missing → { count: 0, files: [], lastIngestAt: null }.
+ * - If log.md is missing or contains no ingest header → ALL raw/aios/*.md
+ *   files are returned as pending and lastIngestAt is null.
+ * - Files sorted by mtime DESC. Non-`.md` entries are ignored.
+ * - kind is parsed from filename prefix (capture-, chat-decision-,
+ *   chat-session-, other).
+ */
+export async function readPendingIngest(
+  wikiPath: string
+): Promise<PendingIngestResult> {
+  const rawAiosDir = path.join(wikiPath, 'raw', 'aios')
+  let entries: string[]
+  try {
+    entries = await fs.readdir(rawAiosDir)
+  } catch {
+    return { count: 0, files: [], lastIngestAt: null }
+  }
+  const lastIngestAt = await parseLastIngestAt(wikiPath)
+  const mdNames = entries.filter(n => n.endsWith('.md'))
+  const files: PendingFile[] = []
+  for (const filename of mdNames) {
+    const filePath = path.join(rawAiosDir, filename)
+    const stat = await fs.stat(filePath)
+    if (lastIngestAt === null || stat.mtime.getTime() > lastIngestAt.getTime()) {
+      files.push({
+        filename,
+        filePath,
+        mtime: stat.mtime,
+        kind: detectKind(filename),
+      })
+    }
+  }
+  files.sort((a, b) => b.mtime.getTime() - a.mtime.getTime())
+  return { count: files.length, files, lastIngestAt }
 }
