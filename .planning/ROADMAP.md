@@ -73,7 +73,7 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
 - [x] 04-03-PLAN.md — Wiki display layer on Project page (Wave 2) — 2026-05-21
 - [ ] 04-04-PLAN.md — Triage override skill + per-row actions + Communications section (Wave 2)
 - [ ] 04-05-PLAN.md — Capture wiki-aware routing + receipt emission (Wave 2)
-- [ ] 04-06-PLAN.md — Brief indexer + chokidar watcher + instrumentation bootstrap (Wave 2)
+- [x] 04-06-PLAN.md — Brief indexer + chokidar watcher + instrumentation bootstrap (Wave 2) — 2026-05-21
 - [ ] 04-07-PLAN.md — Chat hydration bootstrap: cached brief + live Gmail/calendar + Refresh button (Wave 3)
 - [ ] 04-08-PLAN.md — Chat write-back: Drop to raw + session-close transcript drop (Wave 3)
 - [ ] 04-09-PLAN.md — Pending Ingestion surface + /ingest-aios-drops wrapper skill + per-project receipts slice (Wave 4)
@@ -89,4 +89,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. AIOS UI v0 — Read-only Nav & MRR | n/a | Complete | Pre-2026-05-21 (historical) |
 | 2. AIOS UI v1 — Live Sync & Daily Triage | n/a | Complete | Pre-2026-05-21 (historical) |
 | 3. AIOS UI v3 — Capture & Rituals | n/a | Complete | 2026-05-19 (per v3 implementation plan + recent commits) |
-| 4. AIOS UI v2 — Bidirectional Hub | 2/9 | In progress | - |
+| 4. AIOS UI v2 — Bidirectional Hub | 3/9 | In progress | - |

@@ -44,7 +44,7 @@ Requirements for the AIOS UI v0+v1+v3 + bidirectional v2 surface area. Each maps
 ### Bidirectional Hub & Chat (HUB) — DERIVED, ACTIVE (v2)
 
 - [ ] **HUB-01** (DERIVED): Each Project page has a collapsed chat drawer at the bottom; expanding it opens a chat surface that hydrates from the pre-built brief at `aios-ui/.aios-cache/briefs/<slug>.md` and shows "Brief loaded (built Nm ago)" plus a "Refresh context" button
-- [ ] **HUB-02** (DERIVED): A background indexer (`aios-ui/lib/indexer/build-brief.ts`) builds the per-project brief by invoking `/load-project` and capturing stdout; a `chokidar` watcher rebuilds affected briefs on changes to `clients.yaml`, `references/`, `memory/`, the project's resolved `docs_paths`, or the project's `wiki/raw/aios/` (500ms debounce)
+- [x] **HUB-02** (DERIVED): A background indexer (`aios-ui/lib/indexer/build-brief.ts`) builds the per-project brief by invoking `/load-project` and capturing stdout; a `chokidar` watcher rebuilds affected briefs on changes to `clients.yaml`, `references/`, `memory/`, the project's resolved `docs_paths`, or the project's `wiki/raw/aios/` (500ms debounce)
 - [ ] **HUB-03** (DERIVED): The chat backend spawns a long-running `claude` subprocess per Project, manages session continuity via `claude --resume <session-id>`, persists session IDs in `.aios-cache/sessions.json`, and streams stdout to the browser via SSE
 - [ ] **HUB-04** (DERIVED): Dynamic data (Gmail thread triage rows scoped to the Project's contacts, calendar events) is fetched live at chat bootstrap and surfaced inside the chat panel — not embedded in the static brief
 - [ ] **HUB-05** (DERIVED): Captures, chat-decision promotions, and chat-session closes write to `{wikiPath}/raw/aios/<kind>-YYYY-MM-DD-<slug>.md` (kinds: `capture`, `chat-decision`, `chat-session`); files are immutable once written; AIOS never writes to curated wiki paths
@@ -125,7 +125,7 @@ Which phases cover which requirements. v0/v1/v3 phases are historical (COMPLETE)
 | OPS-04 | Phase 3 (v3) | Complete |
 | OPS-05 | Phase 3 (v3) | Complete |
 | HUB-01 | Phase 4 (v2 Bidirectional Hub) | Pending |
-| HUB-02 | Phase 4 (v2 Bidirectional Hub) | Pending |
+| HUB-02 | Phase 4 (v2 Bidirectional Hub) | Complete (04-06 — build-brief + brief-watcher + instrumentation boot) |
 | HUB-03 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-04 | Phase 4 (v2 Bidirectional Hub) | Pending |
 | HUB-05 | Phase 4 (v2 Bidirectional Hub) | Pending |
