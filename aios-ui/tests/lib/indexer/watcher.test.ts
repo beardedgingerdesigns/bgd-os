@@ -58,9 +58,9 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
     // (inside-out, inside-out-website).
     const target = path.join(process.env.CLAUDE_OS_ROOT!, 'references/inside-out-project.md')
 
-    __test_dispatchChange(target)
-    __test_dispatchChange(target)
-    __test_dispatchChange(target)
+    await __test_dispatchChange(target)
+    await __test_dispatchChange(target)
+    await __test_dispatchChange(target)
 
     // Before debounce — no calls yet.
     await vi.advanceTimersByTimeAsync(499)
@@ -69,14 +69,15 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
     // After debounce window — exactly one call.
     await vi.advanceTimersByTimeAsync(2)
     expect(builder).toHaveBeenCalledTimes(1)
-    expect(builder).toHaveBeenCalledWith('inside-out', 'inside-out-website', expect.anything())
+    expect(builder.mock.calls[0][0]).toBe('inside-out')
+    expect(builder.mock.calls[0][1]).toBe('inside-out-website')
   })
 
   it('a change to clients.yaml triggers a rebuild for every known (client, project) pair', async () => {
     const builder = vi.fn().mockResolvedValue({ status: 'success' })
     await startBriefWatcher({ buildBriefFor: builder })
 
-    __test_dispatchChange(CLIENTS_YAML_PATH)
+    await __test_dispatchChange(CLIENTS_YAML_PATH)
     await vi.advanceTimersByTimeAsync(501)
 
     // The fixture clients.yaml has 4 clients with the following (client, project) pairs:
@@ -105,7 +106,7 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
 
     // An untracked file inside references/ — not in any project's docs_paths.
     const target = path.join(REFERENCES_DIR, 'shared-stuff.md')
-    __test_dispatchChange(target)
+    await __test_dispatchChange(target)
     await vi.advanceTimersByTimeAsync(501)
     expect(builder).toHaveBeenCalledTimes(5)
   })
@@ -117,11 +118,12 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
     // tests/fixtures/memory/project_inside_out.md has metadata.client=inside-out
     // and metadata.project=inside-out-website per the fixture.
     const target = path.join(MEMORY_ROOT, 'project_inside_out.md')
-    __test_dispatchChange(target)
+    await __test_dispatchChange(target)
     await vi.advanceTimersByTimeAsync(501)
 
     expect(builder).toHaveBeenCalledTimes(1)
-    expect(builder).toHaveBeenCalledWith('inside-out', 'inside-out-website', expect.anything())
+    expect(builder.mock.calls[0][0]).toBe('inside-out')
+    expect(builder.mock.calls[0][1]).toBe('inside-out-website')
   })
 
   it('a change to memory/<no-frontmatter>.md falls back to ALL projects (conservative)', async () => {
@@ -131,7 +133,7 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
     // project_other.md is a fixture memory file that exists but is NOT tagged
     // to any known (client, project) pair in the fixture clients.yaml.
     const target = path.join(MEMORY_ROOT, 'project_other.md')
-    __test_dispatchChange(target)
+    await __test_dispatchChange(target)
     await vi.advanceTimersByTimeAsync(501)
 
     // With unknown frontmatter slugs, conservative behavior is rebuild ALL.
@@ -151,8 +153,8 @@ describe('briefs rebuild dispatch (debounce + reverse mapping)', () => {
     // covered that. Here we instead fire one CLIENTS_YAML change which dispatches
     // 5 distinct project keys, each with its own debounce timer.
 
-    __test_dispatchChange(insideOut)
-    __test_dispatchChange(CLIENTS_YAML_PATH)
+    await __test_dispatchChange(insideOut)
+    await __test_dispatchChange(CLIENTS_YAML_PATH)
     await vi.advanceTimersByTimeAsync(501)
 
     // 5 pairs from clients.yaml dispatch (one of them is inside-out/inside-out-website,
