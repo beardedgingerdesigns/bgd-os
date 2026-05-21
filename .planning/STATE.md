@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 4 of 4 (AIOS UI v2 — Bidirectional Hub)
-Plan: 04-02 complete (`readWikiDecisions` + `readPendingIngest` data readers); next plan TBD by orchestrator (likely 04-03 wiki display layer in Wave 2)
-Status: 1/9 plans complete in Phase 4 (Wave 1 partially landed: 04-02 done; 04-01 commits exist on branch but no SUMMARY yet)
-Last activity: 2026-05-21 — Completed Plan 04-02: wiki.ts extensions (readWikiDecisions + readPendingIngest), 20 new tests, 183/183 repo-wide pass
+Plan: 04-03 complete (WikiDisplay server component renders expandable Active/Recent/Deferred wiki sections on the Project page; HUB-08 satisfied); next plan TBD by orchestrator
+Status: 2/9 plans complete in Phase 4 (Wave 1 partially landed: 04-02 done; 04-01 commits exist on branch but no SUMMARY yet; Wave 2: 04-03 done; 04-06 brief watcher commits also landed in parallel on this branch)
+Last activity: 2026-05-21 — Completed Plan 04-03: WikiDisplay component + Project-page wiring + 7 new tests, 206/206 repo-wide pass
 
-Progress: [████████▌░] ~78% (Phases 1-3 shipped historically; Phase 4: 1/9 plans done)
+Progress: [████████▊░] ~80% (Phases 1-3 shipped historically; Phase 4: 2/9 plans done)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [████████▌░] ~78% (Phases 1-3 shipped historically
 | 1. AIOS UI v0 | — | — | — |
 | 2. AIOS UI v1 | — | — | — |
 | 3. AIOS UI v3 | 9 tasks (per plan) | — | — |
-| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests | ~25 min | ~25 min |
+| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests | ~18 min | ~18 min |
 
 **Recent Trend:**
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
@@ -48,6 +48,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **ADR 0004** (Phase 4): Staged ingestion via `raw/aios/` — AIOS writes only to staging; promotion is `llm-wiki`'s job; three kinds (capture, chat-decision, chat-session); files immutable
 - **ADR 0005** (Phase 4): Chat hydration via pre-built indexed briefs — supersedes ADR 0001 §6 mechanism; background indexer + chokidar; dynamic data (Gmail, calendar) fetched live at bootstrap
 - **Plan 04-02** (2026-05-21): `lastIngestAt` uses end-of-day UTC (`23:59:59Z`) so same-day captures dropped after an ingest header are NOT falsely flagged pending; bucket cap of 20 enforced inside the reader, not the caller; `decisions/implemented/` and `decisions/superseded/` deliberately excluded from hub display.
+- **Plan 04-03** (2026-05-21): Native `<details>`/`<summary>` chosen over `@radix-ui/react-collapsible` — dep isn't installed and details handles open-by-default, accessibility, and no-JS toggle for free. WikiDisplay paragraph clamp uses an inline `-webkit-line-clamp` style instead of a Tailwind class (Tailwind 4 here doesn't ship a stable line-clamp utility). Component tests use `react-dom/server.renderToStaticMarkup` rather than RTL because vitest is configured `environment: 'node'`.
 
 ### Pending Todos
 
@@ -88,5 +89,5 @@ Items acknowledged and carried forward:
 ## Session Continuity
 
 Last session: 2026-05-21
-Stopped at: Completed Plan 04-02 — `readWikiDecisions` + `readPendingIngest` shipped on `phase/04-bidirectional-hub` worktree with 20 new tests (183/183 repo-wide pass). 4 atomic commits (`6bd7fc3`, `5ffd368`, `de08169`, `e719f7c`).
-Resume file: `.planning/phases/04-bidirectional-hub/04-02-SUMMARY.md`. Next action: pick up the next Phase 4 plan (likely 04-03 Wiki display layer in Wave 2, which depends on 04-02's `readWikiDecisions`).
+Stopped at: Completed Plan 04-03 — `WikiDisplay` server component + Project-page wiring shipped on `phase/04-bidirectional-hub` worktree with 7 new component tests (206/206 repo-wide pass, build clean). 4 atomic commits (`8cfc324`, `c2f9016`, `8dda473`, `7ad6ee0`). HUB-08 satisfied.
+Resume file: `.planning/phases/04-bidirectional-hub/04-03-SUMMARY.md`. Next action: orchestrator picks up the next Phase 4 plan. 04-06 brief watcher commits (`e3a8cfe`, `501c718`, `05c5884`, `c52105b`) also landed on this branch in parallel.
