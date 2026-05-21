@@ -8,6 +8,7 @@ node_modules/
 audits/
 .superpowers/
 .aios-cache/
+.worktrees/
 
 # AIOS UI build artifacts
 aios-ui/node_modules/
