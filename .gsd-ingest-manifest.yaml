@@ -1,0 +1,25 @@
+# GSD ingest-docs manifest for claude-os bootstrap.
+# Lower `precedence` = higher authority. ADRs locked. SPEC informs PRD layer; plans are reference.
+# Drafted 2026-05-21 during the AIOS UI v2 grilling session.
+docs:
+  - path: docs/adr/0001-aios-ui-architecture.md
+    type: ADR
+    precedence: 0
+  - path: docs/adr/0002-mrr-data-model.md
+    type: ADR
+    precedence: 0
+  - path: docs/adr/0003-bidirectional-store-model.md
+    type: ADR
+    precedence: 0
+  - path: docs/adr/0004-staged-ingestion-via-raw-aios.md
+    type: ADR
+    precedence: 0
+  - path: docs/adr/0005-chat-hydration-via-indexed-briefs.md
+    type: ADR
+    precedence: 0
+  - path: docs/superpowers/specs/2026-05-19-aios-ui-v3-design.md
+    type: SPEC
+    precedence: 1
+  - path: docs/superpowers/plans/2026-05-19-aios-ui-v3.md
+    type: DOC
+    precedence: 2

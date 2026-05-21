@@ -1,0 +1,27 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/adr/0004-staged-ingestion-via-raw-aios.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "ADR 0004 — Staged ingestion via `raw/aios/`",
+  "summary": "AIOS UI writes captures, chat-decision promotions, and chat-session transcripts only to a project wiki's raw/aios/ staging inbox; promotion to curated wiki structure is delegated to the llm-wiki ingest pass.",
+  "scope": [
+    "AIOS UI",
+    "project wiki",
+    "raw/aios staging directory",
+    "llm-wiki skill",
+    "Pending Ingestion surface",
+    "capture / chat-decision / chat-session drop kinds"
+  ],
+  "cross_refs": [
+    "0003-bidirectional-store-model.md",
+    "file:///Users/justinlobaito/.claude/skills/llm-wiki/SKILL.md",
+    "../../CONTEXT.md",
+    "../../../../.claude/projects/-Users-justinlobaito-repos-claude-os/memory/project_aios_ui_staged_ingestion.md",
+    "../../../../.claude/projects/-Users-justinlobaito-repos-claude-os/memory/feedback_prefer_staged_ingestion.md",
+    "/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

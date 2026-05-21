@@ -1,0 +1,30 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/adr/0001-aios-ui-architecture.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "ADR 0001 — AIOS UI architecture",
+  "summary": "Architectural decision cluster for the local Next.js AIOS UI: local-only deployment, additive viewer to existing CLI, CLI-subprocess chat, in-memory index with chokidar watcher, drill-down nav, and modal daily-ingest.",
+  "scope": [
+    "AIOS UI",
+    "Next.js app",
+    "Claude Code CLI subprocess",
+    "chat sessions",
+    "in-memory index",
+    "chokidar file watcher",
+    "Server-Sent Events",
+    "drill-down navigation",
+    "daily-ingest modal",
+    "MRR widget",
+    "Skills launcher",
+    "Capture box",
+    "Admin surface"
+  ],
+  "cross_refs": [
+    "../../CONTEXT.md",
+    "0002-mrr-data-model.md"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

@@ -1,0 +1,24 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/adr/0002-mrr-data-model.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "ADR 0002 — MRR data model",
+  "summary": "Decides MRR is stored as a structured mrr_monthly field per Project, summed across paying+active scope, with BrandOS dealer subscriptions modeled as their own Projects.",
+  "scope": [
+    "MRR rollup",
+    "clients.yaml schema",
+    "Project mrr_monthly field",
+    "Client bucket filter",
+    "BrandOS dealer subscriptions",
+    "AIOS UI Home + Client pages"
+  ],
+  "cross_refs": [
+    "0001-aios-ui-architecture.md",
+    "../../CONTEXT.md",
+    "clients.yaml"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

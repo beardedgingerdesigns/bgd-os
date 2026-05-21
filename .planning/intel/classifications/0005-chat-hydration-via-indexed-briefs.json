@@ -1,0 +1,28 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/adr/0005-chat-hydration-via-indexed-briefs.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "ADR 0005 — Chat hydration via pre-built indexed briefs",
+  "summary": "Adopts pre-built indexed briefs (file-watcher-driven cache of /load-project output) as the project chat hydration mechanism.",
+  "scope": [
+    "AIOS UI project chat",
+    "chat hydration",
+    "background indexer",
+    "brief cache",
+    "chokidar file watcher",
+    "/load-project subprocess",
+    "Gmail/calendar live fetch"
+  ],
+  "cross_refs": [
+    "aios-ui/app/api/chat/[client]/[project]/message/route.ts",
+    "docs/adr/0001-aios-ui-architecture.md",
+    "docs/adr/0003-bidirectional-store-model.md",
+    "CONTEXT.md",
+    "/Users/justinlobaito/.claude/skills/load-project/SKILL.md",
+    "/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

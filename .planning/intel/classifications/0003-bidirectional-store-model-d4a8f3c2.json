@@ -1,0 +1,19 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/adr/0003-bidirectional-store-model.md",
+  "type": "ADR",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "ADR 0003 — Bidirectional store model for AIOS UI",
+  "summary": "Adopts the bidirectional store model where the AIOS UI is the seam between operator inputs and durable storage, with two-way flow.",
+  "scope": ["AIOS UI", "bidirectional store model", "Gmail triage", "project chat hydration", "wiki integration", "receipt feed", "raw/aios staging inbox", "triage overrides"],
+  "cross_refs": [
+    "../../CONTEXT.md",
+    "0001-aios-ui-architecture.md",
+    "0004-staged-ingestion-via-raw-aios.md",
+    "0005-chat-hydration-via-indexed-briefs.md",
+    "/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md"
+  ],
+  "locked": true,
+  "precedence": 0,
+  "notes": ""
+}

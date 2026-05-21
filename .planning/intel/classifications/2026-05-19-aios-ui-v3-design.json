@@ -1,0 +1,42 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/superpowers/specs/2026-05-19-aios-ui-v3-design.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "AIOS UI v3 — design spec",
+  "summary": "Technical design spec for AIOS UI v3 adding an inline capture box on project pages and an admin launcher for operator rituals (level-up, weekly-status, audit).",
+  "scope": [
+    "AIOS UI v3",
+    "CaptureBox component",
+    "Admin page",
+    "RitualTile",
+    "RitualModal",
+    "/api/capture/[client]/[project] route",
+    "/api/admin/[ritual] route",
+    "lib/skills/capture.ts",
+    "lib/skills/ritual.ts",
+    "lib/cache/rituals.ts",
+    "stream-json SSE plumbing",
+    "ritual cache layout"
+  ],
+  "cross_refs": [
+    "lib/types.ts",
+    "components/capture-box.tsx",
+    "components/ritual-tile.tsx",
+    "components/ritual-modal.tsx",
+    "app/admin/page.tsx",
+    "app/api/capture/[client]/[project]/route.ts",
+    "app/api/admin/[ritual]/route.ts",
+    "lib/skills/capture.ts",
+    "lib/skills/ritual.ts",
+    "lib/cache/rituals.ts",
+    "tests/fixtures/fake-claude-capture.ts",
+    "tests/fixtures/fake-claude-ritual.ts",
+    ".aios-cache/triage-latest.json",
+    ".aios-cache/sessions.json",
+    ".aios-cache/rituals/"
+  ],
+  "locked": false,
+  "precedence": 1,
+  "notes": ""
+}

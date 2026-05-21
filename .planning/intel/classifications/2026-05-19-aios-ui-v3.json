@@ -1,0 +1,29 @@
+{
+  "source_path": "/Users/justinlobaito/repos/claude-os/docs/superpowers/plans/2026-05-19-aios-ui-v3.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "AIOS UI v3 Implementation Plan",
+  "summary": "Task-by-task implementation plan for adding a project-page capture box and an admin ritual launcher to AIOS UI, reusing v1/v2 streaming subprocess + cache patterns.",
+  "scope": [
+    "aios-ui",
+    "CaptureBox component",
+    "Admin ritual launcher",
+    "/api/capture/[client]/[project] route",
+    "/api/admin/[ritual] route",
+    "ritual subprocess wrapper",
+    "capture subprocess wrapper",
+    "per-ritual cache module",
+    "RitualTile",
+    "RitualModal",
+    "Next.js App Router",
+    "Vitest test fixtures"
+  ],
+  "cross_refs": [
+    "docs/superpowers/specs/2026-05-19-aios-ui-v3-design.md",
+    "2026-05-19-aios-ui-v3-design.md"
+  ],
+  "locked": false,
+  "precedence": 2,
+  "notes": ""
+}
