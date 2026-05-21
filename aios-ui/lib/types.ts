@@ -225,3 +225,25 @@ export interface RitualCacheEntry {
   exitCode: number
   durationMs: number
 }
+
+// ---------- Phase 04: bidirectional hub (raw drops + receipts) ----------
+
+export type RawDropKind = 'capture' | 'chat-decision' | 'chat-session'
+
+export type ReceiptKind =
+  | 'capture'
+  | 'todo'
+  | 'triage_override'
+  | 'chat_drop'
+  | 'chat_session_close'
+  | 'wiki_ingest'
+
+export interface Receipt {
+  id: string                              // e.g. "rcpt_<nanoid>"
+  ts: string                              // ISO-8601
+  kind: ReceiptKind
+  project_slug: string                    // empty string allowed for cross-project receipts
+  file_written: string                    // absolute path
+  excerpt: string                         // first 240 chars of body (or summary)
+  actor: string                           // e.g. "capture-box", "todo-list", "triage-row-actions"
+}
