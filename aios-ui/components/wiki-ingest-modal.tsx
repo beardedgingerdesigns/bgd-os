@@ -147,11 +147,19 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
           </div>
         )}
 
+        {/*
+          Phase 04 review WR-02: <div> inside <pre> is invalid HTML and triggers
+          a React hydration warning in dev. The sentinel must live outside the
+          <pre> so its bounding rect is stable for scrollIntoView. Moved the
+          overflow-y to the wrapper so the scroll container owns the sentinel.
+        */}
         <div className="border-t border-border pt-3">
-          <pre className="text-sm whitespace-pre-wrap break-words font-mono leading-7 text-foreground/90 max-h-[40vh] overflow-y-auto">
-            {output || (status === 'idle' ? 'Waiting to start…' : '')}
+          <div className="max-h-[40vh] overflow-y-auto">
+            <pre className="text-sm whitespace-pre-wrap break-words font-mono leading-7 text-foreground/90">
+              {output || (status === 'idle' ? 'Waiting to start…' : '')}
+            </pre>
             <div ref={outputEndRef} />
-          </pre>
+          </div>
         </div>
 
         {status === 'success' && summary && (
