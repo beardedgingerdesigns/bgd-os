@@ -13,6 +13,18 @@ interface ChatDrawerProps {
   projectName: string
 }
 
+interface BriefMeta {
+  source: string
+  builtAt: string
+}
+
+/** How many minutes ago a Date was (e.g. "3m ago", "65m ago"). */
+function minutesAgo(date: Date): string {
+  const mins = Math.round((Date.now() - date.getTime()) / 60_000)
+  if (mins <= 0) return 'just now'
+  return `${mins}m ago`
+}
+
 export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerProps) {
   const [expanded, setExpanded] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
@@ -20,6 +32,7 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [briefMeta, setBriefMeta] = useState<BriefMeta | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = useCallback(() => {
@@ -42,12 +55,25 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
       buf += decoder.decode(value, { stream: true })
       const events = buf.split('\n\n')
       buf = events.pop() ?? ''
-      for (const event of events) {
-        const dataLine = event.split('\n').find(l => l.startsWith('data: '))
+      for (const rawEvent of events) {
+        const lines = rawEvent.split('\n')
+        // Parse the SSE event name (e.g. "event: brief-meta") + data.
+        const eventLine = lines.find(l => l.startsWith('event: '))
+        const dataLine = lines.find(l => l.startsWith('data: '))
         if (!dataLine) continue
         let payload: unknown
         try { payload = JSON.parse(dataLine.slice(6)) } catch { continue }
         const p = payload as Record<string, unknown>
+
+        // Route brief-meta separately; don't add it to messages.
+        const eventName = eventLine ? eventLine.slice(7) : ''
+        if (eventName === 'brief-meta') {
+          if (typeof p.source === 'string' && typeof p.builtAt === 'string') {
+            setBriefMeta({ source: p.source, builtAt: p.builtAt })
+          }
+          continue
+        }
+
         if (typeof p?.text === 'string') {
           const t = p.text
           setMessages(prev => {
@@ -116,6 +142,24 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
       }
     })()
   }, [expanded, hasLoaded, clientSlug, projectSlug, streamInto])
+
+  /** POST /refresh → clear UI state → trigger a fresh /load on next expand. */
+  const onRefreshContext = useCallback(async () => {
+    if (loading) return
+    setLoading(true)
+    try {
+      await fetch(`/api/chat/${clientSlug}/${projectSlug}/refresh`, { method: 'POST' })
+    } catch {
+      // ignore — next load will just see stale brief
+    } finally {
+      // Reset drawer to "not yet loaded" state — the next expand will re-run /load.
+      setMessages([])
+      setSession(null)
+      setBriefMeta(null)
+      setHasLoaded(false)
+      setLoading(false)
+    }
+  }, [loading, clientSlug, projectSlug])
 
   async function sendMessage() {
     const text = input.trim()
@@ -199,6 +243,21 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
       </button>
       {expanded && (
         <CardContent id="chat-drawer-body">
+          {briefMeta && (
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+              <span>
+                Brief loaded ({briefMeta.source}) — built {minutesAgo(new Date(briefMeta.builtAt))}
+              </span>
+              <button
+                type="button"
+                onClick={() => void onRefreshContext()}
+                disabled={loading}
+                className="hover:text-foreground underline-offset-2 hover:underline disabled:opacity-50"
+              >
+                Refresh context
+              </button>
+            </div>
+          )}
           <div className="max-h-[60vh] overflow-y-auto space-y-4 mb-4">
             {initialLoading && (
               <div className="space-y-3" aria-live="polite" aria-busy="true">

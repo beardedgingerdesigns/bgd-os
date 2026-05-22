@@ -1,5 +1,5 @@
 import { runChatLoad } from '@/lib/skills/chat'
-import { buildProjectBrief } from '@/lib/skills/chat-brief'
+import { readBriefOrBuild, buildLiveContext, assembleSeedPrompt } from '@/lib/skills/chat-bootstrap'
 import { writeChatSession } from '@/lib/cache/sessions'
 import { getClient, getProject } from '@/lib/data/clients'
 
@@ -24,18 +24,22 @@ export async function POST(
 
       send('start', { at: new Date().toISOString() })
 
-      // Build the brief from the data layer (clients.yaml, memory, references,
-      // decisions, wiki). This is what previously came from `/load-project` —
-      // but doing it in JS avoids the slash-command-breaks-resumability bug.
-      let brief: string
-      let projectLabel: string
+      // Resolve project label for display + seed prompt.
+      const clientObj = await getClient(client).catch(() => undefined)
+      const projectObj = await getProject(client, project).catch(() => undefined)
+      const projectLabel = clientObj && projectObj
+        ? `${clientObj.name} — ${projectObj.name}`
+        : `${client}/${project}`
+
+      // Per ADR 0005: read from cache (or lazy-build on first run), then
+      // fetch live Gmail + calendar in parallel on top of the static brief.
+      let briefResult: Awaited<ReturnType<typeof readBriefOrBuild>>
+      let liveCtx: Awaited<ReturnType<typeof buildLiveContext>>
       try {
-        const clientObj = await getClient(client)
-        const projectObj = await getProject(client, project)
-        projectLabel = clientObj && projectObj
-          ? `${clientObj.name} — ${projectObj.name}`
-          : `${client}/${project}`
-        brief = await buildProjectBrief(client, project)
+        ;[briefResult, liveCtx] = await Promise.all([
+          readBriefOrBuild(client, project),
+          buildLiveContext(client, project),
+        ])
       } catch (err) {
         send('done', {
           status: 'failed',
@@ -49,13 +53,30 @@ export async function POST(
         return
       }
 
-      // Stream the brief itself to the UI first so the user sees the context
-      // before Claude's response. Followed by a separator + Claude's reply.
-      send('chunk', { text: brief })
+      // Emit brief metadata BEFORE starting the subprocess so the UI can
+      // display "Brief loaded (built Nm ago)" immediately.
+      send('brief-meta', {
+        source: briefResult.source,
+        builtAt: briefResult.builtAt.toISOString(),
+      })
+
+      const seed = assembleSeedPrompt({
+        brief: briefResult.brief,
+        gmail: liveCtx.gmail,
+        calendar: liveCtx.calendar,
+        projectLabel,
+      })
+
+      // Stream the seed itself to the UI first (preserves v1 UX pattern of
+      // showing context before Claude's response), then the separator.
+      send('chunk', { text: seed })
       send('chunk', { text: '\n\n---\n\n' })
 
+      // runChatLoad is unchanged — it owns the claude --resume / session-id
+      // contract (HUB-03). We pass the seed as the brief; it wraps it in its
+      // own orient-yourself preamble before spawning claude.
       const result = await runChatLoad({
-        brief,
+        brief: seed,
         projectLabel,
         onStdout: chunk => send('chunk', { text: chunk }),
       })
