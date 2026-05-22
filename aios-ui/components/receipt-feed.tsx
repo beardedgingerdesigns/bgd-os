@@ -94,10 +94,19 @@ export function ReceiptFeed() {
     return receipts.filter(r => r.ts > lastSeenAt).length
   }, [receipts, lastSeenAt])
 
+  // Phase 04 review WR-07: mark seen on COLLAPSE, not on expand. Previously
+  // we set lastSeenAt the moment the panel opened, which marked even rows
+  // the operator never scrolled to as "seen" (correctness nit) and was
+  // sensitive to same-millisecond receipt arrivals (potential off-by-one in
+  // the strict r.ts > lastSeenAt comparison). Marking on collapse gives the
+  // operator the natural "I've seen what was on screen" semantics and is
+  // immune to receipts that arrive while the panel is open — those will
+  // still show as unseen until the operator closes the panel.
   const toggle = () => {
     setExpanded(prev => {
       const next = !prev
-      if (next) {
+      if (!next) {
+        // Just collapsed — mark everything currently in receipts as seen.
         const nowIso = new Date().toISOString()
         try {
           window.localStorage.setItem(LAST_SEEN_KEY, nowIso)
