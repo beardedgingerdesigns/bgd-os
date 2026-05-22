@@ -52,6 +52,12 @@ interface RunChatLoadOptions {
   args?: string[]
   timeoutMs?: number
   onStdout?: (chunk: string) => void
+  /**
+   * Phase 04 review WR-05: abort signal forwarded from the SSE route. When
+   * the client disconnects, the in-flight subprocess is SIGTERMed instead
+   * of running to completion.
+   */
+  signal?: AbortSignal
 }
 
 /**
@@ -80,7 +86,7 @@ Please briefly orient yourself: confirm what you see, flag anything that looks l
     seedPrompt,
   ]
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS
-  return runStreamingClaude(claudeBin, args, timeoutMs, opts.onStdout, true)
+  return runStreamingClaude(claudeBin, args, timeoutMs, opts.onStdout, true, opts.signal)
 }
 
 interface RunChatMessageOptions {
@@ -122,6 +128,7 @@ function runStreamingClaude(
   timeoutMs: number,
   onStdout: ((chunk: string) => void) | undefined,
   captureSessionId: boolean,
+  signal?: AbortSignal,
 ): Promise<ChatLoadResult> {
   const start = Date.now()
   return new Promise<ChatLoadResult>(resolve => {
@@ -163,6 +170,31 @@ function runStreamingClaude(
         error: `Subprocess exceeded ${timeoutMs}ms`,
       })
     }, timeoutMs)
+
+    // Phase 04 review WR-05: client-abort wiring. SIGTERM the subprocess when
+    // the SSE client disconnects. sessionId may already be captured before
+    // abort fires; preserve it so the chat surface can still --resume.
+    const onAbort = (): void => {
+      if (settled) return
+      settled = true
+      try { child.kill('SIGTERM') } catch { /* already exited */ }
+      clearTimeout(timer)
+      resolve({
+        status: 'failed',
+        sessionId,
+        output: aggregatedText,
+        exitCode: -1,
+        durationMs: Date.now() - start,
+        error: 'aborted by client',
+      })
+    }
+    if (signal) {
+      if (signal.aborted) {
+        onAbort()
+      } else {
+        signal.addEventListener('abort', onAbort, { once: true })
+      }
+    }
 
     child.stdout.on('data', d => {
       lineBuffer += d.toString()

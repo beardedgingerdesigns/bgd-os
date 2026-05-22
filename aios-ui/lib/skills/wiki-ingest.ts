@@ -55,6 +55,12 @@ export interface RunWikiIngestOptions {
   claudeBin?: string
   timeoutMs?: number
   onStdout?: (chunk: string) => void
+  /**
+   * Phase 04 review WR-05: abort signal from the SSE route. When the client
+   * disconnects mid-ingest, SIGTERM the subprocess instead of letting it run
+   * to completion. Files already written / receipts already appended survive.
+   */
+  signal?: AbortSignal
 }
 
 /**
@@ -110,6 +116,28 @@ export async function runWikiIngest(opts: RunWikiIngestOptions): Promise<WikiIng
         error: `Subprocess exceeded ${timeoutMs}ms`,
       })
     }, timeoutMs)
+
+    // Phase 04 review WR-05: SIGTERM on client disconnect.
+    const onAbort = (): void => {
+      if (settled) return
+      settled = true
+      try { child.kill('SIGTERM') } catch { /* already exited */ }
+      clearTimeout(timer)
+      resolve({
+        status: 'failed',
+        output: aggregatedText,
+        exitCode: -1,
+        durationMs: Date.now() - start,
+        error: 'aborted by client',
+      })
+    }
+    if (opts.signal) {
+      if (opts.signal.aborted) {
+        onAbort()
+      } else {
+        opts.signal.addEventListener('abort', onAbort, { once: true })
+      }
+    }
 
     child.stdout.on('data', d => {
       lineBuffer += d.toString()

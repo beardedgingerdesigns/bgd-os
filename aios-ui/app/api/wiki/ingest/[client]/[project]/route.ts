@@ -9,7 +9,7 @@ export const runtime = 'nodejs'
 export const maxDuration = 360
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ client: string; project: string }> },
 ) {
   const { client, project } = await params
@@ -41,6 +41,9 @@ export async function POST(
         result = await runWikiIngest({
           wikiPath,
           onStdout: chunk => send('chunk', { text: chunk }),
+          // Phase 04 review WR-05: SIGTERM the subprocess if the operator
+          // closes the modal mid-stream so it doesn't burn MCP quota.
+          signal: req.signal,
         })
       } catch (err) {
         send('done', {

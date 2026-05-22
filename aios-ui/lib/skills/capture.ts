@@ -75,6 +75,13 @@ interface RunCaptureOptions {
   args?: string[]
   timeoutMs?: number
   onStdout?: (chunk: string) => void
+  /**
+   * Phase 04 review WR-05: abort signal from the SSE route. When the client
+   * disconnects, the route forwards req.signal here so we can SIGTERM the
+   * in-flight subprocess instead of letting it run to completion (and burn
+   * MCP quota) after the operator is gone.
+   */
+  signal?: AbortSignal
 }
 
 export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunResult> {
@@ -187,6 +194,31 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
         error: `Subprocess exceeded ${timeoutMs}ms`,
       })
     }, timeoutMs)
+
+    // Phase 04 review WR-05: abort wiring. SIGTERM the child if the SSE
+    // client disconnects mid-stream. Subprocess side-effects that have
+    // already fired (raw-drop write, receipt append) survive — abort only
+    // stops further work, it does not roll back what already happened.
+    const onAbort = (): void => {
+      if (settled) return
+      settled = true
+      try { child.kill('SIGTERM') } catch { /* already exited */ }
+      clearTimeout(timer)
+      resolve({
+        status: 'failed',
+        output: aggregatedText,
+        exitCode: -1,
+        durationMs: Date.now() - start,
+        error: 'aborted by client',
+      })
+    }
+    if (opts.signal) {
+      if (opts.signal.aborted) {
+        onAbort()
+      } else {
+        opts.signal.addEventListener('abort', onAbort, { once: true })
+      }
+    }
 
     child.stdout.on('data', d => {
       lineBuffer += d.toString()

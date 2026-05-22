@@ -78,6 +78,10 @@ export async function POST(
         clientSlug: client,
         projectSlug: project,
         onStdout: chunk => send('chunk', { text: chunk }),
+        // Phase 04 review WR-05: forward the client-disconnect signal so the
+        // subprocess gets SIGTERMed instead of running to completion (and
+        // burning MCP quota) after the operator closed the drawer.
+        signal: req.signal,
       })
 
       send('done', result)
