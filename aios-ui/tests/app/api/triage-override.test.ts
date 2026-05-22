@@ -123,4 +123,49 @@ describe('POST /api/triage/override/[threadId]', () => {
     const receipts = await readRecentReceipts()
     expect(receipts[0].project_slug).toBe('')
   })
+
+  // Phase 04 review WR-06 regression tests.
+  it('rejects non-hex threadId', async () => {
+    const req = new Request('http://test/api/triage/override/zzz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'replied' }),
+    })
+    const res = await POST(req, asParams('zzz'))
+    expect(res.status).toBe(400)
+    expect((await res.json()).error).toContain('invalid threadId')
+  })
+
+  it('rejects unbounded threadId', async () => {
+    const huge = 'a'.repeat(50_000)
+    const req = new Request(`http://test/api/triage/override/${huge}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'replied' }),
+    })
+    const res = await POST(req, asParams(huge))
+    expect(res.status).toBe(400)
+    expect((await res.json()).error).toContain('invalid threadId')
+  })
+
+  it('accepts canonical 16-char Gmail thread IDs', async () => {
+    const req = new Request('http://test/api/triage/override/19e20c28fc120342', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'replied' }),
+    })
+    const res = await POST(req, asParams('19e20c28fc120342'))
+    expect(res.status).toBe(200)
+  })
+
+  it('rejects malformed project_slug', async () => {
+    const req = new Request('http://test/api/triage/override/abc123', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'replied', project_slug: '../etc/passwd' }),
+    })
+    const res = await POST(req, asParams('abc123'))
+    expect(res.status).toBe(400)
+    expect((await res.json()).error).toContain('invalid project_slug')
+  })
 })

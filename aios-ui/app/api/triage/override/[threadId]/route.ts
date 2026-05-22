@@ -32,6 +32,23 @@ function isValidStatus(s: string | undefined): s is TriageOverrideStatus {
   return typeof s === 'string' && VALID_STATUSES.has(s as TriageOverrideStatus)
 }
 
+// Phase 04 review WR-06: bound the inputs that flow into the overrides JSON
+// keyspace and into receipt excerpts. threadId is the JSON object key, so an
+// unbounded value would inflate the file on every call. project_slug is also
+// kept tight because it's surfaced in receipt UI.
+//
+// The Gmail thread-id shape (canonical) is 12-20 hex chars — same regex used
+// in components/triage-output.tsx:27 to pull thread IDs out of the triage
+// output. Loosened the upper bound a touch (to 32) here to absorb any
+// future thread-id growth without forcing a coordinated change to the regex
+// in the parser.
+//
+// project_slug shape mirrors clients.yaml conventions: lowercase
+// alphanumeric + dashes, 1-64 chars. Empty/omitted is allowed (triage
+// receipts surfaced outside any project use '').
+const VALID_THREAD_ID = /^[0-9a-f]{6,32}$/i
+const VALID_PROJECT_SLUG = /^[a-z0-9-]{1,64}$/
+
 function randomReceiptId(): string {
   // Lightweight unique-enough id — no crypto dep needed for an audit trail.
   return `rcpt_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`
@@ -42,6 +59,16 @@ export async function POST(
   { params }: { params: Promise<{ threadId: string }> },
 ) {
   const { threadId } = await params
+
+  // Phase 04 review WR-06: validate threadId BEFORE doing any work. Reject
+  // unbounded or shape-violating strings so the overrides JSON file cannot be
+  // inflated with garbage on every call.
+  if (!VALID_THREAD_ID.test(threadId)) {
+    return Response.json(
+      { error: 'invalid threadId (expected 6-32 hex chars)' },
+      { status: 400 },
+    )
+  }
 
   let body: OverrideRequestBody
   try {
@@ -61,6 +88,16 @@ export async function POST(
   if (status === 'snoozed' && !body.snooze_until) {
     return Response.json(
       { error: 'snooze_until required when status=snoozed' },
+      { status: 400 },
+    )
+  }
+
+  // Phase 04 review WR-06: bound project_slug too. Allow omission and empty
+  // string (current callers do not always include it) but reject any non-
+  // empty value that violates the slug shape.
+  if (body.project_slug !== undefined && body.project_slug !== '' && !VALID_PROJECT_SLUG.test(body.project_slug)) {
+    return Response.json(
+      { error: 'invalid project_slug (expected 1-64 chars [a-z0-9-])' },
       { status: 400 },
     )
   }
