@@ -17,6 +17,27 @@ const PATH_REGEXES: RegExp[] = [
   /(\/Users\/[^\s'"`]+\.md)/,
 ]
 
+// Phase 04 review WR-03: YAML-safe scalar formatter for frontmatter values.
+// Kept as a local copy of the helper in chat-writeback.ts (matches the
+// existing per-file duplication pattern noted by IN-01; a shared lift to
+// lib/skills/stream-json.ts or similar can fold these together later).
+function yamlScalar(value: string): string {
+  const needsQuoting =
+    value.length === 0 ||
+    /:\s|:$/.test(value) ||
+    /[\n\r\t]/.test(value) ||
+    /^[-?:[\]{},#&*!|>'"%@`]/.test(value) ||
+    /^\s|\s$/.test(value)
+  if (!needsQuoting) return value
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+  return `"${escaped}"`
+}
+
 function extractTextDelta(line: string): string | null {
   const trimmed = line.trim()
   if (!trimmed) return null
@@ -69,7 +90,7 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
       const slug = slugify(opts.text)
       const body = [
         '---',
-        `project: ${opts.projectLabel}`,
+        `project: ${yamlScalar(opts.projectLabel)}`,
         `captured_at: ${new Date().toISOString()}`,
         `source: aios-ui capture-box`,
         '---',

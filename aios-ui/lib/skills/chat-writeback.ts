@@ -12,6 +12,42 @@
 // Both shapes are read by the /llm-wiki ingest pass (04-09); changing them
 // requires a coordinated update to that skill.
 
+/**
+ * Phase 04 review WR-03: YAML-safe scalar formatter for frontmatter values.
+ *
+ * Returns the input as a plain unquoted scalar when it's safe (the common
+ * case — no YAML metacharacters), and as a double-quoted escaped scalar when
+ * the value contains characters that would otherwise break frontmatter
+ * parsing (colon followed by space, leading dash/colon/quote/etc., embedded
+ * newlines). This preserves test fixtures and existing wiki files that
+ * already have unquoted values like `project: Wild Rose Casino — Site
+ * relaunch`, while defending against future projectLabel/sessionId values
+ * that contain risky characters.
+ *
+ * Risky characters (per YAML 1.2 spec subset we care about):
+ *  - ":" followed by space or end-of-string → starts a new mapping
+ *  - leading "-", "?", ":", "[", "]", "{", "}", ",", "#", "&", "*", "!",
+ *    "|", ">", "'", '"', "%", "@", "`" → indicator chars at start
+ *  - "\n", "\r", "\t" → control chars
+ *  - leading or trailing whitespace
+ */
+function yamlScalar(value: string): string {
+  const needsQuoting =
+    value.length === 0 ||
+    /:\s|:$/.test(value) ||
+    /[\n\r\t]/.test(value) ||
+    /^[-?:[\]{},#&*!|>'"%@`]/.test(value) ||
+    /^\s|\s$/.test(value)
+  if (!needsQuoting) return value
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+  return `"${escaped}"`
+}
+
 export function buildChatDecisionMarkdown(args: {
   projectLabel: string
   userTurn: string
@@ -20,7 +56,7 @@ export function buildChatDecisionMarkdown(args: {
 }): string {
   return [
     '---',
-    `project: ${args.projectLabel}`,
+    `project: ${yamlScalar(args.projectLabel)}`,
     `dropped_at: ${args.dropAt.toISOString()}`,
     'kind: chat-decision',
     '---',
@@ -49,10 +85,10 @@ export function buildChatSessionMarkdown(args: {
     .join('\n')
   return [
     '---',
-    `project: ${args.projectLabel}`,
-    `session_id: ${args.sessionId}`,
-    `started_at: ${args.startedAt}`,
-    `closed_at: ${args.closedAt}`,
+    `project: ${yamlScalar(args.projectLabel)}`,
+    `session_id: ${yamlScalar(args.sessionId)}`,
+    `started_at: ${yamlScalar(args.startedAt)}`,
+    `closed_at: ${yamlScalar(args.closedAt)}`,
     'kind: chat-session',
     '---',
     '',
