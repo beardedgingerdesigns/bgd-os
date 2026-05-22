@@ -85,6 +85,12 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
   // the /capture subprocess entirely. The brief indexer picks the new file
   // up on its next rebuild and the receipt-feed dock surfaces the path link.
   const wikiPath = await resolveProjectWikiPath(opts.clientSlug, opts.projectSlug)
+  // Phase 04 review WR-04: track whether we entered the wiki branch and bailed
+  // so the subprocess fallback's receipt can flag the operator that the wiki
+  // write failed. Without this, the operator sees a normal-looking subprocess
+  // receipt pointing at the global inbox with no indication that their capture
+  // missed the project's wiki.
+  let wikiFallbackError: string | null = null
   if (wikiPath) {
     try {
       const slug = slugify(opts.text)
@@ -123,6 +129,11 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
     } catch (err) {
       // Wiki write failed (EACCES, ENOTDIR, exhausted collision suffixes…).
       // Fall through to the subprocess branch so the capture is not lost.
+      // Phase 04 review WR-04: record the cause so the subprocess fallback's
+      // receipt can be tagged 'capture-box (wiki fallback)' instead of plain
+      // 'capture-box' — gives the operator a visible signal that the wiki
+      // intent failed even though the capture itself survived.
+      wikiFallbackError = err instanceof Error ? err.message : String(err)
       console.warn('[capture] wiki-aware write failed, falling back to subprocess', err)
     }
   }
@@ -221,14 +232,25 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
         }
         const finalize = async (): Promise<void> => {
           if (fileWritten) {
+            // Phase 04 review WR-04: when the subprocess branch executes
+            // because the wiki branch failed (not because the project lacked
+            // a wiki), tag the receipt so the operator can see the wiki
+            // intent did not land. The path link still points at the
+            // subprocess output, so no work is lost.
+            const actor = wikiFallbackError
+              ? 'capture-box (wiki fallback)'
+              : 'capture-box'
+            const excerpt = wikiFallbackError
+              ? `[wiki write failed: ${wikiFallbackError.slice(0, 80)}] ${opts.text.slice(0, 160)}`
+              : opts.text.slice(0, 240)
             await appendReceipt({
               id: newReceiptId(),
               ts: new Date().toISOString(),
               kind: 'capture',
               project_slug: opts.projectSlug,
               file_written: fileWritten,
-              excerpt: opts.text.slice(0, 240),
-              actor: 'capture-box',
+              excerpt,
+              actor,
             })
           } else {
             console.warn(
