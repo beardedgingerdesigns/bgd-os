@@ -8,22 +8,28 @@ Justin Lobaito's personal AI Operating System (AIOS) — a local-only single-ope
 
 The UI must render Justin's current operating reality — who he's working with, what's billing, what just changed, what needs attention — and let him push captures and run rituals from the same page he's looking at, without ever leaving his desk or losing continuity across sessions.
 
-## Requirements
+## Current State
 
-### Validated
+**Shipped:** v1.0 — AIOS UI v0→v2 (Local Operator Command Center). 2026-05-22. See [milestone archive](milestones/v1.0-ROADMAP.md).
 
-<!-- Shipped and confirmed valuable. -->
+The AIOS UI runs locally on `localhost:3000` and delivers the full operator command-center surface: drill-down nav (Home → Client → Project), MRR widget, live filesystem sync, daily inbox triage, per-project capture box, Admin ritual launcher, chat panel with pre-built brief hydration, staged ingestion to `raw/aios/`, Receipt feed, Pending Ingestion bridge to the `llm-wiki` curator. 267 Vitest tests passing. 5 ADRs locked (architecture, MRR data model, bidirectional store, staged ingestion, indexed briefs).
+
+## Next Milestone Goals
+
+No milestone in flight. The 13 deferred requirements documented in [v1.0-REQUIREMENTS.md](milestones/v1.0-REQUIREMENTS.md) (CAPX, DPH, RFP, PLSH) are candidate scope for the next milestone, but no commitment yet. Run `/gsd-new-milestone` to scope and plan v1.1 (or whichever next milestone makes sense — could be operator-data workflow polish, a BGD productization-page build, or BrandOS-platform work).
+
+<details>
+<summary>Prior requirements snapshot (pre-v1.0)</summary>
+
+### Validated (v1.0)
 
 - ✓ Read-only nav (Home + Client + Project pages) with MRR widget — shipped in AIOS UI v0
 - ✓ Filesystem watcher + SSE invalidation + daily-ingest modal — shipped in AIOS UI v1
 - ✓ Capture boxes on project pages + Admin ritual launcher (`level-up`, `weekly-status`, `audit`) — shipped in AIOS UI v3
 - ✓ MRR data model (`mrr_monthly` field; `paying` + `active` filter; dealers-as-Projects) — shipped per ADR 0002
+- ✓ Bidirectional hub — chat brief hydration + staged ingestion + Receipt feed + Pending Ingestion — shipped in AIOS UI v2 (Phase 4)
 
-### Active
-
-<!-- Current scope. Building toward these. -->
-
-- [ ] **AIOS UI v2 — Bidirectional Hub**: chat panel with CLI subprocess + SSE streaming, pre-built indexed brief hydration, staged ingestion via `raw/aios/`, Receipt feed, Pending Ingestion surface (per ADRs 0003, 0004, 0005 — plan to be imported from `/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md`)
+</details>
 
 ### Out of Scope
 

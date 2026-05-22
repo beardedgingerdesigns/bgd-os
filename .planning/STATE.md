@@ -5,16 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-05-21)
 
 **Core value:** The UI must render Justin's current operating reality and let him push captures + run rituals from the same page he's looking at, without losing continuity across sessions.
-**Current focus:** Phase 4 — AIOS UI v2 Bidirectional Hub (Wave 1 — data layer)
+**Current focus:** None — milestone v1.0 closed 2026-05-22. Run `/gsd-new-milestone` to scope next cycle.
 
 ## Current Position
 
-Phase: 4 of 4 (AIOS UI v2 — Bidirectional Hub)
-Plan: 04-09 complete (Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice; HUB-07 satisfied; Phase 4 complete)
-Status: 9/9 plans complete in Phase 4. PHASE 4 COMPLETE.
-Last activity: 2026-05-22 — Completed Plan 04-09: /ingest-aios-drops skill (project-local) + wiki-ingest.ts subprocess runner + POST /api/wiki/ingest SSE endpoint + PendingIngestionSection + WikiIngestModal + RunIngestButton + ProjectReceiptsSlice wired into project page; 265/265 tests pass, build clean
+Milestone: v1.0 SHIPPED (4/4 phases complete). See [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md).
+Phase: n/a (no active phase)
+Last activity: 2026-05-22 — Milestone v1.0 closed: Phase 4 merged to main, code review (17 findings) + fix-pass (11 fixes) complete, 267/267 tests passing, UAT 7/9 + 2 gap re-tests verified in browser.
 
-Progress: [█████████████] 100% (Phases 1-3 shipped historically; Phase 4: 9/9 plans done)
+Progress: [█████████████] 100% (milestone v1.0 shipped)
 
 ## Performance Metrics
 
