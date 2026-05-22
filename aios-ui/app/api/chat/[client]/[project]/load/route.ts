@@ -13,6 +13,22 @@ export async function POST(
 ) {
   const { client, project } = await params
 
+  // Phase 04 review CR-02: validate project exists before letting slugs flow
+  // into buildBriefFor (cache-miss branch in readBriefOrBuild) and
+  // writeChatSession. Without this, unknown slugs would write fallback briefs
+  // for non-existent projects and bypass defense-in-depth path hardening.
+  // Returning a 404 JSON response BEFORE opening the SSE stream is the cheapest
+  // signal the client can act on; once the stream opens, the response status
+  // is locked to 200.
+  const clientObj = await getClient(client).catch(() => undefined)
+  const projectObj = await getProject(client, project).catch(() => undefined)
+  if (!projectObj) {
+    return Response.json({ error: 'unknown project' }, { status: 404 })
+  }
+  const projectLabel = clientObj
+    ? `${clientObj.name} — ${projectObj.name}`
+    : `${client}/${project}`
+
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder()
@@ -23,13 +39,6 @@ export async function POST(
       }
 
       send('start', { at: new Date().toISOString() })
-
-      // Resolve project label for display + seed prompt.
-      const clientObj = await getClient(client).catch(() => undefined)
-      const projectObj = await getProject(client, project).catch(() => undefined)
-      const projectLabel = clientObj && projectObj
-        ? `${clientObj.name} — ${projectObj.name}`
-        : `${client}/${project}`
 
       // Per ADR 0005: read from cache (or lazy-build on first run), then
       // fetch live Gmail + calendar in parallel on top of the static brief.

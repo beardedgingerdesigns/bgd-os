@@ -27,8 +27,26 @@ function cacheDir(): string {
   return process.env.AIOS_CACHE_DIR ?? path.join(process.cwd(), '.aios-cache')
 }
 
+/**
+ * Phase 04 review CR-02 / WR-08: defense-in-depth path guard. Resolve the
+ * caller's target path and verify it stays inside the briefs/ subtree under
+ * cacheDir(). Throws if a malicious slug (containing `..`, NULs, or absolute
+ * path fragments) ever escapes Next.js's segment normalization. The route
+ * handlers also validate slugs via getProject(), but this is the last line
+ * of defense before fs.writeFile().
+ */
 export function briefPathFor(clientSlug: string, projectSlug: string): string {
-  return path.join(cacheDir(), 'briefs', `${clientSlug}__${projectSlug}.md`)
+  const briefsRoot = path.resolve(path.join(cacheDir(), 'briefs'))
+  const target = path.resolve(briefsRoot, `${clientSlug}__${projectSlug}.md`)
+  if (target !== briefsRoot && !target.startsWith(briefsRoot + path.sep)) {
+    throw new Error(`brief path escaped briefs root: ${target}`)
+  }
+  // Also guard against the slug pair resolving to the briefs dir itself
+  // (e.g. both slugs empty) — we need a regular file, not the directory.
+  if (target === briefsRoot) {
+    throw new Error('brief path resolved to briefs root directory')
+  }
+  return target
 }
 
 // Pull text out of one line of `claude --print --output-format stream-json`.
