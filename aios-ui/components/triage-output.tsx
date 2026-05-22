@@ -1,6 +1,6 @@
 import { ExternalLink } from 'lucide-react'
 import { TriageRowActions } from '@/components/triage-row-actions'
-import { extractTodosEnvelope } from '@/lib/skills/daily-ingest'
+import { extractTodosEnvelope } from '@/lib/skills/todos-envelope'
 import type { Todo } from '@/lib/types'
 
 interface TriageOutputProps {
