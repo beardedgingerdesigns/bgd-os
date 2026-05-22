@@ -100,6 +100,15 @@ export async function fetchGmailContext(opts: GmailContextOpts): Promise<string>
       }
     })
 
+    // Drain stderr so the OS pipe buffer (~64 KB) cannot fill and deadlock
+    // the child. We don't surface subprocess stderr from context helpers —
+    // failures resolve to '' — but we must consume the bytes. Matches the
+    // pattern in daily-ingest.ts:96-98, capture.ts, wiki-ingest.ts,
+    // build-brief.ts. (Phase 04 review CR-01.)
+    child.stderr.on('data', () => {
+      // Intentionally empty: drain only.
+    })
+
     child.on('error', () => {
       if (settled) return
       settled = true
