@@ -25,6 +25,31 @@ function minutesAgo(date: Date): string {
   return `${mins}m ago`
 }
 
+/**
+ * Fire-and-forget POST to /drop-session with the current messages.
+ * Empty sessions (no messages or all-empty) are silently skipped by the
+ * endpoint itself, but we also guard here to avoid a network round-trip.
+ * We intentionally do NOT clear messages after the call — the operator's
+ * view is preserved until the next page refresh / new session.
+ */
+async function postDropSession(
+  clientSlug: string,
+  projectSlug: string,
+  messages: ChatMessage[],
+): Promise<void> {
+  if (messages.length === 0) return
+  try {
+    await fetch(`/api/chat/${clientSlug}/${projectSlug}/drop-session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages }),
+    })
+  } catch {
+    // Best-effort — operator will see the session file on the next open if
+    // it was partially written; a missing receipt is acceptable here.
+  }
+}
+
 export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerProps) {
   const [expanded, setExpanded] = useState(false)
   const [hasLoaded, setHasLoaded] = useState(false)
@@ -34,6 +59,10 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
   const [loading, setLoading] = useState(false)
   const [briefMeta, setBriefMeta] = useState<BriefMeta | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Track the previous expanded value so we can detect expand→collapse
+  // transitions for the auto-drop-session trigger.
+  const prevExpandedRef = useRef(false)
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -143,6 +172,16 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
     })()
   }, [expanded, hasLoaded, clientSlug, projectSlug, streamInto])
 
+  // Auto-drop session transcript when the drawer collapses (expanded true → false)
+  // AND there are actual chat messages (not just the empty-drawer state).
+  useEffect(() => {
+    const wasExpanded = prevExpandedRef.current
+    prevExpandedRef.current = expanded
+    if (wasExpanded && !expanded && messages.length > 0) {
+      void postDropSession(clientSlug, projectSlug, messages)
+    }
+  }, [expanded, messages, clientSlug, projectSlug])
+
   /** POST /refresh → clear UI state → trigger a fresh /load on next expand. */
   const onRefreshContext = useCallback(async () => {
     if (loading) return
@@ -160,6 +199,20 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
       setLoading(false)
     }
   }, [loading, clientSlug, projectSlug])
+
+  /**
+   * "New session" — drop the current transcript, then reset UI state so the
+   * next expand triggers a fresh /load with new context.
+   */
+  const onNewSession = useCallback(async () => {
+    if (loading) return
+    // Drop the current session transcript before resetting.
+    await postDropSession(clientSlug, projectSlug, messages)
+    setMessages([])
+    setSession(null)
+    setBriefMeta(null)
+    setHasLoaded(false)
+  }, [loading, clientSlug, projectSlug, messages])
 
   async function sendMessage() {
     const text = input.trim()
@@ -214,6 +267,18 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
   }
 
   const initialLoading = loading && messages.length <= 1 && !session
+
+  /**
+   * Walk the messages array backwards from index i to find the most recent
+   * user turn before an assistant message. Returns undefined when not found
+   * (e.g. the first assistant message before any user input).
+   */
+  function findPriorUserTurn(msgs: ChatMessage[], assistantIdx: number): string | undefined {
+    for (let j = assistantIdx - 1; j >= 0; j--) {
+      if (msgs[j].role === 'user') return msgs[j].content
+    }
+    return undefined
+  }
 
   return (
     <Card className={expanded ? '' : 'border-dashed'}>
@@ -272,7 +337,15 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
                 </div>
               </div>
             )}
-            {!initialLoading && messages.map((m, i) => <ChatMessageView key={i} message={m} />)}
+            {!initialLoading && messages.map((m, i) => (
+              <ChatMessageView
+                key={i}
+                message={m}
+                clientSlug={clientSlug}
+                projectSlug={projectSlug}
+                priorUserTurn={m.role === 'assistant' ? findPriorUserTurn(messages, i) : undefined}
+              />
+            ))}
             <div ref={messagesEndRef} />
           </div>
           <div className="border-t border-border pt-3">
@@ -291,6 +364,18 @@ export function ChatDrawer({ clientSlug, projectSlug, projectName }: ChatDrawerP
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
+            {session && messages.length > 0 && (
+              <div className="mt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => void onNewSession()}
+                  disabled={loading}
+                  className="text-[11px] text-muted-foreground hover:text-foreground disabled:opacity-50 underline-offset-2 hover:underline transition-colors"
+                >
+                  New session
+                </button>
+              </div>
+            )}
           </div>
         </CardContent>
       )}
