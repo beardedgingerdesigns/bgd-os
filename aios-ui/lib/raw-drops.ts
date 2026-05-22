@@ -31,8 +31,34 @@ export function slugify(input: string): string {
 }
 
 /**
+ * Phase 04 review WR-08: defense-in-depth path guard. Resolve both root and
+ * target and verify the target stays inside the root subtree. Catches:
+ *   - relative `..` segments in slug/kind that escape raw/aios/
+ *   - absolute path injection (wouldn't be possible from slugify output,
+ *     but kind and wikiPath are caller-supplied)
+ *   - symlink-bypass IS NOT covered (path.resolve does not follow symlinks).
+ *     The realpath equivalent is intentionally NOT done here — wikiPath
+ *     itself is trusted-ish (read from clients.yaml) and a malicious symlink
+ *     inside the wiki is an out-of-band compromise.
+ *
+ * Throws on escape so callers see a hard error instead of silently writing
+ * outside the expected tree.
+ */
+function assertInside(root: string, target: string): void {
+  const absRoot = path.resolve(root)
+  const absTarget = path.resolve(target)
+  if (absTarget !== absRoot && !absTarget.startsWith(absRoot + path.sep)) {
+    throw new Error(`raw-drop path escaped root: target=${absTarget} root=${absRoot}`)
+  }
+}
+
+/**
  * buildRawDropPath: returns the canonical absolute path
  * `${wikiPath}/raw/aios/<kind>-YYYY-MM-DD-<slug>.md`.
+ *
+ * Phase 04 review WR-08: verifies the resolved path stays inside
+ * `{wikiPath}/raw/aios/`. If slugify() were ever bypassed or kind were
+ * caller-supplied with `..`, the assertion would catch it before fs.writeFile.
  */
 export function buildRawDropPath(args: {
   wikiPath: string
@@ -42,12 +68,13 @@ export function buildRawDropPath(args: {
 }): string {
   const date = args.date ?? new Date()
   const dateStr = date.toISOString().slice(0, 10)
-  return path.join(
-    args.wikiPath,
-    'raw',
-    'aios',
+  const rawAiosDir = path.join(args.wikiPath, 'raw', 'aios')
+  const target = path.join(
+    rawAiosDir,
     `${args.kind}-${dateStr}-${args.slug}.md`,
   )
+  assertInside(rawAiosDir, target)
+  return target
 }
 
 async function fileExists(p: string): Promise<boolean> {
@@ -97,6 +124,10 @@ export async function writeRawDrop(args: {
       )
     }
   }
+
+  // Phase 04 review WR-08: re-assert the final candidate path stays inside the
+  // raw/aios/ tree. Catches collision-suffix arithmetic accidents.
+  assertInside(path.join(args.wikiPath, 'raw', 'aios'), candidate)
 
   await fs.writeFile(candidate, args.body, 'utf-8')
   return { filePath: candidate, excerpt: args.body.slice(0, 240) }
