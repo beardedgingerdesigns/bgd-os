@@ -74,7 +74,7 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
 - [x] 04-04-PLAN.md — Triage override skill + per-row actions + Communications section (Wave 2) — 2026-05-21
 - [x] 04-05-PLAN.md — Capture wiki-aware routing + receipt emission (Wave 2) — 2026-05-21
 - [x] 04-06-PLAN.md — Brief indexer + chokidar watcher + instrumentation bootstrap (Wave 2) — 2026-05-21
-- [ ] 04-07-PLAN.md — Chat hydration bootstrap: cached brief + live Gmail/calendar + Refresh button (Wave 3)
+- [x] 04-07-PLAN.md — Chat hydration bootstrap: cached brief + live Gmail/calendar + Refresh button (Wave 3) — 2026-05-22
 - [ ] 04-08-PLAN.md — Chat write-back: Drop to raw + session-close transcript drop (Wave 3)
 - [ ] 04-09-PLAN.md — Pending Ingestion surface + /ingest-aios-drops wrapper skill + per-project receipts slice (Wave 4)
 **UI hint**: yes
