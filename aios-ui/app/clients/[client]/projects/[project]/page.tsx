@@ -15,6 +15,8 @@ import { FileText } from 'lucide-react'
 import { ChatDrawer } from '@/components/chat-drawer'
 import { CaptureBox } from '@/components/capture-box'
 import { CommunicationsSection } from '@/components/communications-section'
+import { PendingIngestionSection } from '@/components/pending-ingestion-section'
+import { ProjectReceiptsSlice } from '@/components/project-receipts-slice'
 import { DeleteEntityDialog } from '@/components/delete-entity-dialog'
 import { TodoList } from '@/components/todo-list'
 import { Badge } from '@/components/ui/badge'
@@ -219,13 +221,19 @@ export default async function ProjectPage({
           )}
 
           {/* COMMUNICATIONS — per-project triage with row overrides (04-04).
-              Inserted AFTER source files, BEFORE CaptureBox. Future plans
-              (e.g., 04-09 Pending Ingestion) should insert themselves AFTER
-              this node per their own plan. */}
+              Inserted AFTER source files, BEFORE CaptureBox. */}
           <CommunicationsSection
             clientSlug={client.slug}
             projectSlug={project.slug}
             projectContacts={allContacts}
+          />
+
+          {/* PENDING INGESTION — raw/aios/ drop counter + Run wiki ingest button (04-09 / HUB-07).
+              Inserted AFTER CommunicationsSection, BEFORE CaptureBox. */}
+          <PendingIngestionSection
+            clientSlug={client.slug}
+            projectSlug={project.slug}
+            wikiPath={wikiInfo?.rootPath ?? null}
           />
 
           <section className="mb-10">
@@ -242,6 +250,10 @@ export default async function ProjectPage({
               title={`Recent activity — ${project.name}`}
             />
           </section>
+
+          {/* PER-PROJECT RECEIPTS — last 10 receipts for this project (04-09 / HUB-06).
+              Inserted AFTER RecentActivityFeed, BEFORE ChatDrawer. */}
+          <ProjectReceiptsSlice projectSlug={project.slug} />
 
           <section>
             <ChatDrawer
