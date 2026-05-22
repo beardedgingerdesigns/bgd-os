@@ -1,5 +1,7 @@
 import { ExternalLink } from 'lucide-react'
 import { TriageRowActions } from '@/components/triage-row-actions'
+import { extractTodosEnvelope } from '@/lib/skills/daily-ingest'
+import type { Todo } from '@/lib/types'
 
 interface TriageOutputProps {
   markdown: string
@@ -28,6 +30,12 @@ const THREAD_ID_REGEX = /Thread:\s*`?([0-9a-f]{12,20})`?/g
 // `### `, `1.`, `2.`, `- **`, or `Thread:` after a blank line — see
 // daily-inbox-triage SKILL.md Step 5 output template.
 const BLOCK_BOUNDARY = /^(##+\s|\d+\.\s|-\s\*\*|Thread:\s)/
+
+// Strip the TODOS_JSON envelope (markers + fenced JSON) from rendered output.
+// We never want operators to see the system envelope as text — it's a machine
+// surface for the UI's structured renderer (see GAP-04-01).
+const TODOS_ENVELOPE_STRIP_RE =
+  /<!--\s*TODOS_JSON_START\s*-->[\s\S]*?<!--\s*TODOS_JSON_END\s*-->\s*/i
 
 interface ThreadBlock {
   lines: string[]
@@ -85,16 +93,105 @@ function filterByContacts(markdown: string, contacts: string[]): string {
   return kept.map(b => b.lines.join('\n')).join('\n')
 }
 
+/**
+ * Structured render path (GAP-04-01).
+ *
+ * When the skill emits a `<!-- TODOS_JSON_START -->...<!-- TODOS_JSON_END -->`
+ * envelope (the contract daily-inbox-triage SKILL.md guarantees), we use it
+ * as the PRIMARY data source for per-row actions. The prose markdown above
+ * the envelope is human-readable but ambiguous to substring-filter (it
+ * contains display names like "Wild Rose group", not email addresses), which
+ * was the UAT-04 failure mode. The envelope carries `project_slug` matched
+ * exactly against `clients.yaml`, so filtering is deterministic.
+ *
+ * The envelope itself is suppressed from rendered output — it's a system
+ * marker, not operator-facing.
+ */
+function renderTodosStructured(
+  todos: Todo[],
+  projectSlug: string,
+): React.ReactElement | null {
+  const scoped = todos.filter(t => t.project_slug === projectSlug)
+  if (scoped.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        No threads scoped to this project in the latest triage run.
+      </p>
+    )
+  }
+  return (
+    <ul className="space-y-4 list-none p-0 m-0">
+      {scoped.map(todo => {
+        const threadId = todo.thread_id
+        return (
+          <li
+            key={todo.id}
+            className="border border-border rounded-md p-3 bg-background/40"
+          >
+            <div className="font-medium text-foreground/90 text-sm leading-snug">
+              {todo.summary}
+            </div>
+            {todo.context && (
+              <p className="mt-1 text-sm text-muted-foreground leading-snug">
+                {todo.context}
+              </p>
+            )}
+            {threadId && (
+              <div className="mt-2 flex items-center gap-2 text-sm">
+                <a
+                  href={`${GMAIL_LINK_BASE}${threadId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-foreground underline-offset-2 hover:underline"
+                >
+                  <code className="text-xs">{threadId}</code>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            )}
+            {threadId && (
+              <div className="mt-2">
+                <TriageRowActions threadId={threadId} projectSlug={projectSlug} />
+              </div>
+            )}
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 export function TriageOutput({
   markdown,
   projectSlug,
   projectContacts,
   renderRowActions,
 }: TriageOutputProps) {
+  // Primary path (GAP-04-01): when row actions are requested AND the skill
+  // emitted a TODOS_JSON envelope, render structured rows from the envelope.
+  // This is the operator-facing surface for Communications on a Project page.
+  if (renderRowActions && projectSlug) {
+    const envelope = extractTodosEnvelope(markdown)
+    if (envelope) {
+      return (
+        <article className="max-w-none text-sm leading-7 text-foreground/90">
+          {renderTodosStructured(envelope.todos, projectSlug)}
+        </article>
+      )
+    }
+  }
+
+  // Fallback / legacy path: no envelope (older cache, or admin dashboard
+  // usage where rows aren't requested). Run the original prose-block filter
+  // by contacts and render the markdown with Gmail-link rewrites in place.
+  // We still strip the envelope markers if any happen to be present, so the
+  // operator never sees the raw <!-- TODOS_JSON_START --> markers as text.
+  const withoutEnvelope = markdown.replace(TODOS_ENVELOPE_STRIP_RE, '')
+
   const filtered =
     projectSlug && projectContacts && projectContacts.length > 0
-      ? filterByContacts(markdown, projectContacts)
-      : markdown
+      ? filterByContacts(withoutEnvelope, projectContacts)
+      : withoutEnvelope
 
   const enhanced = filtered.replace(THREAD_ID_REGEX, (match, id) => {
     return `Thread: [\`${id}\`](${GMAIL_LINK_BASE}${id})`
