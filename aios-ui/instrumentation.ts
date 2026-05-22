@@ -13,25 +13,19 @@ export async function register() {
     console.error('[aios-ui] failed to start file watcher', err)
   }
 
-  // New brief watcher (lib/indexer/watcher.ts) — rebuilds .aios-cache/briefs/<slug>.md
-  // on changes to clients.yaml, references/, memory/, docs_paths, and wiki raw/aios/.
-  // Best-effort: a failure here must not block the file watcher above (and vice versa).
-  // First-run policy is LAZY (briefs build on first chat open per project, plan 04-07);
-  // the watcher only REBUILDS already-existing briefs during this boot path.
+  // Brief watcher (lib/indexer/watcher.ts) REMOVED per GAP-04-02 closure
+  // (UAT 2026-05-22). A single clients.yaml save fan-outed subprocess spawns
+  // to all ~22 projects, /load-project returned exit 1 universally, and
+  // claude-mem/context-mode SQLite locks contended under the concurrent
+  // PreToolUse writes — burning Justin's session quota uncontrollably.
   //
-  // TEMPORARY UAT GATE (2026-05-22, GAP-04-02): a clients.yaml save fan-outs subprocess
-  // spawns to ALL projects, /load-project fails universally with exit 1, and quota
-  // burns down. Disabled via AIOS_DISABLE_BRIEF_WATCHER=1 until gap-closure lands.
-  if (process.env.AIOS_DISABLE_BRIEF_WATCHER === '1') {
-    console.log('[aios-ui] brief watcher DISABLED via AIOS_DISABLE_BRIEF_WATCHER=1')
-  } else {
-    try {
-      const { startBriefWatcher } = await import('@/lib/indexer/watcher')
-      await startBriefWatcher()
-      // eslint-disable-next-line no-console
-      console.log('[aios-ui] brief watcher started')
-    } catch (err) {
-      console.error('[aios-ui] failed to start brief watcher', err)
-    }
-  }
+  // Replacement contract:
+  //   - Briefs build LAZILY on first chat open per project
+  //     (lib/skills/chat-bootstrap.ts → readBriefOrBuild → buildBriefFor)
+  //   - The "Refresh context" button on the chat drawer explicitly re-invokes
+  //     buildBriefFor via POST /api/chat/[client]/[project]/refresh
+  //
+  // HUB-02 success criterion ("brief reflects latest data when chat opens")
+  // is satisfied via lazy-rebuild on stale cache + manual refresh. We do not
+  // pre-warm briefs.
 }
