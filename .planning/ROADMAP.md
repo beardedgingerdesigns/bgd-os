@@ -13,7 +13,7 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
 - [x] **Phase 1: AIOS UI v0 — Read-only Nav & MRR** — Home / Client / Project pages render from filesystem; MRR widget computes against the locked data model
 - [x] **Phase 2: AIOS UI v1 — Live Sync & Daily Triage** — chokidar watcher + SSE invalidation + daily-ingest modal with cached read-only Gmail deep-links
 - [x] **Phase 3: AIOS UI v3 — Capture & Rituals** — CaptureBox on every Project page + Admin ritual launcher (`level-up`, `weekly-status`, `audit`) with cached "last ran" state
-- [ ] **Phase 4: AIOS UI v2 — Bidirectional Hub** — chat panel with pre-built brief hydration, staged ingestion to `raw/aios/`, Receipt feed, Pending Ingestion surface (plan to be imported)
+- [x] **Phase 4: AIOS UI v2 — Bidirectional Hub** — chat panel with pre-built brief hydration, staged ingestion to `raw/aios/`, Receipt feed, Pending Ingestion surface (plan to be imported)
 
 ## Phase Details
 
@@ -76,7 +76,7 @@ The AIOS UI is being built in slices that correspond to the operator-experience 
 - [x] 04-06-PLAN.md — Brief indexer + chokidar watcher + instrumentation bootstrap (Wave 2) — 2026-05-21
 - [x] 04-07-PLAN.md — Chat hydration bootstrap: cached brief + live Gmail/calendar + Refresh button (Wave 3) — 2026-05-22
 - [x] 04-08-PLAN.md — Chat write-back: Drop to raw + session-close transcript drop (Wave 3) — 2026-05-22
-- [ ] 04-09-PLAN.md — Pending Ingestion surface + /ingest-aios-drops wrapper skill + per-project receipts slice (Wave 4)
+- [x] 04-09-PLAN.md — Pending Ingestion surface + /ingest-aios-drops wrapper skill + per-project receipts slice (Wave 4) — 2026-05-22
 **UI hint**: yes
 
 ## Progress
@@ -89,4 +89,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. AIOS UI v0 — Read-only Nav & MRR | n/a | Complete | Pre-2026-05-21 (historical) |
 | 2. AIOS UI v1 — Live Sync & Daily Triage | n/a | Complete | Pre-2026-05-21 (historical) |
 | 3. AIOS UI v3 — Capture & Rituals | n/a | Complete | 2026-05-19 (per v3 implementation plan + recent commits) |
-| 4. AIOS UI v2 — Bidirectional Hub | 5/9 | In progress | - |
+| 4. AIOS UI v2 — Bidirectional Hub | 9/9 | Complete | 2026-05-22 |

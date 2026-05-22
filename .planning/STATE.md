@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-05-21)
 ## Current Position
 
 Phase: 4 of 4 (AIOS UI v2 — Bidirectional Hub)
-Plan: 04-08 complete (chat write-back — chat-writeback helpers + /drop-decision + /drop-session + Drop to raw button per AI message + auto-drop on chat collapse/new-session; HUB-05 + HUB-06 satisfied)
-Status: 8/9 plans complete in Phase 4 (Wave 1: 04-02; Wave 2: 04-03, 04-04, 04-05, 04-06; Wave 3: 04-07, 04-08; 04-09 remaining; 04-01 commits on branch but no SUMMARY yet)
-Last activity: 2026-05-22 — Completed Plan 04-08: chat write-back + per-message Drop button + session-close auto-transcript; 261/261 tests pass, build clean; vitest fixture race fixed
+Plan: 04-09 complete (Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice; HUB-07 satisfied; Phase 4 complete)
+Status: 9/9 plans complete in Phase 4. PHASE 4 COMPLETE.
+Last activity: 2026-05-22 — Completed Plan 04-09: /ingest-aios-drops skill (project-local) + wiki-ingest.ts subprocess runner + POST /api/wiki/ingest SSE endpoint + PendingIngestionSection + WikiIngestModal + RunIngestButton + ProjectReceiptsSlice wired into project page; 265/265 tests pass, build clean
 
-Progress: [████████████░] ~97% (Phases 1-3 shipped historically; Phase 4: 8/9 plans done)
+Progress: [█████████████] 100% (Phases 1-3 shipped historically; Phase 4: 9/9 plans done)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [████████████░] ~97% (Phases 1-3 shipped his
 | 1. AIOS UI v0 | — | — | — |
 | 2. AIOS UI v1 | — | — | — |
 | 3. AIOS UI v3 | 9 tasks (per plan) | — | — |
-| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-05: 2 tasks, ~8 min, 3 commits, 8 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests · 04-07: 4 tasks, ~30 min, 6 commits, 19 tests · 04-08: 3 tasks, ~35 min, 5 commits, 13 tests | ~17 min | ~17 min |
+| 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-05: 2 tasks, ~8 min, 3 commits, 8 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests · 04-07: 4 tasks, ~30 min, 6 commits, 19 tests · 04-08: 3 tasks, ~35 min, 5 commits, 13 tests · 04-09: 3 tasks, ~35 min, 3 commits, 4 tests | ~18 min | ~18 min |
 
 **Recent Trend:**
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
@@ -54,6 +54,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **Plan 04-05** (2026-05-21): `resolveProjectWikiPath` kept in `lib/data/wiki.ts` — adding `getProject` + `resolveDocsPaths` imports introduced no circular dependency (verified via `tsc --noEmit` clean + 230/230 tests + clean `next build`). HUB-06 absolute-path-required invariant enforced via ordered `PATH_REGEXES` array with explicit receipt-SUPPRESSION when no regex matches (rather than emitting an empty `file_written` field). Subprocess `appendReceipt` is awaited inside the close handler before `resolve()` so callers + tests observe the receipt on disk synchronously. Required (not optional) `clientSlug`/`projectSlug` on `RunCaptureOptions` so stale call sites surface at compile time. Per-test fixture-mutation pattern (`clients.yaml` snapshot → patch placeholder → `invalidateClients()` → restore) is the working answer for injecting tmpdir paths into the shared YAML fixture.
 - **Plan 04-07** (2026-05-22): `brief-meta` SSE event name carries `{ source, builtAt: ISO }` and is emitted by /load before subprocess start. `formatRelativeDate` from lib/format.ts not used for the drawer (only handles YYYY-MM-DD); inline `minutesAgo(date)` used instead. Message route /message/route.ts needed NO changes. HUB-03 contract test used `claudeBin` injection + argv-logging bash wrapper (not `vi.spyOn(spawn)`) because ESM import caching in vitest means `spawn` is captured at module-load time before the spy installs, so the spy never fires.
 - **Plan 04-08** (2026-05-22): `priorUserTurn` computed via role-walk backward (loop from assistantIdx-1 to 0) not index-1 offset — handles non-alternating sequences. drop-session fires on every collapse transition when messages exist (not deduplicated). "Dropped" button permanently disabled after 2s success — local React state, no persistence needed. `fileParallelism: false` added to vitest config to fix pre-existing race on shared YAML fixture (3+ test files concurrently patching clients.yaml).
+- **Plan 04-09** (2026-05-22): /ingest-aios-drops skill at project-local path (.claude/skills/) NOT user-global — confirmed correct per acceptance criteria check. INGEST_SUMMARY_RE is case-insensitive lazy multi-line. WikiIngestModal uses existing Dialog primitive. WikiIngestModal auto-starts POST on open=true via useEffect + hasStartedRef guard (no manual Run button needed since RunIngestButton is already the one-click entry). ProjectReceiptsSlice reads readRecentReceipts(100) and filters in-memory — no new indexed read needed at this scale.
 
 ### Pending Todos
 
@@ -94,5 +95,5 @@ Items acknowledged and carried forward:
 ## Session Continuity
 
 Last session: 2026-05-22
-Stopped at: Completed Plan 04-08 — chat write-back (chat-writeback helpers + /drop-decision + /drop-session + Drop to raw button per AI message + auto-drop on collapse/new-session + vitest fixture race fix). 5 task commits. 261/261 tests pass, build clean. HUB-05, HUB-06 satisfied.
-Resume file: `.planning/phases/04-bidirectional-hub/04-08-SUMMARY.md`. Next action: orchestrator picks up 04-09 (llm-wiki ingest pass). Phase 4 status: 8/9 plans done.
+Stopped at: Completed Plan 04-09 — Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice. 3 task commits. 265/265 tests pass, build clean. HUB-07 satisfied. PHASE 4 COMPLETE.
+Resume file: `.planning/phases/04-bidirectional-hub/04-09-SUMMARY.md`. Phase 4: 9/9 plans done. All phases complete.
