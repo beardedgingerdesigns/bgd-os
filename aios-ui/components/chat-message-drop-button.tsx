@@ -8,7 +8,7 @@
 // On success: label changes to "Dropped" for 2s then the button is permanently
 // disabled for this render (state is local — no persistence needed).
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ChatMessageDropButtonProps {
   clientSlug: string
@@ -31,6 +31,22 @@ export function ChatMessageDropButton({
   const [errorText, setErrorText] = useState<string>('')
   const [permanentlyDropped, setPermanentlyDropped] = useState(false)
 
+  // Phase 04 review WR-09: schedule the success→permanently-dropped transition
+  // in a useEffect that cleans up its own setTimeout. The previous inline
+  // setTimeout had no cleanup, so if the parent drawer collapsed (and
+  // unmounted message rows) inside the 2s window, React warned about
+  // setting state on an unmounted component. Driving the transition from
+  // state lets the cleanup function clear the timer on unmount or on
+  // re-entry (e.g. an unlikely double-click).
+  useEffect(() => {
+    if (state !== 'success') return
+    const timer = setTimeout(() => {
+      setPermanentlyDropped(true)
+      setState('idle')
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [state])
+
   async function handleDrop() {
     if (disabled || state === 'loading' || permanentlyDropped) return
     setState('loading')
@@ -47,12 +63,8 @@ export function ChatMessageDropButton({
         setState('error')
         return
       }
+      // Transition to 'success' — the useEffect above takes over from here.
       setState('success')
-      // Show "Dropped" feedback for 2s then lock permanently.
-      setTimeout(() => {
-        setPermanentlyDropped(true)
-        setState('idle')
-      }, 2000)
     } catch (err) {
       setErrorText(err instanceof Error ? err.message : 'Network error')
       setState('error')
