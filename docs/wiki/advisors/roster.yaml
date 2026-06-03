@@ -1,0 +1,14 @@
+advisors:
+  nate-herk:
+    name: Nate Herk
+    lens: "AI business strategy, the 3Ms framework, leveraging AI as a business operator"
+    sources:
+      - youtube: "@nateherk"
+    knowledge_path: docs/wiki/advisors/nate-herk/
+
+  matt-pocock:
+    name: Matt Pocock
+    lens: "AI-assisted development, LLM skill design, developer tooling, building effectively with Claude Code"
+    sources:
+      - youtube: "@mattpocockuk"
+    knowledge_path: docs/wiki/advisors/matt-pocock/
