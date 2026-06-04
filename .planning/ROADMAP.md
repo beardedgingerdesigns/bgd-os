@@ -56,11 +56,11 @@ Plans:
 4. `/onboard-client` runs the full sequence: intake interview → `clients.yaml` entry → `/kickoff-project` → initial STATE.md → decisions log entry — in a single uninterrupted flow.
 5. Email threads are never written to the to-do list (ephemeral triage output, not persistent actions).
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
-- [ ] 06-01-PLAN.md — Persistent to-do list artifact + /load-project deprecation
+- [x] 06-01-PLAN.md — Persistent to-do list artifact + /load-project deprecation
 - [ ] 06-02-PLAN.md — /onboard-client full lifecycle chain rewire
 
 ---
