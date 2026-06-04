@@ -23,6 +23,7 @@ clients:
         mrr_monthly: 400
         docs_paths:
           - references/insideout-project.md
+          - /Users/justinlobaito/repos/inside-out/docs
         contacts:
           - mdennis@insideoutiowa.org
           - sbundy@insideoutiowa.org
@@ -42,6 +43,7 @@ clients:
         mrr_monthly: 1000
         docs_paths:
           - references/wild-rose-project.md
+          - /Users/justinlobaito/repos/wild-rose/wiki
         contacts:
           - aaron.harn@wildrosecorporate.com
           - krystal.light@wildrosecorporate.com
@@ -49,6 +51,7 @@ clients:
           - scott.ivers@wildrosecorporate.com
           - "@wildrosecorporate.com"
           - jon@lieblmg.com
+          - justin@beradedgingerdesigns.com
       - slug: thermal-kitchen
         name: Thermal Kitchen redesign
         status: active
@@ -57,6 +60,7 @@ clients:
         docs_paths:
           - references/thermal-kitchen-project-plan.md
           - references/thermal-kitchen-call-2026-05-06.md
+          - /Users/justinlobaito/repos/thermal-kitchen/docs
         contacts:
           - deann@thermalkitchen.com
           - briandiver@thermalkitchen.com
@@ -142,7 +146,13 @@ clients:
           - lmasaoay@npsmediagroup.com
           # Note: deliberately NOT using "@npsmediagroup.com" catch-all — Frank Lama and Jamie Fallon
           # are NPS-wide noise, not Partners For Sight contacts. Add specific NPS people only.
-
+      - slug: door-is-a-jar-magazine
+        name: Door Is A Jar Magazine
+        status: active
+        contract: $125/mo bonsai
+        mrr_monthly: 125
+        contacts:
+          - doorisajarmag@gmail.com
   - slug: terraplex
     name: Terraplex
     bucket: paying
@@ -214,7 +224,13 @@ clients:
           - jamesmccurry@trussservicesllc.com
           # Status: scaffolded on platform but blocked on previous vendor releasing the domain.
           # June 5 follow-up scheduled with James per inbox triage 2026-05-19.
-
+      - slug: superior-drones-llc
+        name: Superior Drone, LLC - dealer subscription
+        status: active
+        contract: $250/mo Bonsai
+        mrr_monthly: 250
+        contacts:
+          - rob@superiordronellc.com
   - slug: revolution
     name: Revolution Drones (GTEEX / AgSoilRegen — Russell Hedrick)
     bucket: prospects
@@ -251,7 +267,8 @@ clients:
           - references/channel-platform-product.md
         contacts:
           - jon@lieblmg.com
-          # TODO: add Nel + Alex emails when partnership formalized
+          # Nel + Alex (Deploy Answers partnership) live on the deploy-answers sub-project,
+          # not here — keeps the sales-channel relationship (Jon) distinct from the partnership.
       - slug: brandos
         name: BrandOS productization (cross-cutting platform play)
         status: active
@@ -269,3 +286,86 @@ clients:
           - russell@agsoilregen.com
           # TODO: add dealer contacts (Pyro, Black Knight, New Heights, Great River, Truss, Superior Drone)
           # on next /load — confirmed domains/emails surfaced from Gmail history
+      - slug: deploy-answers
+        name: Deploy Answers (Nel + Alex partnership venture)
+        status: active
+        docs_paths:
+          - references/deploy-answers.md
+          - references/deploy-answers-brand-brief.md
+          - /Users/justinlobaito/repos/deploy-answers/docs
+        contacts:
+          - nel@forbiddensky.com
+          - alexsdoucos@gmail.com
+  - slug: kuberski-brothers
+    name: Kuberski Brothers
+    bucket: paying
+    notes: Kuberski Brothers Lawn Care (Des Moines). Liebl-routed deal. Base 44 site live since 2025-12-11.
+    projects:
+      - slug: website
+        name: Website
+        status: active
+        contract: $400/mo bonsai
+        mrr_monthly: 400
+        docs_paths:
+          - references/kuberski-brothers-project.md
+        contacts:
+          - alex@kuberskibrothers.com
+          - jered@kuberskibrothers.com
+          - rochelle@kuberskibrothers.com
+          - "@kuberskibrothers.com"
+          - jon@lieblmg.com
+          - sammi.manning@gmail.com
+  - slug: unity
+    name: Unity
+    bucket: paying
+    notes: Unity bought the Spirituality and Health website from NPS media group.
+    projects:
+      - slug: spirituality-and-health
+        name: Spirituality and Health
+        status: active
+        contract: $125/mo bonsai
+        mrr_monthly: 125
+        contacts:
+          - WalkerED@unityonline.org
+  - slug: hatch-dsm
+    name: Hatch DSM
+    bucket: paying
+    notes: Hatch is a local advertising agency, I have been working with the Owner, Cooper, for many years. The largest The largest project I work on for them is the Iowa State Fair website.
+    projects:
+      - slug: iowa-state-fair
+        name: Iowa State Fair
+        status: active
+        contract: TBD
+        contacts:
+          - cooper@hatchdsm.com
+          - maggie@hatchdsm.com
+          - wlong@iowastatefair.org
+          - JMoore@iowastatefair.org
+  - slug: mr-gym
+    name: Mr Gym
+    bucket: paying
+    notes: Mr. Gym is an aspiring personal trainer who wants to make an online clothing store.
+    projects:
+      - slug: mr-gym-online-store
+        name: Mr Gym Online Store
+        status: active
+        docs_paths:
+          - /Users/justinlobaito/repos/mr-gym-online-store/docs
+          - references/mr-gym-project.md
+        contacts:
+          - babanks89@gmail.com
+  - slug: co-line-mfg
+    name: Co-Line Manufacturing
+    bucket: paying
+    notes: Manufacturing company. Craft site + intranet. Website redesign stalled. Prime re-engagement candidate for AI pivot pitch. Employment/internal process needs.
+    projects:
+      - slug: website-maintenance
+        name: Website + intranet maintenance
+        status: active
+        contract: $75/mo
+        mrr_monthly: 75
+        contacts:
+          - mdickenson@colinemfg.com
+          - fbrand@colinemfg.com
+          - nolivier@colinemfg.com  # HR lead (needs confirmation)
+          - "@colinemfg.com"

@@ -20,6 +20,112 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 
 ---
 
+## 2026-05-28 — BGD strategic pivot: from "I build websites" to "I solve business problems with AI"
+
+**Decision:** BGD is shifting identity. The business is no longer defined by Craft CMS builds. The new positioning: **Justin solves business problems for mid-market companies and ships the solutions as products.** AI is the accelerant that lets one talented operator build what used to take a team. If the solution is a website, fine. If it's an automation, a platform, or a tool, fine. The offering is the problem-solving, not the medium.
+
+Craft builds become legacy/maintenance revenue, not the growth engine. BrandOS is reframed as the first proof point of this model (a product that solves a specific business problem: channel marketing for multi-tier distribution networks), not a separate company play. The AI automation work with Jon is example #2.
+
+**Jon Liebl's role is formalized as the sales channel.** Justin doesn't sell. Jon does. Jon needs a concept to sell. Friday 5/30 is the conversation where the pitch shifts from "Justin builds websites" to "Justin solves business problems with AI — and every solution I build becomes something you can sell to your other clients."
+
+**Why:**
+
+1. **Justin's passion and strength is solving business problems, not building websites.** His own words: "Once I have the client, I'm phenomenal because I solve business problems. I don't just try to sell people." The Craft CMS identity undersells what he actually does.
+2. **AI changes the build economics.** Things that took weeks now take days. Products that required a team can be built by one person who's talented behind the wheel. This is a structural shift, not a trend. Justin is positioned to capitalize because he's both technical and business-minded.
+3. **The ceiling on custom Craft builds is real.** Nel and Alex already proved it: 6-7 active clients and Justin is out of hours. Productized solutions at higher MRR per client is the only path to scale.
+4. **Jon is the missing piece.** Justin's chronic weakness is sales. Jon has been the biggest source of new clients and projects for years. Giving Jon a bigger, more valuable thing to sell (AI-powered business solutions vs. websites) unlocks a bigger market without requiring Justin to become a salesperson.
+5. **The Des Moines mid-market is underserved.** Companies like Kirk Financial (Wild Rose, Thermal Kitchen), Terraplex, NPS Media Group, Hatch DSM — real businesses with real operational problems, no internal AI capability, and budgets that don't reach enterprise SaaS pricing. Justin already has relationships with these companies.
+
+**Alternatives considered:**
+
+- *Keep BGD as a Craft CMS shop and add AI automations as a side service.* Rejected — that's adding a fourth priority to an already overloaded Q2. The shift needs to be identity-level, not additive.
+- *Build BrandOS as a separate company and keep BGD for Craft.* Rejected — BrandOS is an instance of the new model, not a divergent path. Separating them splits focus.
+- *Wait until BrandOS is further along before pivoting.* Rejected — the AI automation opportunity is real now. Jon is receptive now. The market window is open now. 2026 is the gauge year; this is what you're gauging.
+- *Hire salespeople instead of relying on Jon.* Premature — validate the model with Jon first. If it works, the Jon partnership model can replicate with other relationship-holders.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- **Friday 5/30 call with Jon:** Frame as partnership pitch, not demo. "I solve problems, you sell relationships. Every solution I build for you becomes something you can sell."
+- **Existing clients are the test market.** Stress test the concept against Kirk Financial, Terraplex, NPS Media Group, Hatch DSM, IowaEverywhere. What problems do they have that AI can solve? What would they pay?
+- **Craft builds don't stop overnight.** Current contracts run out. New client conversations shift toward problem-solving positioning. No abrupt client disruption.
+- **Q2 priorities reframe:** Priority #1 (productize) now means productizing the problem-solving model, not just the 18-month Craft tier. Priority #3 (business plan) absorbs this pivot as the strategic thesis.
+- **BrandOS stays on track** — it's the flagship proof point of this model, not a distraction from it.
+
+**Open follow-ups:**
+
+- Overnight research: market landscape, client problem audit, pricing models, competitive positioning in Des Moines. Review morning of 5/29.
+- Friday 5/30: Jon partnership conversation.
+- Post-Friday: decide on formal branding, pricing tiers, and go-to-market for the new positioning.
+- Revisit Q2 priority language in CLAUDE.md to reflect the pivot.
+
+---
+
+## 2026-05-28 — Exploring AI automation as a new BGD service line; Jon Liebl is proof-of-concept
+
+**Decision:** Justin is actively prototyping a new AI automation service line for BGD. Not chatbots. Real business operations automations that eliminate repetitive weekly management tasks for clients. Jon Liebl (LMG) is the proof-of-concept. Email sent 2026-05-26 (subject: "New capabilities"). Jon confirmed Friday 5/30 afternoon for a call. Justin also plans to demo BrandOS progress on that call.
+
+Jon replied same day with his pain points:
+
+1. **Workflow segregation** across TPLX, IE, and LMG. Balancing urgent vs. can-wait across three businesses.
+2. **Billing / collections** — repetitive.
+3. **Updating copy, creative, and traffic for IE** — repetitive.
+4. **Presentation decks** — already leaning on Claude for this.
+5. **Client touch points** — repetitive.
+6. **Getting invoices from vendors in a timely manner** — chasing vendors.
+
+Jon also noted: "I know there are a ton of efficiencies I can be employing." High receptivity.
+
+**Why:** BGD's current offering is custom Craft CMS builds + hosting + ongoing support. AI automations expand the service line into operational efficiency for existing clients. This creates new recurring revenue and positions Jon (and eventually other partners) to sell AI automation services alongside BrandOS. Jon is the ideal proof-of-concept because he runs three overlapping businesses with real operational overhead and he's already bought into the partnership thesis.
+
+**Alternatives considered:**
+
+- *Cold-pitch the service line to prospects without validation.* Rejected — proving the concept with a trusted partner first is cheaper and builds a real case study.
+- *Build generic automation demos without a real client's problems.* Rejected — real-world use cases are the whole point. Jon's specific pain points give us concrete prototypes to build toward.
+- *Wait until BrandOS is further along before layering on new offerings.* Rejected — AI automations are complementary, not competing. And Jon's problems are solvable now.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- Before Friday 5/30 call: research and prototype automation approaches for Jon's top pain points (workflow triage, billing/collections, vendor invoice chasing are the strongest candidates).
+- Presentation decks are deprioritized since Jon's already using Claude there.
+- The IE copy/creative/traffic item may overlap with BrandOS content propagation work — explore synergy.
+- Friday call agenda: review automation findings + demo BrandOS progress.
+- After Friday: assess which automations are generalizable enough to become a repeatable service offering.
+
+**Update 2026-05-28 (phone call):** Jon's #1 ask is **email prioritization** — a way to sort emails into "needs my reply / requires attention" vs. "can be deferred." This is structurally the same problem Justin's `/daily-inbox-triage` skill already solves. Strongest candidate for the first Friday demo: proven pattern, minimal build time, directly maps to Jon's stated need.
+
+**Open follow-ups:**
+
+- Lead Friday demo with the email triage prototype (adapt `/daily-inbox-triage` pattern for Jon's inbox).
+- Prototype automation approaches for Jon's remaining pain points (billing/collections, vendor invoice chasing) before 5/30.
+- Friday 5/30 call (time TBD, afternoon confirmed).
+- Post-call: decide whether to formalize this as a named BGD service line or keep prototyping.
+
+---
+
+## 2026-05-23 — Inside Out wiki converted to AIOS canonical layout
+
+**Decision:** Reshaped the existing LLM-Wiki at `/Users/justinlobaito/repos/inside-out/wiki/` (+ companion `raw/`) into AIOS canonical `docs/wiki/` layout via `/convert-wiki`. Updated `clients.yaml` `docs_paths` for `inside-out-website` from `.../inside-out/wiki` → `.../inside-out/docs` so `detectWiki()` resolves via `docs/wiki/WIKI-CLAUDE.md`. Verbatim snapshots preserved under `docs/wiki/raw/external/{wiki,raw}-pre-aios-2026-05-23/`. Conversion record: `/Users/justinlobaito/repos/inside-out/docs/wiki/log/2026-05-23-wiki-converted-from-project-root.md`.
+
+**Why:** The Inside Out wiki was already llm-wiki-shaped (had SCHEMA.md, decisions/, sources/, overview.md, log.md) but lived at the project root (`wiki/`) rather than the AIOS-canonical `docs/wiki/` path. AIOS's `detectWiki()` walks one level under `docs_paths` to find `WIKI-CLAUDE.md`, so the old location was invisible to the OS. Reshape matches Iowa Everywhere / Wild Rose pattern: WIKI-CLAUDE.md as schema doc, decisions split into `active/deferred/implemented/superseded`, `log/` as folder with per-event files, plus `plans/`, `architecture/`, `strategy/`, `research/` sections. All curated content preserved; project-specific `brand/`, `services/`, `pages/` sections kept since they're load-bearing for this project.
+
+**Alternatives considered:** (a) Delete the old `wiki/` outright (rejected — convert-wiki skill explicitly forbids it; that's the project owner's call). (b) Move (`mv`) content into `docs/wiki/` to preserve git history (rejected — files were untracked anyway, and the cp-only approach left an undisturbed `wiki/` for Justin to remove on his own timeline). (c) Keep the old sequential `NNNN-<slug>.md` decision numbering (rejected — date-based slugs sort chronologically and match other BGD wikis).
+
+**Owner:** Justin (decides when to remove the now-redundant `/Users/justinlobaito/repos/inside-out/wiki/` and `/Users/justinlobaito/repos/inside-out/raw/` directories at project root).
+
+## 2026-05-21 — Wild Rose launch slipped to mid/late June + scope decisions locked
+
+**Decision:** Wild Rose Resorts redesign launch moves from Jun 1 to mid-to-end of June. Same walkthrough locked five scope decisions: email signup feature removed; promotions converted from calendar logic to single-text-field entries; ticketing roadblock popup confirmed for cross-property purchase clarity; entertainment entries stay separate per property; careers page removes mandatory property pre-selection.
+
+**Why:** Aaron Harn initiated the slip — Wild Rose travel schedule + Memorial Day holiday + Justin's concurrent Thermal Kitchen load (6/16 launch). Aaron explicitly cited TK as a reason to let Wild Rose breathe. Email signup was killed because Maro Post requires Player ID; gating capture on Player ID would segment too many users. Promotions de-calendared because cadence text ("Every Sunday at XYZ") is simpler for both backend and frontend than chronological scheduling. Ticketing roadblock papers over the root cause (three separate ticketing platforms) without consolidating platforms now.
+
+**Alternatives considered:** Hold the Jun 1 date (rejected — Aaron offered the slip, capacity is real). Ship email signup behind a Player-ID gate (rejected — Aaron: "if that creates problems, just 86 the whole idea"). Consolidate entertainment entries across properties (rejected — Krystal: wrong-property arrivals already happen, consolidation would amplify confusion). Auto-redirect to property page on default-location set (deferred — Justin to test both auto-redirect and filter-only and return with a recommendation).
+
+**Owner:** Justin. Open homework: deploy to dev, finish content, schedule content meeting with Meghan Wymore (wildrosecorporate.com), prep entertainment-strategy options.
+
 ## 2026-05-12 — BrandOS pitch reframe + Crash Champions lead + partnership formalization sequencing
 
 **Decision:** Three directionally aligned outputs from the Nel + Alex touchbase 2026-05-12 (`references/touchbase-2026-05-12.md`):
@@ -701,5 +807,78 @@ Justin is rolling the llm-wiki pattern out across every project. `/load {project
 - First run: pick a safe test case (Crash Champions opportunity or a new BrandOS dealer) so the flow is exercised before it touches a high-stakes onboarding.
 - After 5 successful onboardings, evaluate moving to Bike Method Phase 2 (Gmail-based contact pre-population).
 - This skill paired with `/load-project` makes the full client lifecycle: onboard → load → work → log decisions → repeat.
+
+---
+
+## 2026-05-21 — Iowa State Fair 2027 redesign is the strategic exception to the Q2 no-new-custom-projects rule
+
+**Decision:** The Iowa State Fair 2027 website redesign (Craft 5 rebuild through Hatch DSM) is authorized as the **strategic exception** to the CLAUDE.md hard constraint "no new custom one-off projects during the productization push." When the engagement moves from scoping → contracted, it lands as a standalone BGD project — separate SOW, separate engagement, separate from the current $1,600/$600 maintenance retainer.
+
+Also corrected CLAUDE.md (line 29): dropped "— Iowa State Fair, etc." from the 2RM parenthetical. ISF is a BGD/Hatch client, not 2RM work.
+
+**Why:**
+
+1. **Visibility justifies the deviation.** ISF is one of Justin's highest-visibility clients — the 11-day August fair is a public-facing brand surface that dwarfs most BGD projects. Hatch DSM is also a multi-client agency relationship; saying "no" to the ISF redesign risks the broader Hatch relationship.
+2. **Cycle timing makes deferral impossible.** 2027 fair launches August 2027. Working backwards: discovery done ~Q4 2026, build Q1-Q2 2027, launch by ~July 2027. Already in active scoping (Writemap mtgs 5/18-19/26, Whitney wishlist circulated 4/9/26). Pushing it to post-productization (post-July 2026) gives only 12 months for a full Craft 4 → Craft 5 rebuild including paperless camping rework — that's tight even on a fresh start.
+3. **It doesn't fit a productized tier anyway.** Custom Craft 5 rebuild + Craft Commerce + custom camping reservation flow + paperless ops + multi-system integrations don't compress into the 18-month $X/mo BGD tier model. Forcing it into a tier would either understate the scope or distort the tier definitions Justin is trying to lock down.
+4. **Productization push isn't actually threatened.** The rule's intent was to stop ad-hoc small jobs from absorbing the productization runway. ISF is the opposite — a single, large, known engagement with a hard 2027 deadline. It's an exception that proves the rule, not a pattern-break.
+
+**Alternatives considered:**
+
+- *Refuse the redesign and let Hatch find another developer.* Rejected — destroys 5-6 years of client trust + ongoing $1,600/$600 retainer + Hatch relationship optionality.
+- *Try to fit ISF into a productized BGD tier.* Rejected per reason #3.
+- *Defer the engagement until post-productization (after July 2026).* Rejected per reason #2 — squeezes the build window to <12 months.
+- *Quietly do the redesign while pretending the rule still holds.* Rejected — that's how strategic boundaries silently erode. Documenting the exception is what keeps the rule intact for genuine ad-hoc work.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- When the redesign moves from scoping → contracted, it gets its own SOW with separate billing and separate scope. Don't bundle into the maintenance retainer.
+- When proposing pricing, anchor against project scale (Craft 5 rebuild + Craft Commerce + custom camping + paperless ops + integrations), not against productized BGD tiers.
+- The Q2 hard constraint in CLAUDE.md still applies to *other* new custom one-offs (e.g., one-off site builds outside the productized tier). ISF is the named exception; don't extrapolate it into a general loosening.
+- Memory: `project_iowa_state_fair_2027_redesign.md` updated to reflect the resolved deviation.
+
+**Open follow-ups:**
+
+- Capture Whitney's wishlist contents (the document Maggie forwarded 4/9/26) into memory or a reference doc before the next Writemap conversation.
+- After the 5/18 + 5/19 Writemap meetings, log scope direction back to this log + the 2027-redesign memory file.
+- When Hatch is ready to contract, draft the SOW with explicit scope/timeline separation from the maintenance retainer.
+
+---
+
+## 2026-05-31 — Deploy Answers is the Nel + Alex + Justin company name
+
+**Decision:** The partnership LLC between Nel Santiago, Alexandra Sdoucos, and Justin is named **Deploy Answers**. Originally "Deploy Assist" but renamed because domain was taken by URL squatters. Filing as Texas LLC via Bizee. Products under the umbrella: Backup Bison (Vimeo backup utility), Clappy (video production/editing tool).
+
+**Why:** Nel corrected the name in the 4/30 Agenda Items email thread. Alex confirmed. Domain availability drove the rename.
+
+**Alternatives considered:**
+
+- *Deploy Assist* — original pick, blocked by squatters.
+
+**Owner:** Nel (filing), Alex (commercial/ops), Justin (product/platform).
+
+**Also locked:** Alex's last name is **Sdoucos** (Executive Producer, Doozy Films). "Chacon" was a Google Calendar display name artifact. Email: alexsdoucos@gmail.com.
+
+---
+
+## 2026-06-01 — Nel + Alex (Deploy Answers) partnership: go/no-go = GO
+
+**Decision:** The Nel + Alex + Justin partnership is a **GO**. Justin is committing directionally. The **formal operating structure** — equity split, revenue share, roles/decision rights, IP ownership, time commitment — is **not yet defined**. That is the next body of work; the GO is being recorded now without prematurely committing to a structure.
+
+**Emerging thesis:** Justin expects to need support on **BrandOS** as it scales, and that is the likely point where Alex and Nel "fold in" — Alex on commercial/sales, Nel on technical/delivery. This raises the central structural question to resolve next: does BrandOS stay **BGD-owned** with Alex/Nel partnered or contracted into it, or does BrandOS come **under the Deploy Answers umbrella**? Cap-table and IP implications diverge sharply between the two.
+
+**Why:** CLAUDE.md priority #3 calls for a formal go/no-go on the Nel + Alex partnership inside the 12-month plan. Justin is resolving the go/no-go now (GO) and de-risking by sequencing the formal-operating decisions next, rather than locking a structure before the economics are understood.
+
+**Open items before "formal operating" is fleshed out:**
+
+- Keep two ventures clean: **Deploy Answers** (Backup Bison, Clappy — Nel/Alex products) vs **BrandOS** (BGD product). Same people, different economics.
+- Define what "support in BrandOS" means concretely — sales, delivery, or both — and who owns each client relationship.
+- Equity + revenue-share model per venture. IP ownership (BrandOS IP is currently Justin's/BGD's).
+- Coordinate Alex's commercial role with **Jon Liebl's** sales channel to avoid overlap/conflict.
+- Capacity: partnership operating load against Justin's already-maxed hours (the pivot exists to escape the hours ceiling — partnership must reduce load, not add it).
+
+**Owner:** Justin (BGD). Partners: Nel (filing/technical), Alex (commercial/ops).
 
 ---
