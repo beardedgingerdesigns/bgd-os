@@ -98,4 +98,84 @@ describe('runWikiIngest', () => {
     expect(result.exitCode).not.toBe(0)
     expect(result.error).toBeTruthy()
   })
+
+  it('rich summary: parses ContestedEntry and SkippedEntry objects', async () => {
+    const os = await import('os')
+    const fs = await import('fs/promises')
+    const { execFile } = await import('child_process')
+    const { promisify } = await import('util')
+    const wrapperPath = path.join(os.tmpdir(), 'fake-claude-rich-summary.sh')
+    await fs.writeFile(
+      wrapperPath,
+      `#!/usr/bin/env bash\nexec "${FAKE_WIKI_INGEST}" --rich-summary "$@"\n`,
+    )
+    await promisify(execFile)('chmod', ['+x', wrapperPath])
+
+    const result = await runWikiIngest({
+      wikiPath: '/tmp/test-wiki',
+      claudeBin: wrapperPath,
+      timeoutMs: 10_000,
+    })
+    expect(result.status).toBe('success')
+    expect(result.summary).toBeDefined()
+
+    // promoted
+    expect(result.summary!.promoted).toHaveLength(1)
+    expect(result.summary!.promoted[0]).toBe('capture-2026-06-04-thermal-kitchen-launch.md')
+
+    // skipped
+    expect(result.summary!.skipped).toHaveLength(1)
+    expect(result.summary!.skipped[0].file).toBe('capture-2026-06-04-status-check.md')
+    expect(result.summary!.skipped[0].reason).toContain('fully covered')
+
+    // contested
+    expect(result.summary!.contested).toHaveLength(1)
+    expect(result.summary!.contested[0].file).toBe('chat-decision-2026-06-04-launch-shifted.md')
+    expect(result.summary!.contested[0].contradiction.incoming_claim).toBe('Launch date moved to July 15')
+    expect(result.summary!.contested[0].contradiction.existing_claim).toBe('Launch date is June 16')
+    expect(result.summary!.contested[0].contradiction.existing_page).toBe('wiki/pages/timeline.md')
+    expect(result.summary!.contested[0].contradiction.severity).toBe('high')
+  })
+
+  it('legacy contested strings: wraps as ContestedEntry with unknown fields', async () => {
+    const os = await import('os')
+    const fs = await import('fs/promises')
+    const { execFile } = await import('child_process')
+    const { promisify } = await import('util')
+    const wrapperPath = path.join(os.tmpdir(), 'fake-claude-legacy-contested.sh')
+    await fs.writeFile(
+      wrapperPath,
+      `#!/usr/bin/env bash\nexec "${FAKE_WIKI_INGEST}" --legacy-contested "$@"\n`,
+    )
+    await promisify(execFile)('chmod', ['+x', wrapperPath])
+
+    const result = await runWikiIngest({
+      wikiPath: '/tmp/test-wiki',
+      claudeBin: wrapperPath,
+      timeoutMs: 10_000,
+    })
+    expect(result.status).toBe('success')
+    expect(result.summary).toBeDefined()
+
+    // Legacy string contested should be wrapped as ContestedEntry
+    expect(result.summary!.contested).toHaveLength(1)
+    expect(result.summary!.contested[0].file).toBe('some-file.md')
+    expect(result.summary!.contested[0].contradiction.incoming_claim).toBe('unknown')
+    expect(result.summary!.contested[0].contradiction.existing_claim).toBe('unknown')
+    expect(result.summary!.contested[0].contradiction.existing_page).toBe('unknown')
+    expect(result.summary!.contested[0].contradiction.severity).toBe('medium')
+  })
+
+  it('summary with empty skipped: skipped defaults to empty array', async () => {
+    // Default fixture has no skipped field in the envelope; parser should default to []
+    const result = await runWikiIngest({
+      wikiPath: '/tmp/test-wiki',
+      claudeBin: FAKE_WIKI_INGEST,
+      timeoutMs: 10_000,
+    })
+    expect(result.status).toBe('success')
+    expect(result.summary).toBeDefined()
+    expect(result.summary!.skipped).toBeDefined()
+    expect(result.summary!.skipped).toHaveLength(0)
+  })
 })
