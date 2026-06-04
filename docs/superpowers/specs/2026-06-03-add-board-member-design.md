@@ -87,10 +87,10 @@ After all knowledge agents complete, a synthesis agent reads all the knowledge f
 
 ### Step 6 — Register
 
-Add the advisor entry to the target board's `roster.yaml` with:
+Add the advisor entry to the target board's `roster.yaml` matching the existing schema:
 - `name`
-- `slug`
-- `role` (one-line description)
+- `lens` (one-line description of their advisory perspective)
+- `sources` (list of source handles/domains, e.g., `- youtube: "@handle"`)
 - `knowledge_path` (relative path to their directory)
 
 ### Step 7 — Report
@@ -144,22 +144,34 @@ The roster.yaml follows the same schema as the AIOS global roster. No other proj
 
 ## Knowledge File Format
 
-Each knowledge file follows the pattern established by the existing Nate Herk and Matt Pocock advisors:
+Each knowledge file follows the pattern established by the existing Nate Herk and Matt Pocock advisors. Agents are briefed on the format by reading one example knowledge file from the AIOS board as a template. The established format:
 
 ```markdown
+---
+source: add-board-member
+advisor: {slug}
+captured: {YYYY-MM-DD}
+url: {source url}
+status: ingested
+---
+
 # {Topic Title}
 
-## Context
-Where this comes from (video title, blog post, talk).
+**URL:** {url}
+**Published:** {year or date}
+**Type:** {content type}
 
-## Key Concepts
-- Concept with explanation
+## Key Frameworks and Patterns
+{Core frameworks, mental models, structured thinking with ### subheadings.}
 
-## Positions
-Detailed positions, frameworks, mental models extracted from the content.
+## Positions and Opinions
+{Clear positions — what they advocate for, what they argue against, and why.}
 
-## Actionable Takeaways
-What Justin can actually do with this.
+## Relevant Quotes
+{3-5 direct quotes with context.}
+
+## How This Applies as a Decision Lens
+{When advising on a decision, how this content informs the recommendation.}
 ```
 
 Target: 8-10 knowledge files per advisor for a full onboard. Content additions add incrementally on top.
