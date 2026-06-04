@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
 status: executing
-last_updated: "2026-06-04T07:14:37.741Z"
+last_updated: "2026-06-04T07:22:44.084Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 33
 ---
 
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 ## Current Position
 
 Phase: 07 (wiki-filtering-two-layer-intelligence) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-06-04
 
@@ -59,6 +59,7 @@ Last activity: 2026-06-04
 | Phase 06 P01 | 2min | 2 tasks | 3 files |
 | Phase 06 P02 | 3min | 1 task | 1 file |
 | Phase 07 P01 | 3min | 2 tasks | 5 files |
+| Phase 07 P02 | 4min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - [Phase ?]: Plan 06-01: Persistent to-do list created at todos/pending.md with structured markdown format; /load-project retired with deprecation notice preserving all trigger phrases
 - [Phase ?]: Plan 06-02: /onboard-client rewired with full lifecycle chain. Phases 6-8 added (Kickoff with /kickoff-project chain, Initial STATE.md, Final Close). Graceful degradation: core writes complete before optional chain steps.
 - [Phase 07]: Plan 07-01: classifyContent pure function with 4-rule priority (route context > frontmatter > keywords > ambiguous). Operational threshold strict (opScore > projScore + 1). All 3 write surfaces (capture.ts, drop-decision, drop-session) gated before writeRawDrop. Zero new deps.
+- [Phase ?]: [Phase 07]: Plan 07-02: ContestedEntry/SkippedEntry types in wiki-ingest.ts with backward-compatible parser. SKILL.md gains evaluate-before-promote logic (promote/skip/flag per file). WikiIngestModal updated for new types.
 
 ### Pending Todos
 
@@ -122,6 +124,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-06-04T07:14:37.728Z
-Stopped at: Completed 07-01-PLAN.md -- Layer 1 AIOS output filter with classifier gate on all write surfaces
+Last session: 2026-06-04T07:22:44.072Z
+Stopped at: Completed 07-02-PLAN.md -- Layer 2 wiki ingest evaluator with three-outcome evaluation types
 Resume file: None

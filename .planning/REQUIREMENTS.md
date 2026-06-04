@@ -17,8 +17,8 @@
 
 ### Wiki Filtering (WIKI)
 - [x] **WIKI-01**: AIOS output filter classifies content as operational vs. project-relevant before staging to `raw/aios/`
-- [ ] **WIKI-02**: Wiki ingest evaluates incoming `raw/aios/` files against current wiki knowledge
-- [ ] **WIKI-03**: Wiki ingest produces three outcomes: promote (new info), skip (redundant), flag (contradicts existing)
+- [x] **WIKI-02**: Wiki ingest evaluates incoming `raw/aios/` files against current wiki knowledge
+- [x] **WIKI-03**: Wiki ingest produces three outcomes: promote (new info), skip (redundant), flag (contradicts existing)
 - [ ] **WIKI-04**: Flagged contradictions surface to operator for resolution rather than auto-overwriting
 
 ### Prospect Pipeline (PROSPECT)
