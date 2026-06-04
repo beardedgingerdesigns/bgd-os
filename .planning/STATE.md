@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
-status: executing
-last_updated: "2026-06-04T06:00:06.863Z"
+status: verifying
+last_updated: "2026-06-04T06:07:33.551Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 17
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 
 Phase: 05 (end-of-session-state-hook) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-04
 
 ## Performance Metrics
@@ -53,6 +53,7 @@ Last activity: 2026-06-04
 
 *Updated after each plan completion.*
 | Phase 05 P01 | 5min | 2 tasks | 3 files |
+| Phase 05 P02 | 7min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **Plan 04-08** (2026-05-22): `priorUserTurn` computed via role-walk backward (loop from assistantIdx-1 to 0) not index-1 offset — handles non-alternating sequences. drop-session fires on every collapse transition when messages exist (not deduplicated). "Dropped" button permanently disabled after 2s success — local React state, no persistence needed. `fileParallelism: false` added to vitest config to fix pre-existing race on shared YAML fixture (3+ test files concurrently patching clients.yaml).
 - **Plan 04-09** (2026-05-22): /ingest-aios-drops skill at project-local path (.claude/skills/) NOT user-global — confirmed correct per acceptance criteria check. INGEST_SUMMARY_RE is case-insensitive lazy multi-line. WikiIngestModal uses existing Dialog primitive. WikiIngestModal auto-starts POST on open=true via useEffect + hasStartedRef guard (no manual Run button needed since RunIngestButton is already the one-click entry). ProjectReceiptsSlice reads readRecentReceipts(100) and filters in-memory — no new indexed read needed at this scale.
 - [Phase ?]: Plan 05-01: PostToolUse metrics hook uses 5s stdin timeout, accumulates edits/writes/bash/commits/user_messages/cwd in /tmp/claude-state-{session_id}.json
+- [Phase ?]: Plan 05-02: SessionEnd hook uses 10s stdin timeout, 25s claude subprocess timeout, js-yaml from aios-ui node_modules, skips claude-os sessions, counts user messages from transcript JSONL
 
 ### Pending Todos
 
@@ -112,6 +114,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-06-04T05:59:50.741Z
+Last session: 2026-06-04T06:07:19.201Z
 Stopped at: Completed Plan 04-09 — Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice. 3 task commits. 265/265 tests pass, build clean. HUB-07 satisfied. PHASE 4 COMPLETE.
 Resume file: None

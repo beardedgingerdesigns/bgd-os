@@ -29,7 +29,7 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 4. A copy lands in claude-os `state/<slug>.md` within the same hook execution.
 5. Rerunning the hook on an unchanged session produces no diff to existing STATE.md.
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 **Wave 1**
 
@@ -37,7 +37,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 05-02-PLAN.md — SessionEnd state generator hook + settings wiring + verification
+- [x] 05-02-PLAN.md — SessionEnd state generator hook + settings wiring + verification
 
 ---
 
