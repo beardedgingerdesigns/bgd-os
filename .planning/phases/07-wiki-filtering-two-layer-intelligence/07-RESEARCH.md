@@ -432,27 +432,19 @@ Note: This extends the current `contested: string[]` to `contested: object[]` fo
 | A4 | The LLM tiebreaker can use the same `claude --print --bare --model haiku` pattern as the state hook | Architecture Patterns | If haiku is insufficient for classification, may need a larger model |
 | A5 | Phase 8 triage dispatch will be the next write surface added after this phase | Common Pitfalls | If other write surfaces appear first, they also need classifier integration |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **What constitutes "operational" content in practice?**
-   - What we know: The AIOS generates several kinds of content -- triage queue rankings, audit reports, level-up suggestions, system configuration, skill definitions. These feel operational.
-   - What's unclear: Where is the exact line? A triage run that surfaces "Wild Rose launch moved to July" contains project intelligence embedded in operational output.
-   - Recommendation: Start with a narrow operational definition (only AIOS system metadata). Let Layer 2 handle the redundancy of over-routing to wikis. Expand the operational category based on operator feedback.
+   - RESOLVED: Narrow operational definition (AIOS system metadata only). Layer 2 catches over-routing. Implemented in Plan 07-01 Task 1 classifier heuristics.
 
 2. **Should the `skipped` category be separate from `deferred` in the skill envelope?**
-   - What we know: Currently the skill uses `deferred` for "could not process" and `contested` for "conflicts." A skip-because-redundant is semantically different from both.
-   - What's unclear: Whether the UI should distinguish "deferred due to error" from "skipped due to redundancy."
-   - Recommendation: Add `skipped` as a distinct field. Deferred = error/retry later. Skipped = intentionally not promoted. This is cleaner for the operator.
+   - RESOLVED: Yes, `skipped` is distinct from `deferred`. Deferred = error/retry. Skipped = intentionally not promoted. Implemented in Plan 07-02 Task 1 type updates.
 
 3. **Flag resolution flow: inline in modal or separate view?**
-   - What we know: The `WikiIngestModal` is a streaming overlay that auto-starts on open. Flags need operator attention after the ingest completes.
-   - What's unclear: Whether the modal should stay open with resolution controls, or whether flags should persist somewhere (a file? a new UI surface?) for later resolution.
-   - Recommendation: Inline in the modal for now. The modal already stays open after completion. Add resolution buttons. If the operator closes without resolving, the flagged files remain in `raw/aios/` (they were never promoted) and will appear again on the next ingest run. No persistence layer needed beyond the files themselves.
+   - RESOLVED: Inline in WikiIngestModal. Unresolved flags remain in `raw/aios/` for next ingest. Implemented in Plan 07-03 Task 1.
 
 4. **How should the classifier handle multi-project content?**
-   - What we know: A chat session might discuss multiple projects. A triage dispatch might mention several clients in one email thread.
-   - What's unclear: Should the content be split and routed to multiple wikis, or routed to the "primary" project?
-   - Recommendation: Route to the primary project (the one in the route context, or the one with the strongest contact/keyword match). Do not split content. If the operator wants it in multiple wikis, they capture it twice. Splitting introduces complexity with no clear benefit at this scale.
+   - RESOLVED: Route to primary project only (route context or strongest match). No splitting. Implemented in Plan 07-01 Task 1.
 
 ## Validation Architecture
 
