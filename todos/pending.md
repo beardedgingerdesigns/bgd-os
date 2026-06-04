@@ -19,11 +19,11 @@ Items persist until explicitly completed. Completed items are moved to `complete
 
 ## Pending
 
-- [ ] **Verify Phase 5 STATE.md hook fires correctly on next session end** `#ops`
+- [ ] **Revisit STATE.md output format and content quality** `#ops`
   - Added: 2026-06-04
   - Source: manual
-  - Priority: high
-  - Notes: Confirm state-session-end.js produces valid STATE.md in a project wiki after the next non-claude-os session closes.
+  - Priority: medium
+  - Notes: Phase 5 UAT passed (concept proven). Review the actual generated STATE.md output for section structure, verbosity, and usefulness. May need to tune the prompt template at scripts/state-hook/state-prompt.md or add post-processing.
 
 - [ ] **Add periodic STATE.md background generation to PostToolUse hook** `#ops`
   - Added: 2026-06-04
