@@ -65,4 +65,34 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| *(filled by roadmapper)* | | |
+| STATE-01 | Phase 5 — End-of-Session State Hook | Not started |
+| STATE-02 | Phase 5 — End-of-Session State Hook | Not started |
+| STATE-03 | Phase 5 — End-of-Session State Hook | Not started |
+| STATE-04 | Phase 5 — End-of-Session State Hook | Not started |
+| TODO-01 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| TODO-02 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| TODO-03 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| TODO-04 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| SKILL-01 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| SKILL-02 | Phase 6 — Persistent To-Do List + Skill Lifecycle | Not started |
+| WIKI-01 | Phase 7 — Wiki Filtering (Two-Layer Intelligence) | Not started |
+| WIKI-02 | Phase 7 — Wiki Filtering (Two-Layer Intelligence) | Not started |
+| WIKI-03 | Phase 7 — Wiki Filtering (Two-Layer Intelligence) | Not started |
+| WIKI-04 | Phase 7 — Wiki Filtering (Two-Layer Intelligence) | Not started |
+| TRIAGE-01 | Phase 8 — Scheduled Triage Automation | Not started |
+| TRIAGE-02 | Phase 8 — Scheduled Triage Automation | Not started |
+| TRIAGE-03 | Phase 8 — Scheduled Triage Automation | Not started |
+| TRIAGE-04 | Phase 8 — Scheduled Triage Automation | Not started |
+| TRIAGE-05 | Phase 8 — Scheduled Triage Automation | Not started |
+| PROSPECT-01 | Phase 9 — Prospect Pipeline | Not started |
+| PROSPECT-02 | Phase 9 — Prospect Pipeline | Not started |
+| PROSPECT-03 | Phase 9 — Prospect Pipeline | Not started |
+| PROSPECT-04 | Phase 9 — Prospect Pipeline | Not started |
+| PROSPECT-05 | Phase 9 — Prospect Pipeline | Not started |
+| UI-01 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-02 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-03 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-04 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-05 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-06 | Phase 10 — AIOS UI Rewrite | Not started |
+| UI-07 | Phase 10 — AIOS UI Rewrite | Not started |

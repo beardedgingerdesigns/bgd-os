@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 5 — End-of-Session State Hook (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-06-04 — Milestone v2.0 started. Grill-with-docs session completed 20 questions, CONTEXT.md updated with dispatcher model, decisions log entry written.
+Status: Roadmap complete. Ready to plan Phase 5.
+Last activity: 2026-06-04 — Milestone v2.0 roadmap written. 6 phases (5-10), 26/26 requirements mapped, traceability table filled. Phase 5 is next entry point.
 
 ## Performance Metrics
 
