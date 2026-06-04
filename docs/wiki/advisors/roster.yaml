@@ -12,3 +12,10 @@ advisors:
     sources:
       - youtube: "@mattpocockuk"
     knowledge_path: docs/wiki/advisors/matt-pocock/
+
+  chris-do:
+    name: Chris Do
+    lens: "Value-based pricing, brand positioning, creative business strategy, the vendor-to-consultant shift"
+    sources:
+      - youtube: "@thefutur"
+    knowledge_path: docs/wiki/advisors/chris-do/
