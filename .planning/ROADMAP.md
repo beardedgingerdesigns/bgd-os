@@ -80,7 +80,7 @@ Plans:
 4. A flagged contradiction surfaces in the AIOS UI (or a notification surface) with the original and the incoming version side-by-side — operator resolves, file is not auto-promoted.
 5. Heuristic classification handles the common cases; LLM is invoked only for ambiguous files.
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
@@ -89,7 +89,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 07-03-PLAN.md — Flag resolution UI + resolve API endpoint
+- [x] 07-03-PLAN.md — Flag resolution UI + resolve API endpoint
 
 ---
 
