@@ -7,6 +7,8 @@ type: brief
 
 Compiled 2026-05-02 from Gmail (WIld Rose Resorts label), Gemini transcripts in Drive, and Bonsai invoices.
 
+**Project wiki (LLM-Wiki):** `/Users/justinlobaito/repos/wild-rose/wiki/` — structured pages (entities, topics, concepts, sources) including `entities/lucky-s-restaurant.md`, `entities/aaron-harn.md`, `entities/krystal-light.md`, plus kickoff (2026-02-02) and banquets (2026-03-11) source notes. Authoritative on names and project entities.
+
 ## Project overview
 
 Justin is redesigning wildroseresorts.com for Wild Rose Corporate, a three-property Iowa casino chain (Jefferson, Clinton, Emittsburg). The relationship also produced a second project: **Thermal Kitchen** (separate section below). Both run through the same client contact, Aaron Harn.
@@ -76,6 +78,33 @@ From kickoff (Feb 2) and design review (Mar 2) Gemini transcripts:
 - Wild Rose staging hosting on Servd: $79/month, renews monthly (paid Mar 18, Apr 18).
 - Jon Liebl invoiced for "Wild Rose Casino" and separately "Website Hosting" (two separate Bonsai line items).
 - $5,000 project invoice was sent to Jon Mar 4 (per "Invoices" email to Jon).
+
+## Walkthrough — 2026-05-21
+
+30-min dev walkthrough with Aaron Harn and Krystal Light. Aaron Hub and Jon Liebl declined (Jon: declined; Aaron Hub: invitation was past-tense). Gemini notes: https://docs.google.com/document/d/1M0lthQBRYXszefS6kJH0JEr7g40R16ufMHlxULm5WXo/edit
+
+**Decisions locked:**
+- **Launch rescheduled June 1 → mid-to-end of June.** Aaron's call. Driver: Wild Rose travel schedule + Memorial Day holiday + Thermal Kitchen workload concurrent. Justin offered, Aaron took it.
+- **Email signup removed from site.** Aaron confirmed Maro Post requires Player ID; requiring Player ID at email capture would segment too many users. Killed the feature entirely rather than ship a Player-ID-gated form.
+- **Promotions calendar logic → single text field.** No more date-based scheduling for promos. One text field for occurrence ("Every Sunday at XYZ"). Promos list as entries, not calendar events. Entertainment stays calendar-based because dates matter.
+- **Ticketing roadblock popup confirmed.** New field on calendar entries for purchase URL. Click triggers interstitial: "You're purchasing tickets for a Clinton show. Proceed or go back." Three separate ticketing platforms on the back end is the real problem this papers over.
+- **Entertainment entries stay separate per property.** Krystal: people already show up at the wrong property; consolidating entries would amplify confusion. Aaron agreed despite hating the clunky look.
+- **Careers page: no mandatory property selection.** All listings visible, filter optional. Removed unused "team" field (HR only ever used "staff").
+- **Cookie persistence: 1 month.** Locked at 1 month for location default — this is longer than the 1-2 day duration noted in the Feb/Mar brief.
+- **Phased rollout confirmed.** Redesign first → booking process for event spaces (a few weeks later) → **Lucky's** microsite. (Gemini transcript rendered it "liies"/"lilies"; correct spelling is Lucky's per the wiki entity page `wiki/pages/entities/lucky-s-restaurant.md`.)
+
+**Open / Justin's homework:**
+- **Auto-redirect vs. filter-only when default location is set.** Justin to test both, gut-check, return with a recommendation. Aaron's worry: internal teams (not guests) get confused about which property's content is showing.
+- **Shared-act-across-properties handling for entertainment.** Two options on the table: (a) keep entries separate and rely on the roadblock popup, (b) shared landing page with separate "purchase tickets for X" buttons. Justin to noodle and bring options to the follow-up content meeting.
+- **Categories for promotions: TBD.** Justin has the structure ready; Krystal hasn't decided whether they're needed.
+
+**Next steps (Justin):**
+1. Deploy current progress to dev site for team review.
+2. Finish outstanding content updates.
+3. Schedule deeper content + entertainment meeting — Krystal sent the contact: **Meghan Wymore** (meghan.wymore@wildrosecorporate.com) handles all current website updates. Target early next week.
+4. Prep entertainment-strategy recommendations for that meeting.
+
+**Side note from Krystal's separate email (same day):** Meghan Wymore is the day-to-day website updater. Add her to the content-meeting invite.
 
 ## Thermal Kitchen (Wild Rose-adjacent project)
 

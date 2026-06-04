@@ -208,6 +208,8 @@ What they get:
 
 5. **Domain acquisition timing.** All variants of `brandos.*` are squatted. Acquisition deferred until platform revenue justifies the spend. First inquiry candidate: `brandos.ai` (likely $500-$5K range, Namecheap-held). `brandos.com` (Abion broker, $10K-$50K+) is the long-term target. No urgency.
 
+6. **Who staffs the support / commercial / delivery layer as BrandOS scales?** Today it's all Justin. The Deploy Answers partners — **Alex Sdoucos**, **Nel Santiago** — are currently informal **thought partners** on BrandOS (helping flesh out the product, demo it, gather feedback). No economics or defined role. Open: what evidence moves a thought partner to a defined role (Alex on commercial/sales — coordinate with Jon, don't collide; Nel on delivery)? And if they take one, is BrandOS BGD-owned with them contracted/partnered in, or folded under Deploy Answers? Cap-table + IP diverge sharply. Overlaps Q2 (sales motion) and Q3 (company structure). See `references/deploy-answers.md` and `decisions/log.md` 2026-06-01.
+
 ### Resolved questions (kept for context)
 
 - **Vertical-first or vertical-agnostic?** Resolved 2026-05-03: vertical-agnostic platform, mid-market manufacturer commercial focus.
