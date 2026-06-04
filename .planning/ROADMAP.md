@@ -56,6 +56,13 @@ Plans:
 4. `/onboard-client` runs the full sequence: intake interview → `clients.yaml` entry → `/kickoff-project` → initial STATE.md → decisions log entry — in a single uninterrupted flow.
 5. Email threads are never written to the to-do list (ephemeral triage output, not persistent actions).
 
+**Plans:** 2 plans
+Plans:
+**Wave 1** *(parallel — no file overlap)*
+
+- [ ] 06-01-PLAN.md — Persistent to-do list artifact + /load-project deprecation
+- [ ] 06-02-PLAN.md — /onboard-client full lifecycle chain rewire
+
 ---
 
 ### Phase 7: Wiki Filtering (Two-Layer Intelligence)
@@ -133,4 +140,4 @@ Plans:
 ## Progress
 
 Milestone v1.0: 4/4 phases complete, 100%.
-Milestone v2.0: 0/6 phases complete, 0% — Phase 5 planning complete.
+Milestone v2.0: 1/6 phases complete, 17% — Phase 6 planning complete.
