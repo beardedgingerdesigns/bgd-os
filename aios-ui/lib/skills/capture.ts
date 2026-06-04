@@ -3,6 +3,8 @@ import type { CaptureRunResult } from '@/lib/types'
 import { resolveProjectWikiPath } from '@/lib/data/wiki'
 import { slugify, writeRawDrop } from '@/lib/raw-drops'
 import { appendReceipt } from '@/lib/cache/receipts'
+import { classifyContent } from '@/lib/content-classifier'
+import matter from 'gray-matter'
 
 const DEFAULT_TIMEOUT_MS = 90_000
 
@@ -111,6 +113,25 @@ export async function runCapture(opts: RunCaptureOptions): Promise<CaptureRunRes
         opts.text,
         '',
       ].join('\n')
+
+      // Phase 07 — Layer 1 classifier gate: classify before writing to raw/aios/.
+      const parsed = matter(body)
+      const classification = classifyContent({
+        frontmatter: parsed.data as Record<string, unknown>,
+        body: parsed.content,
+        source: 'capture-box',
+        routeContext: { clientSlug: opts.clientSlug, projectSlug: opts.projectSlug },
+      })
+      if (classification.classification === 'operational') {
+        console.log('[capture] classified as operational; not staging to wiki', classification.reason)
+        return {
+          status: 'success',
+          output: 'Classified as operational content (not staged to wiki)',
+          exitCode: 0,
+          durationMs: 0,
+        }
+      }
+
       const { filePath, excerpt } = await writeRawDrop({
         wikiPath,
         kind: 'capture',
