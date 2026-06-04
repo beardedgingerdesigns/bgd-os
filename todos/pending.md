@@ -25,6 +25,12 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Priority: high
   - Notes: Confirm state-session-end.js produces valid STATE.md in a project wiki after the next non-claude-os session closes.
 
+- [ ] **Add periodic STATE.md background generation to PostToolUse hook** `#ops`
+  - Added: 2026-06-04
+  - Source: manual
+  - Priority: low
+  - Notes: IDE extension lacks reliable SessionEnd. PostToolUse could spawn detached claude -p every N tool calls (cooldown-gated) so STATE.md stays near-current even if session ends abruptly. Factor generation logic into shared module. Lower priority if switching to terminal-only sessions.
+
 - [ ] **Review BrandOS dealer migration status** `#review`
   - Added: 2026-06-04
   - Source: manual
