@@ -51,6 +51,7 @@ Before processing any pending files, ensure the wiki has the required structure:
 For each pending file (in mtime ascending order -- oldest first):
 
 1. Read the file contents (frontmatter + body).
+   - **Resolution check:** If `{wikiPath}/raw/aios/.resolved/{filename}.json` exists, skip this file (already resolved by operator). Do not include it in any summary array.
 2. **Evaluation pass:**
    a. Identify the topic/entity the file describes from its content.
    b. Read existing wiki pages that cover the same topic. Search index.md for matching terms. Check decisions/active/ for related slugs. Read sources/ entries for overlapping dates or topics.
