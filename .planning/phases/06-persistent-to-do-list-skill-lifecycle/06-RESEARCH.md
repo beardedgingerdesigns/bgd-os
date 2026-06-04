@@ -354,22 +354,16 @@ bike-method-phase: retired
 
 **All claims above are `[ASSUMED]` based on observed codebase patterns and Claude Code behavior. No external packages to verify.**
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `/onboard-client` always chain to `/kickoff-project`, or should it ask first?**
-   - What we know: The requirement (SKILL-02) says "triggers full lifecycle." The existing `/kickoff-project` skill has its own interview phase (3-6 questions).
-   - What's unclear: Whether the operator always wants the full kickoff at onboard time, or sometimes just wants the registry entry now and will kickoff later.
-   - Recommendation: Default to chaining with an opt-out. Show a confirmation: "Ready to run /kickoff-project to seed the wiki. Continue, or skip for now?" This respects SKILL-02's intent while allowing the operator to defer kickoff.
+   - RESOLVED: Default to chaining with an opt-out confirmation. Implemented in Plan 06-02 Phase 6 (confirmation prompt before kickoff).
 
 2. **Should the to-do list support categories/views or just a flat list?**
-   - What we know: The format includes hashtag tags and client/project metadata.
-   - What's unclear: Whether Phase 10 UI will need structured categories (by client, by priority, by source) or just renders the flat list.
-   - Recommendation: Keep the file flat for Phase 6. The metadata per item (client, priority, source) is sufficient for Phase 10 to build views. Don't over-engineer the file format.
+   - RESOLVED: Keep flat for Phase 6. Per-item metadata (client, priority, source) enables Phase 10 views. Implemented in Plan 06-01 Task 1.
 
 3. **What happens to existing `/load-project` users mid-session?**
-   - What we know: Justin uses `/load {project}` regularly (it's Bike Method Phase 1).
-   - What's unclear: Whether there's a transition period where both old and new patterns coexist.
-   - Recommendation: The deprecation notice should be informative, not blocking. Print the notice, explain the new approach, and suggest the equivalent action. Don't error out.
+   - RESOLVED: Informative deprecation notice, not blocking. Implemented in Plan 06-01 Task 2.
 
 ## Validation Architecture
 
