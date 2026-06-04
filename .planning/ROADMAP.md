@@ -8,19 +8,18 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 
 - [x] **v1.0 — AIOS UI v0→v2 (Local Operator Command Center)** ✅ SHIPPED 2026-05-22 — see [.planning/milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md). Phases 1-4: read-only nav + MRR; live sync + daily triage; capture + ritual launchers; bidirectional hub with brief-hydrated chat, staged ingestion to `raw/aios/`, Receipt feed, Pending Ingestion. 267 tests, 9,932 LOC added, 5 ADRs locked.
 
-## Active Phases
-
-### Milestone v2.0 — AIOS v2: Dispatcher + Strategic Partner
+## Milestone v2.0 — AIOS v2: Dispatcher + Strategic Partner
 
 **Goal:** Re-architect AIOS around two jobs — a dispatcher that triages and routes work to project wikis, and a strategic business partner for cross-cutting BGD decisions, research, and planning.
 
 ---
 
-#### Phase 5 — End-of-Session State Hook
+### Phase 5: End-of-Session State Hook
 
+**Goal:** Ship the Claude Code end-of-session hook that auto-generates STATE.md in project wikis and syncs a copy to claude-os `state/`.
 **Requirements:** STATE-01, STATE-02, STATE-03, STATE-04
 
-**Summary:** Ship the Claude Code end-of-session hook that auto-generates STATE.md in project wikis and syncs a copy to claude-os `state/`. This is the foundational "last-known-state" layer that every downstream phase reads from — project cards, triage dispatch, and prospect pipeline all depend on knowing where each project last stood.
+**Summary:** This is the foundational "last-known-state" layer that every downstream phase reads from. Project cards, triage dispatch, and prospect pipeline all depend on knowing where each project last stood.
 
 **Success Criteria:**
 1. A Claude Code hook fires at session end and produces a `STATE.md` in the active project wiki when the session substance threshold is met (edits + messages + commits).
@@ -29,10 +28,17 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 4. A copy lands in claude-os `state/<slug>.md` within the same hook execution.
 5. Rerunning the hook on an unchanged session produces no diff to existing STATE.md.
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Infrastructure + PostToolUse metrics accumulator hook
+- [ ] 05-02-PLAN.md — SessionEnd state generator hook + settings wiring + verification
+
 ---
 
-#### Phase 6 — Persistent To-Do List + Skill Lifecycle
+### Phase 6: Persistent To-Do List + Skill Lifecycle
 
+**Goal:** Stand up the operator-level to-do list and retire/rewire skill lifecycle commands.
 **Requirements:** TODO-01, TODO-02, TODO-03, TODO-04, SKILL-01, SKILL-02
 
 **Summary:** Stand up the operator-level to-do list as a first-class AIOS artifact. Retire `/load-project` (wikis are now self-sufficient) and wire `/onboard-client` to trigger the full intake-to-kickoff lifecycle. Bundled together because both are low-infrastructure changes with no UI dependencies, and SKILL-02 touches the same onboarding data model the prospect pipeline (Phase 9) will consume.
@@ -46,8 +52,9 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 
 ---
 
-#### Phase 7 — Wiki Filtering (Two-Layer Intelligence)
+### Phase 7: Wiki Filtering (Two-Layer Intelligence)
 
+**Goal:** Add intelligence to the staged ingestion pipeline with output filtering and wiki-side evaluation.
 **Requirements:** WIKI-01, WIKI-02, WIKI-03, WIKI-04
 
 **Summary:** Add intelligence to the staged ingestion pipeline that already exists from v1.0 (ADR 0004). AIOS gets an output filter (classify operational vs. project-relevant before writing to `raw/aios/`). The wiki ingest side gets an evaluation pass that produces promote/skip/flag outcomes and surfaces contradictions to the operator rather than silently overwriting.
@@ -61,7 +68,7 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 
 ---
 
-#### Phase 8 — Scheduled Triage Automation
+### Phase 8: Scheduled Triage Automation
 
 **Requirements:** TRIAGE-01, TRIAGE-02, TRIAGE-03, TRIAGE-04, TRIAGE-05
 
@@ -76,7 +83,7 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 
 ---
 
-#### Phase 9 — Prospect Pipeline
+### Phase 9: Prospect Pipeline
 
 **Requirements:** PROSPECT-01, PROSPECT-02, PROSPECT-03, PROSPECT-04, PROSPECT-05
 
@@ -91,7 +98,7 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 
 ---
 
-#### Phase 10 — AIOS UI Rewrite
+### Phase 10: AIOS UI Rewrite
 
 **Requirements:** UI-01, UI-02, UI-03, UI-04, UI-05, UI-06, UI-07
 
@@ -116,4 +123,4 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 ## Progress
 
 Milestone v1.0: 4/4 phases complete, 100%.
-Milestone v2.0: 0/6 phases complete, 0% — Phase 5 not started.
+Milestone v2.0: 0/6 phases complete, 0% — Phase 5 planning complete.
