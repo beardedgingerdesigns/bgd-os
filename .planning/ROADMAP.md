@@ -80,6 +80,17 @@ Plans:
 4. A flagged contradiction surfaces in the AIOS UI (or a notification surface) with the original and the incoming version side-by-side — operator resolves, file is not auto-promoted.
 5. Heuristic classification handles the common cases; LLM is invoked only for ambiguous files.
 
+**Plans:** 3 plans
+Plans:
+**Wave 1** *(parallel — no file overlap)*
+
+- [ ] 07-01-PLAN.md — Content classifier (Layer 1) + write surface integration
+- [ ] 07-02-PLAN.md — Ingest evaluator skill enhancement + type updates (Layer 2)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 07-03-PLAN.md — Flag resolution UI + resolve API endpoint
+
 ---
 
 ### Phase 8: Scheduled Triage Automation
@@ -140,4 +151,4 @@ Plans:
 ## Progress
 
 Milestone v1.0: 4/4 phases complete, 100%.
-Milestone v2.0: 1/6 phases complete, 17% — Phase 6 planning complete.
+Milestone v2.0: 2/6 phases complete, 33% — Phase 7 planning complete.
