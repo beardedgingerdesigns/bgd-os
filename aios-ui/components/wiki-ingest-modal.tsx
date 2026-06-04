@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Loader2, X } from 'lucide-react'
 import type { WikiIngestSummary, ContestedEntry, SkippedEntry } from '@/lib/skills/wiki-ingest'
+import { WikiFlagDetail } from '@/components/wiki-flag-detail'
 
 interface Props {
   clientSlug: string
@@ -31,6 +32,7 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
   const [status, setStatus] = useState<Status>('idle')
   const [summary, setSummary] = useState<WikiIngestSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [resolvedFlags, setResolvedFlags] = useState<Set<string>>(new Set())
   const hasStartedRef = useRef(false)
   const outputEndRef = useRef<HTMLDivElement>(null)
 
@@ -196,6 +198,48 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
             <span className="text-foreground/80">
               promoted {summary.promoted.length}, skipped {summary.skipped.length}, deferred {summary.deferred.length}, contested {summary.contested.length}
             </span>
+          </div>
+        )}
+
+        {status === 'success' && summary && summary.skipped.length > 0 && (
+          <details>
+            <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+              {summary.skipped.length} file(s) skipped (redundant)
+            </summary>
+            <ul className="mt-1 space-y-1 pl-4 text-sm">
+              {summary.skipped.map((s) => (
+                <li key={s.file} className="text-muted-foreground">
+                  <code className="font-mono text-xs">{s.file}</code>
+                  <span className="ml-1 text-xs">— {s.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+
+        {status === 'success' && summary && summary.contested.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-amber-400">
+                {summary.contested.length} file(s) flagged for review
+              </span>
+              {resolvedFlags.size > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {resolvedFlags.size}/{summary.contested.length} resolved
+                </span>
+              )}
+            </div>
+            {summary.contested.map((entry) => (
+              <WikiFlagDetail
+                key={entry.file}
+                entry={entry}
+                clientSlug={clientSlug}
+                projectSlug={projectSlug}
+                onResolved={(file) => {
+                  setResolvedFlags(prev => new Set(prev).add(file))
+                }}
+              />
+            ))}
           </div>
         )}
 
