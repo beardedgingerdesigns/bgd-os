@@ -13,7 +13,7 @@ Produces a **weekly project status board** across all active BGD engagements by 
 
 1. `memory/project_*.md` (filtered by frontmatter `client:` / `project:` keys)
 2. `decisions/log.md` (entries within the last 14 days + open follow-ups) — **cross-cutting AIOS / business decisions**
-3. **LLM-wiki activity per project** — `decisions/active/`, `decisions/deferred/`, recent `log/*.md` in each project's wiki (when registered in `clients.yaml` `docs_paths:`). This is the **project-internal** decision record. See Step 2.5.
+3. **LLM-wiki activity per project** — `decisions/active/`, `decisions/deferred/`, recent `log/*.md` (or single `log.md`) in each project's wiki (when registered in `clients.yaml` `docs_paths:`). This is the **project-internal** decision record. Sampled by the `project-researcher` agent — see Step 2.
 4. Gmail per project (last 7 days of inbound/outbound for the project's contacts)
 5. Google Calendar (upcoming events tagged to project participants in the next 14 days)
 
@@ -57,71 +57,47 @@ Also pull from `clients.yaml` (root) if present — it's the canonical client/pr
 
 Exclude projects flagged `status: closed` / `status: killed` / `status: archived` in frontmatter. Include "at risk" projects (e.g., Superior Drone on its 5/30 kill clock — still active until the date hits).
 
-### Step 2 — Per-project data pulls
+### Step 2 — Fan out to `project-researcher` agent (one per project, all in parallel)
 
-For each project, gather in parallel:
+For each active project from Step 1, dispatch one `project-researcher` agent. **All dispatches MUST go in a single message with multiple Agent tool calls** so they run concurrently — that's the whole point of the agent layer.
 
-**A. Memory snapshot:**
-- All `memory/project_*.md` files matching that client/project
-- For each, capture: latest update date, current state (1-3 sentences), open follow-ups
+Prompt template per project:
 
-**B. Recent decisions (last 14 days):**
-- Use Grep on `decisions/log.md` for the client name + project name
-- Pull headlines + "How to apply" bullets
+```
+slug: {project-slug}
+mode: status
+lookback: 7d
+```
 
-**C. Gmail activity (last 7 days):**
-- Use `mcp__claude_ai_Gmail__search_threads` with: `from:{project_contact_domain} OR to:{project_contact_domain} newer_than:7d`
-- Capture: thread count, last inbound, last outbound, any flagged-unanswered (intersect with daily-inbox-triage logic)
+The agent (see `.claude/agents/project-researcher.md`) handles the per-project work:
 
-**D. Upcoming calendar (next 14 days):**
-- Use Google Calendar to find events whose attendees include project contacts
-- Capture: event title, date, attendees
+- Resolves the project from `clients.yaml`
+- Pulls matching `memory/project_*.md`
+- Greps `decisions/log.md` for the project in the last 7 days
+- Searches Gmail for thread activity over the project's contact domains
+- Pulls calendar events touching project contacts in the next 14 days
+- Samples the project's LLM-wiki (when registered in `docs_paths`) — `index.md`, decisions counts, recent decision/log entries, fired revisit triggers
 
-Keep each pull lean — don't fetch full bodies, work from snippets and headers.
+Each agent returns a single structured block:
 
-### Step 2.5 — Sample LLM-wiki activity (shallow)
+```
+**{Project Name}** — {On track | At risk | Blocked | Decision needed}
+Why: {1 sentence}
+Next: {time-bounded action} ({owner})
+Deadline: {date or "none"}
+Email: {summary}
+Calendar: {summary}
+Wiki: {summary}
+Flagged deferred: {list if any}
+```
 
-For each project, check `clients.yaml` `docs_paths:` for entries pointing at a project repo with an LLM-wiki. Detection (same as `/load-project` Step 4a):
+**Agent failure modes** the parent skill must handle:
+- `NOT_FOUND: no project with slug={slug} in clients.yaml` — slug enumeration drift from Step 1; drop the row and add a one-line note in Step 4 ("Step 1 surfaced slug `{slug}` but it's not in clients.yaml — registry needs sync").
+- `ERROR: ...` — pass through into the brief as a row labeled `Error` so it's visible.
 
-- `WIKI-CLAUDE.md` at directory root, OR
-- `wiki/WIKI-CLAUDE.md` one level down (when `docs_paths` is the parent `docs/`), OR
-- `decisions/` + `log/` siblings present together
+If a project has multiple memory files spanning multiple distinct slugs in `clients.yaml`, dispatch one agent per slug, not one per memory file. The agent is project-scoped, not memory-file-scoped.
 
-If no wiki detected: skip with one-line "no wiki registered" note and continue.
-
-If wiki detected, do **shallow sampling** — not full reads:
-
-1. **Read `decisions/index.md`** (one file, small, lists every decision's filename + status + one-line description). This is the wiki's TOC and the right summary surface for cross-project synthesis.
-2. **List filenames in `decisions/active/`, `decisions/deferred/`, and `log/`** without reading bodies. Filenames are `YYYY-MM-DD-<slug>.md`.
-3. **For files dated within the last 14 days**, read full content. These are the "recent activity" entries that should influence status. Cap at 5 files per section to bound wall-clock.
-4. **Open-trigger scan:** for every `decisions/deferred/*.md` (regardless of age), check if any of its `Revisit triggers` reference dates that have now passed or events that have happened (mentioned in memory or Gmail). Flag these as "decisions needing revisit." Use shallow heuristics — exact-date matches and named-event matches; don't try to reason about every trigger. False positives are fine; this is a prompt to look, not a final answer.
-
-Capture per project:
-- Total active / deferred / superseded / implemented decision counts
-- Most recent active decision (date + title)
-- Most recent log entry (date + title)
-- Decisions changed in the last 14 days (full content of those few files)
-- Open follow-ups extracted from recent active decisions (from `Do not relitigate without` and explicit `Open follow-ups:` sections)
-- Deferred decisions whose revisit triggers may have fired (flagged)
-
-### Step 3 — Per-project synthesis (one AI summarization step)
-
-For each project, derive:
-
-- **Status:** On track / At risk / Blocked / Decision needed
-- **Why this status** (one sentence, evidence-based)
-- **Next action this week** (one concrete, time-bounded action)
-- **Owner** (almost always Justin, but flag if a client owns the next move — e.g., "Deann owes design feedback by 5/20")
-- **Deadline pressure** (any date inside the next 21 days)
-- **Recent wiki activity** (one line: "{N} active, {M} deferred; last decision {date}; {K} log entries in last 14d" — or "no wiki")
-
-This is the one AI call per project. Feed it the structured data from Step 2 + Step 2.5 and ask for the 6 fields above.
-
-**Status heuristics:**
-- **Blocked:** Project has a stated dependency that hasn't moved in 7+ days (e.g., Truss blocked on domain transfer).
-- **Decision needed:** A wiki `decisions/deferred/*.md` revisit trigger appears to have fired (Step 2.5 flagged it), OR an active decision's `Do not relitigate without` trigger is now hot. Status pushes for a relitigation pass, not an execution sprint.
-- **At risk:** Hard deadline within 14 days + open follow-ups not progressing, OR client owes a response >5 business days, OR known-deferred state (e.g., Russell trip outreach on hold).
-- **On track:** Everything else with recent forward motion.
+**Status heuristics** are encoded in the agent — Blocked / Decision needed / At risk / On track. Trust the agent's verdict.
 
 ### Step 4 — Surface cross-project signal
 
@@ -148,14 +124,14 @@ Print a Markdown brief in chat:
 - **Next action:** {time-bounded}
 - **Owner:** {who}
 - **Deadline pressure:** {date or none}
-- **Wiki:** {N active, M deferred; last decision {date}; {K} log entries in last 14d — or "no wiki"}
+- **Wiki:** {agent's Wiki line, passed through — shape varies by wiki layout}
 - **Flagged deferred decisions** (revisit triggers may have fired): {list filenames, or omit}
 
 ## On track
 ### {Project Name}
 - **Next action:** {time-bounded}
 - **Deadline pressure:** {date or none}
-- **Wiki:** {one-line activity summary}
+- **Wiki:** {agent's Wiki line}
 
 ## Cross-project signal
 - {observation 1}
@@ -193,14 +169,14 @@ No other file writes. No outbound messages.
 
 ## Critical implementation rules
 
-1. **Read-only on memory + decisions + wiki + Gmail + Calendar.** Only writes are to `briefs/status-{date}.md`. Never edit wiki files.
-2. **Don't restate raw memory or wiki content verbatim.** Synthesize. The brief is a derived view.
-3. **Don't include 2RM W-2 work.** 2RM calendar is visible for conflict-checking only per `connections.md`.
-4. **Don't fabricate next actions.** If memory + decisions + wiki + email show no clear next move, say "next action unclear" and prompt Justin to decide.
+1. **Read-only.** Per-project reading happens inside `project-researcher` agents (Read, Grep, Glob, Gmail, Calendar). The only writes this skill performs are to `briefs/status-{date}.md`. Never edit wiki files.
+2. **Don't restate the agent's raw output verbatim in the brief.** The agent emits structured blocks; the skill assembles them, groups by status, and adds cross-project signal.
+3. **Don't include 2RM W-2 work.** 2RM calendar is visible for conflict-checking only per `connections.md`. The agent strips 2RM events; double-check before they land in the calendar-load section.
+4. **Don't fabricate next actions.** The agent returns `next action unclear; needs Justin's decision` when the data doesn't support a confident call. Pass that through verbatim — don't backfill.
 5. **Don't auto-promote to-do items into memory or wiki.** Brief is ephemeral; durable state lives in memory, claude-os decisions log, and per-project wiki.
-6. **Honor `status:` frontmatter.** Closed/killed/archived projects don't appear in the active list.
-7. **Stay under ~90s wall-clock.** Cap per-project Gmail pulls at 10 threads. Cap calendar lookup at 14 days forward. **Wiki sampling is shallow** — read `decisions/index.md` + filenames + at most 5 recent files per section per project. Full wiki content is `/load-project`'s job, not this skill's.
-8. **Wiki false-positive triggers are fine.** Step 2.5's deferred-decision trigger scan uses shallow heuristics. Flagging too eagerly is better than missing a relitigation moment. Justin filters on read.
+6. **Honor `status:` frontmatter.** Filter `paused` / `closed` / `killed` / `archived` projects out of the active list before dispatching the agent. The agent will still run if dispatched (and prefix `[STATUS=...]`) — this rule keeps the parent from spawning agents for closed work.
+7. **Dispatch agents in parallel — one message, many Agent calls.** Sequential dispatch defeats the purpose of the agent layer. Wall-clock should be ~one agent's runtime (≈30s), not N × 30s.
+8. **Wiki false-positive triggers are fine.** The agent's deferred-decision revisit scan uses shallow heuristics. Flagging too eagerly is better than missing a relitigation moment. Justin filters on read.
 
 ## KPI tracking (Method spec)
 

@@ -97,13 +97,33 @@ Tier the result:
 - **FYI / context only:** score 1–3
 - **Archive candidate:** score 0
 
-### Step 4 — Attach project memory context
+### Step 4 — Attach project memory context (via `project-researcher` agent)
 
-For each "Reply today" and "Reply this week" thread, identify the related project by matching sender domain + thread subject against `memory/project_*.md` files (use frontmatter `client:` / `project:` keys when present).
+For each "Reply today" and "Reply this week" thread, identify the related project by matching the sender's email address against `clients.yaml` `contacts:` lists (full address first, then `@domain.com` patterns). The match produces a `project_slug`.
 
-Pull **1-2 sentence** project state from memory and attach. Don't dump full memory bodies into output.
+**Identity rule — match on email address, never on first name alone.** Two senders sharing a first name on different domains are presumed **different people** unless `clients.yaml` explicitly links the addresses. Do not write context lines like "same person, different project" based on name similarity — that requires evidence (an explicit cross-reference in `clients.yaml` or memory, or a thread where Justin treats them as one person). When the sender's address does not resolve to a project, set `client_slug` and `project_slug` to `null` and write the project context as `Unknown — domain not in clients.yaml; verify before treating as known contact.` Don't guess to fill the slot.
 
-Example: a thread from `deann@thermalkitchen.com` → look up `memory/project_thermal_kitchen_launch_2026-05.md` → attach "Launch shifted to Tue 6/16; design comps due to Deann 5/19 ahead of 5/20 review call."
+#### 4.1 — Dedupe slugs, then fan out to the agent
+
+Collect the unique set of `project_slug`s across all qualifying threads. Dispatch one `project-researcher` agent per unique slug (not per thread) — **all dispatches in a single message with multiple Agent tool calls** so they run concurrently.
+
+Prompt template per slug:
+
+```
+slug: {project-slug}
+mode: context
+lookback: 1d
+```
+
+The agent returns 1-2 sentences of project state pulled from the freshest memory file. The skill caches the response per slug and attaches it to every thread that resolved to that slug.
+
+**Agent failure modes:**
+- `NOT_FOUND: no project with slug=...` — shouldn't happen if the slug came from `clients.yaml`; if it does, write context as `Unknown — slug not in clients.yaml; registry needs sync.`
+- Agent returns `No project memory; verify before treating as known engagement.` — pass through verbatim; that's the agent's intentional output when the project is registered but has no memory file yet.
+
+Example: a thread from `deann@thermalkitchen.com` resolves (via `@thermalkitchen.com` pattern under `kirk-financial`/`thermal-kitchen`) → dispatch agent with `slug: thermal-kitchen mode: context` → agent returns `"Launch shifted to Tue 6/16; design comps due to Deann 5/19 ahead of 5/20 review call."` → attach to every thread row that matched that slug.
+
+Don't dump full memory bodies into output. The agent already constrained itself to 1-2 sentences.
 
 ### Step 5 — Output the queue
 
@@ -199,6 +219,8 @@ That's it. No file writes. No Gmail drafts created without confirmation. No send
 5. **Don't surface internal Justin-to-Justin or system-generated email.** Bot exclusions in Step 1.
 6. **If zero threads qualify**, say so cheerfully — "Inbox is clean as of {time}." That's a real outcome, not a failure.
 7. **Stay under ~60s wall-clock.** Cap thread fetches; don't call `get_thread` until a draft is requested.
+8. **Never conflate two contacts by first name alone.** Different email addresses → different people, unless memory/clients.yaml explicitly says otherwise. No "same person, different project" framing without an evidence trail.
+9. **Render the actual sender name from the email header.** Don't substitute or "correct" a name based on what memory says the contact's name should be. If memory disagrees with the header, surface the discrepancy in the context line; don't silently overwrite.
 
 ## KPI tracking (Method spec)
 
