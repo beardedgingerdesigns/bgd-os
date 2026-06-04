@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
 status: executing
-last_updated: "2026-06-04T07:08:22.038Z"
-last_activity: 2026-06-04 -- Phase 7 planning complete
+last_updated: "2026-06-04T07:14:37.741Z"
+last_activity: 2026-06-04
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 33
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-04)
 
 **Core value:** AIOS is the intelligence layer — dispatcher + strategic partner. Dispatches to project wikis, doesn't compete with them. Project work happens in project repos.
-**Current focus:** Phase 7 — wiki filtering (two layer intelligence)
+**Current focus:** Phase 07 — wiki-filtering-two-layer-intelligence
 
 ## Current Position
 
-Phase: 7
-Plan: Not started
+Phase: 07 (wiki-filtering-two-layer-intelligence) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-06-04 -- Phase 7 planning complete
+Last activity: 2026-06-04
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Last activity: 2026-06-04 -- Phase 7 planning complete
 | Phase 05 P02 | 7min | 2 tasks | 2 files |
 | Phase 06 P01 | 2min | 2 tasks | 3 files |
 | Phase 06 P02 | 3min | 1 task | 1 file |
+| Phase 07 P01 | 3min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - [Phase ?]: Plan 05-02: SessionEnd hook uses 10s stdin timeout, 25s claude subprocess timeout, js-yaml from aios-ui node_modules, skips claude-os sessions, counts user messages from transcript JSONL
 - [Phase ?]: Plan 06-01: Persistent to-do list created at todos/pending.md with structured markdown format; /load-project retired with deprecation notice preserving all trigger phrases
 - [Phase ?]: Plan 06-02: /onboard-client rewired with full lifecycle chain. Phases 6-8 added (Kickoff with /kickoff-project chain, Initial STATE.md, Final Close). Graceful degradation: core writes complete before optional chain steps.
+- [Phase 07]: Plan 07-01: classifyContent pure function with 4-rule priority (route context > frontmatter > keywords > ambiguous). Operational threshold strict (opScore > projScore + 1). All 3 write surfaces (capture.ts, drop-decision, drop-session) gated before writeRawDrop. Zero new deps.
 
 ### Pending Todos
 
@@ -120,6 +122,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-06-04T06:43:06.460Z
-Stopped at: Completed 06-02-PLAN.md -- /onboard-client rewired with full lifecycle chain (Kickoff, Initial STATE.md, Final Close). PHASE 6 COMPLETE.
+Last session: 2026-06-04T07:14:37.728Z
+Stopped at: Completed 07-01-PLAN.md -- Layer 1 AIOS output filter with classifier gate on all write surfaces
 Resume file: None
