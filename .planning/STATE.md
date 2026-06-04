@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
-status: executing
-last_updated: "2026-06-04T06:37:55.943Z"
+status: verifying
+last_updated: "2026-06-04T06:43:06.472Z"
 last_activity: 2026-06-04
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
-  percent: 17
+  completed_plans: 4
+  percent: 33
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 
 Phase: 06 (persistent-to-do-list-skill-lifecycle) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-06-04
 
 ## Performance Metrics
@@ -56,6 +56,7 @@ Last activity: 2026-06-04
 | Phase 05 P01 | 5min | 2 tasks | 3 files |
 | Phase 05 P02 | 7min | 2 tasks | 2 files |
 | Phase 06 P01 | 2min | 2 tasks | 3 files |
+| Phase 06 P02 | 3min | 1 task | 1 file |
 
 ## Accumulated Context
 
@@ -77,6 +78,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - [Phase ?]: Plan 05-01: PostToolUse metrics hook uses 5s stdin timeout, accumulates edits/writes/bash/commits/user_messages/cwd in /tmp/claude-state-{session_id}.json
 - [Phase ?]: Plan 05-02: SessionEnd hook uses 10s stdin timeout, 25s claude subprocess timeout, js-yaml from aios-ui node_modules, skips claude-os sessions, counts user messages from transcript JSONL
 - [Phase ?]: Plan 06-01: Persistent to-do list created at todos/pending.md with structured markdown format; /load-project retired with deprecation notice preserving all trigger phrases
+- [Phase ?]: Plan 06-02: /onboard-client rewired with full lifecycle chain. Phases 6-8 added (Kickoff with /kickoff-project chain, Initial STATE.md, Final Close). Graceful degradation: core writes complete before optional chain steps.
 
 ### Pending Todos
 
@@ -117,6 +119,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-06-04T06:37:02.916Z
-Stopped at: Completed Plan 04-09 — Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice. 3 task commits. 265/265 tests pass, build clean. HUB-07 satisfied. PHASE 4 COMPLETE.
+Last session: 2026-06-04T06:43:06.460Z
+Stopped at: Completed 06-02-PLAN.md -- /onboard-client rewired with full lifecycle chain (Kickoff, Initial STATE.md, Final Close). PHASE 6 COMPLETE.
 Resume file: None

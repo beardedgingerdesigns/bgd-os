@@ -45,7 +45,7 @@
 
 ### Skill Lifecycle (SKILL)
 - [x] **SKILL-01**: Retire `/load-project` skill
-- [ ] **SKILL-02**: `/onboard-client` triggers full lifecycle: intake → `clients.yaml` → `/kickoff-project` → STATE.md → decisions log
+- [x] **SKILL-02**: `/onboard-client` triggers full lifecycle: intake → `clients.yaml` → `/kickoff-project` → STATE.md → decisions log
 
 ## Future Requirements (deferred from scoping)
 
