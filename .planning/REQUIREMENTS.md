@@ -5,7 +5,7 @@
 ### State Management (STATE)
 - [ ] **STATE-01**: End-of-session hook generates STATE.md in project wiki with status, accomplishments, next steps, blockers, and key dates
 - [ ] **STATE-02**: End-of-session hook syncs STATE.md copy to claude-os `state/<slug>.md`
-- [ ] **STATE-03**: Hook is gated on session substance (skips trivial sessions based on edits/messages/commits threshold)
+- [x] **STATE-03**: Hook is gated on session substance (skips trivial sessions based on edits/messages/commits threshold)
 - [ ] **STATE-04**: LLM summarizes session context into tight STATE.md when substance threshold is met
 
 ### Triage (TRIAGE)

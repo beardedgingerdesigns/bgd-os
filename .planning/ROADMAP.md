@@ -29,11 +29,11 @@ claude-os is Justin's personal AIOS — a local-only Next.js workspace combining
 4. A copy lands in claude-os `state/<slug>.md` within the same hook execution.
 5. Rerunning the hook on an unchanged session produces no diff to existing STATE.md.
 
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 05-01-PLAN.md — Infrastructure + PostToolUse metrics accumulator hook
+- [x] 05-01-PLAN.md — Infrastructure + PostToolUse metrics accumulator hook
 
 **Wave 2** *(blocked on Wave 1 completion)*
 

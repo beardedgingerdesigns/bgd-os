@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
 status: executing
-last_updated: "2026-06-04T05:50:51.632Z"
-last_activity: 2026-06-04 -- Phase 5 planning complete
+last_updated: "2026-06-04T06:00:06.863Z"
+last_activity: 2026-06-04
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 2
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-04)
 
 **Core value:** AIOS is the intelligence layer — dispatcher + strategic partner. Dispatches to project wikis, doesn't compete with them. Project work happens in project repos.
-**Current focus:** Milestone v2.0 — AIOS v2 Dispatcher + Strategic Partner reframe.
+**Current focus:** Phase 05 — end-of-session-state-hook
 
 ## Current Position
 
-Phase: Phase 5 — End-of-Session State Hook (not started)
-Plan: —
+Phase: 05 (end-of-session-state-hook) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-06-04 -- Phase 5 planning complete
+Last activity: 2026-06-04
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Last activity: 2026-06-04 -- Phase 5 planning complete
 - Trend: Stable — v3 landed cleanly; ADRs 0003/0004/0005 written 2026-05-21 to unblock Phase 4
 
 *Updated after each plan completion.*
+| Phase 05 P01 | 5min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **Plan 04-07** (2026-05-22): `brief-meta` SSE event name carries `{ source, builtAt: ISO }` and is emitted by /load before subprocess start. `formatRelativeDate` from lib/format.ts not used for the drawer (only handles YYYY-MM-DD); inline `minutesAgo(date)` used instead. Message route /message/route.ts needed NO changes. HUB-03 contract test used `claudeBin` injection + argv-logging bash wrapper (not `vi.spyOn(spawn)`) because ESM import caching in vitest means `spawn` is captured at module-load time before the spy installs, so the spy never fires.
 - **Plan 04-08** (2026-05-22): `priorUserTurn` computed via role-walk backward (loop from assistantIdx-1 to 0) not index-1 offset — handles non-alternating sequences. drop-session fires on every collapse transition when messages exist (not deduplicated). "Dropped" button permanently disabled after 2s success — local React state, no persistence needed. `fileParallelism: false` added to vitest config to fix pre-existing race on shared YAML fixture (3+ test files concurrently patching clients.yaml).
 - **Plan 04-09** (2026-05-22): /ingest-aios-drops skill at project-local path (.claude/skills/) NOT user-global — confirmed correct per acceptance criteria check. INGEST_SUMMARY_RE is case-insensitive lazy multi-line. WikiIngestModal uses existing Dialog primitive. WikiIngestModal auto-starts POST on open=true via useEffect + hasStartedRef guard (no manual Run button needed since RunIngestButton is already the one-click entry). ProjectReceiptsSlice reads readRecentReceipts(100) and filters in-memory — no new indexed read needed at this scale.
+- [Phase ?]: Plan 05-01: PostToolUse metrics hook uses 5s stdin timeout, accumulates edits/writes/bash/commits/user_messages/cwd in /tmp/claude-state-{session_id}.json
 
 ### Pending Todos
 
@@ -110,6 +112,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-05-22
+Last session: 2026-06-04T05:59:50.741Z
 Stopped at: Completed Plan 04-09 — Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice. 3 task commits. 265/265 tests pass, build clean. HUB-07 satisfied. PHASE 4 COMPLETE.
-Resume file: `.planning/phases/04-bidirectional-hub/04-09-SUMMARY.md`. Phase 4: 9/9 plans done. All phases complete.
+Resume file: None
