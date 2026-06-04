@@ -2,11 +2,11 @@
 
 ## What This Is
 
-Justin Lobaito's personal AI Operating System (AIOS) — a local-only single-operator workspace that combines a Next.js UI (`aios-ui/`), a filesystem-source-of-truth data model (`clients.yaml`, `references/`, `memory/`, `decisions/`, per-client wikis), Claude Code skills (`/onboard`, `/audit`, `/level-up`, `/daily-inbox-triage`, `/weekly-project-status`, `/load-project`, `/capture`), and an append-only decisions log. The repo is Justin's thought partner for productizing Bearded Ginger Designs (BGD) while shipping enterprise Craft work at 2RM.
+Justin Lobaito's personal AI Operating System (AIOS) — the intelligence layer that powers his business operations. AIOS has two jobs: (1) strategic business partner for cross-cutting BGD decisions, research, and planning; (2) dispatcher that maintains thin awareness of every project and client, triages incoming work, and routes it to focused project sessions. Surfaces include a Next.js UI (`aios-ui/`) and terminal Claude Code. The repo combines a filesystem-source-of-truth data model (`clients.yaml`, `references/`, `memory/`, `decisions/`, `state/`), Claude Code skills, scheduled routines, and an append-only decisions log.
 
 ## Core Value
 
-The UI must render Justin's current operating reality — who he's working with, what's billing, what just changed, what needs attention — and let him push captures and run rituals from the same page he's looking at, without ever leaving his desk or losing continuity across sessions.
+AIOS is the intelligence layer — not a project workspace. It renders Justin's operating reality (who needs attention, what's billing, where things stand) and lets him act inline (reply to emails, check off to-dos, launch research). Project work happens in project repos where wikis provide context natively. AIOS dispatches to them, not competes with them.
 
 ## Current State
 
@@ -14,9 +14,19 @@ The UI must render Justin's current operating reality — who he's working with,
 
 The AIOS UI runs locally on `localhost:3000` and delivers the full operator command-center surface: drill-down nav (Home → Client → Project), MRR widget, live filesystem sync, daily inbox triage, per-project capture box, Admin ritual launcher, chat panel with pre-built brief hydration, staged ingestion to `raw/aios/`, Receipt feed, Pending Ingestion bridge to the `llm-wiki` curator. 267 Vitest tests passing. 5 ADRs locked (architecture, MRR data model, bidirectional store, staged ingestion, indexed briefs).
 
-## Next Milestone Goals
+## Current Milestone: v2.0 AIOS v2 — Dispatcher + Strategic Partner
 
-No milestone in flight. The 13 deferred requirements documented in [v1.0-REQUIREMENTS.md](milestones/v1.0-REQUIREMENTS.md) (CAPX, DPH, RFP, PLSH) are candidate scope for the next milestone, but no commitment yet. Run `/gsd-new-milestone` to scope and plan v1.1 (or whichever next milestone makes sense — could be operator-data workflow polish, a BGD productization-page build, or BrandOS-platform work).
+**Goal:** Re-architect AIOS around two jobs — a dispatcher that triages and routes work to project wikis, and a strategic business partner for cross-cutting BGD decisions, research, and planning.
+
+**Target features:**
+- End-of-session hook: auto-generates STATE.md in project wikis, syncs cached copy to claude-os `state/`
+- Scheduled triage routine: runs every ~2hrs, produces ready-to-act dashboard with draft replies and action items
+- Two-layer wiki filtering: AIOS filters on the way out (heuristic + LLM tiebreaker), wiki filters on the way in (promote/skip/flag)
+- Prospect pipeline: accumulate knowledge in `prospects/<slug>.md`, context-aware onboarding that seeds rich wikis at conversion
+- Persistent to-do list: operator-level action items that persist until completed
+- AIOS UI simplification: dashboard + triage + strategic chat + project status cards (read-only, click to open externally)
+- Retire `/load-project`: wikis are self-sufficient in project repos
+- Retire per-project chat, project briefs, per-project Communications
 
 <details>
 <summary>Prior requirements snapshot (pre-v1.0)</summary>

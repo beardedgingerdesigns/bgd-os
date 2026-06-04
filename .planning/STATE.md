@@ -2,18 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-21)
+See: .planning/PROJECT.md (updated 2026-06-04)
 
-**Core value:** The UI must render Justin's current operating reality and let him push captures + run rituals from the same page he's looking at, without losing continuity across sessions.
-**Current focus:** None — milestone v1.0 closed 2026-05-22. Run `/gsd-new-milestone` to scope next cycle.
+**Core value:** AIOS is the intelligence layer — dispatcher + strategic partner. Dispatches to project wikis, doesn't compete with them. Project work happens in project repos.
+**Current focus:** Milestone v2.0 — AIOS v2 Dispatcher + Strategic Partner reframe.
 
 ## Current Position
 
-Milestone: v1.0 SHIPPED (4/4 phases complete). See [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md).
-Phase: n/a (no active phase)
-Last activity: 2026-05-22 — Milestone v1.0 closed: Phase 4 merged to main, code review (17 findings) + fix-pass (11 fixes) complete, 267/267 tests passing, UAT 7/9 + 2 gap re-tests verified in browser.
-
-Progress: [█████████████] 100% (milestone v1.0 shipped)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-04 — Milestone v2.0 started. Grill-with-docs session completed 20 questions, CONTEXT.md updated with dispatcher model, decisions log entry written.
 
 ## Performance Metrics
 

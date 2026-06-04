@@ -882,3 +882,47 @@ Also corrected CLAUDE.md (line 29): dropped "— Iowa State Fair, etc." from the
 **Owner:** Justin (BGD). Partners: Nel (filing/technical), Alex (commercial/ops).
 
 ---
+
+## 2026-06-03 — AIOS reframe: dispatcher + strategic partner, not project worker
+
+**Decision:** AIOS (claude-os) is being reframed around two jobs only:
+
+1. **Strategic business partner.** Cross-cutting intelligence that no single project wiki holds — BGD thesis, pivot strategy, revenue targets, pricing, client relationships, positioning. The thinking room for "should I take this deal?" and "what's my MRR gap?"
+
+2. **Dispatcher/receptionist.** Thin awareness of every project and client. Triages incoming work, routes with the right context slice to a focused project session via `/load-project`. Doesn't do deep project work itself.
+
+What AIOS keeps: daily inbox view (lighter/dashboard-style), email reply drafting with inline interaction, project snapshot board, MRR view, client onboarding (creates project wikis then lets them go), calendar awareness.
+
+What AIOS stops doing: deep project-level work (that's the project wiki + project repo session), heavy process rituals requiring manual triggers.
+
+**Two-layer knowledge filtering (new):** Not everything that crosses Justin's desk is project-relevant. AIOS applies a filter before staging to a wiki: "Does this change what the project knows about itself?" Client moved a launch date → wiki. New stakeholder → wiki. Scope/pricing shift → wiki. "Yeah Tuesday works" → stays at AIOS operational layer. "Can you resend the logo files?" → operational, dies at AIOS.
+
+Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy). Wiki ingest filters on the way in (evaluating against what the project already knows — redundant? skip; contradicts something? flag; genuinely new? promote). The wiki becomes self-curating, not just a bucket.
+
+**Routines over manual triggers:** Daily triage, project snapshot refresh, MRR reconciliation should run on schedules. AIOS does its morning prep before Justin sits down. He opens to a ready dashboard, not a process to run.
+
+**Why:**
+
+1. **AIOS feels cumbersome at the project layer** (feedback logged 2026-05-23). Justin works in project repos directly, not from claude-os. The friction is because AIOS tries to be both dispatcher and worker.
+2. **Project wikis are working phenomenally.** The compounding knowledge pattern is proven across BrandOS, Iowa Everywhere, Wild Rose, Inside Out, Mr Gym. AIOS should dispatch to them, not compete with them.
+3. **Inspired by Matt Pocock's "handoff" concept** (YouTube, May 2026). Core insight: small, focused context beats large, diluted context. LLMs have a "smart zone" (~0-120k tokens) and a "dumb zone" (everything past). AIOS as the thin routing layer that stays permanently in the smart zone by never going deep into implementation.
+4. **The strategic partner role is where AIOS earns its keep.** Business model, client relationships, BGD direction, what to say yes/no to — this is cross-cutting intelligence that lives nowhere else. No project wiki holds this view.
+5. **Daily triage has the right intelligence but wrong ergonomics.** AIOS understands projects well enough to write good replies. It understands Justin's voice. The understanding is there; the interaction layer isn't. Too many steps between seeing an email and acting on it.
+
+**Alternatives considered:**
+
+- *Keep AIOS as-is and iterate incrementally.* Rejected — the friction is architectural (trying to be two things), not incremental (needs polish). Polish won't fix the identity problem.
+- *Move everything into project wikis and eliminate AIOS.* Rejected — cross-cutting strategic intelligence has no home in any single project wiki. The dispatcher/receptionist role is genuinely needed.
+- *Build a separate UI/dashboard app.* Premature — validate the reframed model inside Claude Code first. If the CLI interaction model proves insufficient for the dashboard use case, that's a future decision.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- This decision shapes the next milestone for claude-os itself. GSD roadmap to follow.
+- Existing skills (`/daily-inbox-triage`, `/weekly-project-status`, `/load-project`, `/onboard-client`) are retained but evaluated against the two-job model.
+- Wiki ingest skill (`/llm-wiki`) gets a relevance-check upgrade: evaluate incoming content against what the project already knows before promoting from `raw/`.
+- Scheduled routines exploration begins — move daily triage and weekly status from manual triggers to automated schedules.
+- AIOS-to-wiki staging becomes a natural byproduct of triage, not a deliberate process.
+
+---
