@@ -1,3 +1,18 @@
+---
+gsd_state_version: 1.0
+milestone: v2.0
+milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
+status: executing
+last_updated: "2026-06-04T05:50:51.632Z"
+last_activity: 2026-06-04 -- Phase 5 planning complete
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 2
+  completed_plans: 0
+  percent: 0
+---
+
 # Project State
 
 ## Project Reference
@@ -11,12 +26,13 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 
 Phase: Phase 5 — End-of-Session State Hook (not started)
 Plan: —
-Status: Roadmap complete. Ready to plan Phase 5.
-Last activity: 2026-06-04 — Milestone v2.0 roadmap written. 6 phases (5-10), 26/26 requirements mapped, traceability table filled. Phase 5 is next entry point.
+Status: Ready to execute
+Last activity: 2026-06-04 -- Phase 5 planning complete
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: n/a (Phases 1-3 shipped before `.planning/` setup; no per-plan timing recorded)
 - Average duration: n/a
 - Total execution time: per ADR 0001 estimate, ~5-10 hours of Claude Code time for v0+v1+v3 across the historical phases
@@ -31,6 +47,7 @@ Last activity: 2026-06-04 — Milestone v2.0 roadmap written. 6 phases (5-10), 2
 | 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-05: 2 tasks, ~8 min, 3 commits, 8 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests · 04-07: 4 tasks, ~30 min, 6 commits, 19 tests · 04-08: 3 tasks, ~35 min, 5 commits, 13 tests · 04-09: 3 tasks, ~35 min, 3 commits, 4 tests | ~18 min | ~18 min |
 
 **Recent Trend:**
+
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
 - Trend: Stable — v3 landed cleanly; ADRs 0003/0004/0005 written 2026-05-21 to unblock Phase 4
 
@@ -61,6 +78,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 None yet (fresh `.planning/` initialization).
 
 Pre-v4 follow-ups carried over from ADR 0002:
+
 - BRDO-01: backfill `mrr_monthly:` on Inside Out, ToneQuest, IowaEverywhere, Partners For Sight, future Wild Rose / Thermal Kitchen
 - BRDO-02: run `/onboard-client` for the 5 BrandOS dealers; resolve "under terraplex Client vs. own Client" per dealer
 - BRDO-03: rename `terraplex-hub` → `terraplex-distributor` once dealer migration is no longer happening inside it
