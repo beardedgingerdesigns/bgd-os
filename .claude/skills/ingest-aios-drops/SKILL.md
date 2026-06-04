@@ -46,12 +46,20 @@ Before processing any pending files, ensure the wiki has the required structure:
   ```
 - If `{wikiPath}/sources/` does not exist, create it.
 
-### Step 3: Process each pending file
+### Step 3: Evaluate and process each pending file
 
-For each pending file (in mtime ascending order — oldest first):
+For each pending file (in mtime ascending order -- oldest first):
 
-1. Read the file contents.
-2. Invoke the llm-wiki ingest flow for this source file:
+1. Read the file contents (frontmatter + body).
+2. **Evaluation pass:**
+   a. Identify the topic/entity the file describes from its content.
+   b. Read existing wiki pages that cover the same topic. Search index.md for matching terms. Check decisions/active/ for related slugs. Read sources/ entries for overlapping dates or topics.
+   c. Compare the incoming content against existing wiki knowledge:
+      - If the file contains information NOT in any existing wiki page: verdict is **PROMOTE**.
+      - If the file's content is substantially covered by existing wiki pages (same facts, same dates, same decisions): verdict is **SKIP** with logged reason.
+      - If the file's content CONTRADICTS an existing wiki page (different date for same event, reversed decision, conflicting status at the same point in time): verdict is **FLAG**.
+   d. IMPORTANT: A status update is NOT a contradiction. A superseded decision is NOT a contradiction. A contradiction is when two sources claim different facts about the same event or entity at the same point in time. Be specific about the contradiction.
+3. For PROMOTE files: invoke the llm-wiki ingest flow as before:
    - Use the `/llm-wiki` skill on this file to promote its content into the wiki.
    - The llm-wiki skill will:
      a. Parse the source file's frontmatter and body.
@@ -59,12 +67,15 @@ For each pending file (in mtime ascending order — oldest first):
      c. Identify relevant decisions and either create new entries in `{wikiPath}/decisions/active/` or update existing ones.
      d. Update `{wikiPath}/index.md` (if it exists) to reflect new content.
      e. Append one `## [YYYY-MM-DD] ingest | <one-line summary>` entry to `{wikiPath}/log.md`.
-3. If the llm-wiki flow raises an error or cannot process the file, mark the file as `deferred` and continue with the next file.
+4. For SKIP files: do NOT promote. Record the reason (e.g., "Content fully covered by existing wiki/overview.md").
+5. For FLAG files: do NOT promote. Record the contradiction detail (incoming claim, existing claim, existing page, severity).
+6. If the llm-wiki flow raises an error or cannot process a PROMOTE file, mark the file as `deferred` and continue with the next file.
 
 **IMPORTANT CONSTRAINTS:**
-- Do NOT write to or modify `raw/aios/*.md` files — they are immutable per ADR 0004.
+- Do NOT write to or modify `raw/aios/*.md` files -- they are immutable per ADR 0004.
 - Do NOT touch any curated wiki paths outside of those explicitly created or updated by the llm-wiki ingest flow.
 - Process files sequentially, not in parallel, to avoid conflicting writes to log.md.
+- Do NOT auto-resolve contradictions. Flagged files remain in `raw/aios/` for operator review.
 
 ### Step 4: Emit structured summary
 
@@ -74,16 +85,30 @@ After processing all pending files, emit the following block to stdout (verbatim
 <!-- INGEST_SUMMARY_START -->
 ```json
 {
-  "promoted": ["<filename1>", "<filename2>"],
-  "deferred": ["<filename3>"],
-  "contested": []
+  "promoted": ["filename1.md"],
+  "deferred": ["filename-with-error.md"],
+  "skipped": [
+    { "file": "filename2.md", "reason": "Content fully covered by existing wiki/overview.md" }
+  ],
+  "contested": [
+    {
+      "file": "filename3.md",
+      "contradiction": {
+        "incoming_claim": "Launch date moved to July 15",
+        "existing_claim": "Launch date is June 16",
+        "existing_page": "wiki/pages/timeline.md",
+        "severity": "high"
+      }
+    }
+  ]
 }
 ```
 <!-- INGEST_SUMMARY_END -->
 ```
 
-- `promoted` — filenames of drops that were successfully ingested into the wiki.
-- `deferred` — filenames of drops that could not be processed (errors, conflicts, unclear mapping).
-- `contested` — filenames where the ingest produced conflicting decision updates that require human review (e.g., a drop contradicts an existing active decision).
+- `promoted` -- filenames of drops that were successfully ingested into the wiki.
+- `deferred` -- filenames of drops that could not be processed due to an error; retry on next ingest run.
+- `skipped` -- files intentionally not promoted because content is redundant with existing wiki knowledge. Each entry is an object with `file` (string) and `reason` (string).
+- `contested` -- files that contradict existing wiki knowledge; operator must resolve before promotion. Each entry is an object with `file` (string) and `contradiction` containing `incoming_claim`, `existing_claim`, `existing_page`, and `severity` ("high", "medium", or "low").
 
-If no files were pending, emit the summary with all three arrays empty.
+If no files were pending, emit the summary with all four arrays empty.

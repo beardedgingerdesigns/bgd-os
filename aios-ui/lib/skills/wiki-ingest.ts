@@ -35,10 +35,26 @@ function extractTextDelta(line: string): string | null {
 const INGEST_SUMMARY_RE =
   /<!--\s*INGEST_SUMMARY_START\s*-->\s*```json\s*([\s\S]*?)\s*```\s*<!--\s*INGEST_SUMMARY_END\s*-->/i
 
+export interface ContestedEntry {
+  file: string
+  contradiction: {
+    incoming_claim: string
+    existing_claim: string
+    existing_page: string
+    severity: 'high' | 'medium' | 'low'
+  }
+}
+
+export interface SkippedEntry {
+  file: string
+  reason: string
+}
+
 export interface WikiIngestSummary {
   promoted: string[]
   deferred: string[]
-  contested: string[]
+  skipped: SkippedEntry[]
+  contested: ContestedEntry[]
 }
 
 export interface WikiIngestResult {
@@ -177,10 +193,49 @@ export async function runWikiIngest(opts: RunWikiIngestOptions): Promise<WikiIng
         if (match) {
           try {
             const parsed = JSON.parse(match[1]) as Record<string, unknown>
+
+            // Parse contested: supports both legacy string[] and new ContestedEntry[] formats
+            const rawContested = Array.isArray(parsed.contested) ? parsed.contested : []
+            const contested: ContestedEntry[] = rawContested.map((item: unknown) => {
+              if (typeof item === 'object' && item !== null) {
+                const obj = item as Record<string, unknown>
+                if (typeof obj.file === 'string' && typeof obj.contradiction === 'object' && obj.contradiction !== null) {
+                  return obj as unknown as ContestedEntry
+                }
+              }
+              // Legacy string format: wrap with unknown placeholders
+              return {
+                file: typeof item === 'string' ? item : String(item),
+                contradiction: {
+                  incoming_claim: 'unknown',
+                  existing_claim: 'unknown',
+                  existing_page: 'unknown',
+                  severity: 'medium' as const,
+                },
+              }
+            })
+
+            // Parse skipped: supports both legacy string[] and new SkippedEntry[] formats
+            const rawSkipped = Array.isArray(parsed.skipped) ? parsed.skipped : []
+            const skipped: SkippedEntry[] = rawSkipped.map((item: unknown) => {
+              if (typeof item === 'object' && item !== null) {
+                const obj = item as Record<string, unknown>
+                if (typeof obj.file === 'string' && typeof obj.reason === 'string') {
+                  return obj as unknown as SkippedEntry
+                }
+              }
+              // Legacy string format: wrap with unknown reason
+              return {
+                file: typeof item === 'string' ? item : String(item),
+                reason: 'unknown',
+              }
+            })
+
             summary = {
               promoted: Array.isArray(parsed.promoted) ? (parsed.promoted as string[]) : [],
               deferred: Array.isArray(parsed.deferred) ? (parsed.deferred as string[]) : [],
-              contested: Array.isArray(parsed.contested) ? (parsed.contested as string[]) : [],
+              skipped,
+              contested,
             }
           } catch {
             // Malformed JSON inside markers — skip summary, still treat as success
