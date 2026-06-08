@@ -95,6 +95,7 @@ Plans:
 
 ### Phase 8: Scheduled Triage Automation
 
+**Goal:** Promote email triage from a manually triggered skill to a scheduled Desktop task routine with draft replies, action item extraction, and wiki dispatch.
 **Requirements:** TRIAGE-01, TRIAGE-02, TRIAGE-03, TRIAGE-04, TRIAGE-05
 
 **Summary:** Promote triage from a manually triggered skill to a scheduled routine (~2hr waking-hours intervals). Output expands to include inline draft replies, persistent action item extraction (writing to the Phase 6 to-do store), and dispatch handoffs to project wikis for project-relevant email intelligence. Depends on the to-do store (Phase 6) and the wiki dispatch filter (Phase 7).
@@ -106,6 +107,17 @@ Plans:
 3. Action items extracted from email content are written to the persistent to-do list and survive until explicitly completed.
 4. Email threads containing project-relevant intelligence trigger a dispatch handoff written to the appropriate project wiki's `raw/aios/` staging directory.
 5. Dispatch classification uses heuristic categories first; LLM tiebreaker fires only for ambiguous threads, keeping routine cost predictable.
+
+**Plans:** 3 plans
+Plans:
+**Wave 1** *(parallel — no file overlap)*
+
+- [ ] 08-01-PLAN.md — RawDropKind type extension + detectKind update + triage-dispatch tests
+- [ ] 08-02-PLAN.md — Scheduled triage SKILL.md (Steps 0-9: lookback, filter, score, context, output, drafts, action items, dispatch, cache+notification)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 08-03-PLAN.md — Desktop scheduled task creation + end-to-end verification checkpoint
 
 ---
 
@@ -151,4 +163,4 @@ Plans:
 ## Progress
 
 Milestone v1.0: 4/4 phases complete, 100%.
-Milestone v2.0: 2/6 phases complete, 33% — Phase 7 planning complete.
+Milestone v2.0: 3/6 phases complete, 50% — Phase 8 planning complete.
