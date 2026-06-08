@@ -503,17 +503,11 @@ This is the most important planning decision for Phase 8. The research reveals a
 
 **If this table is empty:** All claims in this research were verified or cited — no user confirmation needed.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Cloud Routine vs. Desktop Task tradeoff**
-   - What we know: Cloud Routines cannot access local files; Desktop tasks can but require the laptop to be awake.
-   - What's unclear: How often does Justin's laptop sleep during waking hours? If he closes it during lunch, the 1pm run is skipped.
-   - Recommendation: Start with Desktop tasks. Add a note in CONTEXT.md clarifying the tradeoff. If missed runs become a real problem, move outputs to git-tracked files and migrate to cloud Routines in a future phase.
+1. **Cloud Routine vs. Desktop Task tradeoff** — RESOLVED: Desktop task. Filesystem dependencies (todos/pending.md, wiki raw/aios/, triage-overrides.json) require local access. Cloud Routines work from a fresh git clone and cannot reach these paths. Tradeoff (runs skip when laptop sleeps) is documented in Plan 03 and surfaced to operator.
 
-2. **Single task with complex cron vs. multiple tasks**
-   - What we know: `0 */2 7-19 * 1-5` should fire at 7, 9, 11, 13, 15, 17, 19 on weekdays. This is a single task.
-   - What's unclear: Whether the Desktop task UI/scheduler correctly handles the `7-19` hour range with `*/2` steps.
-   - Recommendation: Use the single expression and verify during Wave 0 with a `Run now` test. If the expression is rejected, fall back to 7 separate tasks each with an `0 H * * 1-5` entry.
+2. **Single task with complex cron vs. multiple tasks** — RESOLVED: Single cron `0 7-19/2 * * 1-5` with 7-separate-tasks fallback if the scheduler rejects the expression. Plan 03 Task 1 implements this with the fallback explicitly documented.
 
 ## Environment Availability
 
