@@ -78,7 +78,7 @@ export interface PendingFile {
   filename: string              // e.g. "capture-2026-05-21-meghan-handoff.md"
   filePath: string              // absolute
   mtime: Date
-  kind: 'capture' | 'chat-decision' | 'chat-session' | 'other'  // parsed from filename prefix
+  kind: 'capture' | 'chat-decision' | 'chat-session' | 'triage-dispatch' | 'other'  // parsed from filename prefix
 }
 
 export interface PendingIngestResult {
@@ -239,7 +239,7 @@ export interface RitualCacheEntry {
 
 // ---------- Phase 04: bidirectional hub (raw drops + receipts) ----------
 
-export type RawDropKind = 'capture' | 'chat-decision' | 'chat-session'
+export type RawDropKind = 'capture' | 'chat-decision' | 'chat-session' | 'triage-dispatch'
 
 export type ReceiptKind =
   | 'capture'

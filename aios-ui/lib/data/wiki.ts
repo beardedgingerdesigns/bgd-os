@@ -267,6 +267,7 @@ function detectKind(filename: string): PendingFile['kind'] {
   if (filename.startsWith('capture-')) return 'capture'
   if (filename.startsWith('chat-decision-')) return 'chat-decision'
   if (filename.startsWith('chat-session-')) return 'chat-session'
+  if (filename.startsWith('triage-dispatch-')) return 'triage-dispatch'
   return 'other'
 }
 
