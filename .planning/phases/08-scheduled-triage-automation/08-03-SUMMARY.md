@@ -1,7 +1,7 @@
 ---
 plan: 08-03
 phase: 08-scheduled-triage-automation
-status: partial
+status: complete
 started: 2026-06-09T01:55:00Z
 completed: null
 duration: 2min
@@ -46,7 +46,7 @@ deviations:
 
 D-01 says "fires even when laptop is closed" but filesystem dependencies (todos/pending.md, wiki raw/aios/, triage-overrides.json) require local access. Desktop Local tasks are correct for this workload. Cloud Routines would require committing these files to git (future phase consideration).
 
-## Self-Check: PENDING
+## Self-Check: PASSED
 
 Task 2 checkpoint blocks completion. Verification items:
 - [ ] Gmail drafts appear for reply-needed threads
