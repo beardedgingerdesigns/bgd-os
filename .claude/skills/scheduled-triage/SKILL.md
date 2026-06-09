@@ -16,8 +16,8 @@ This is the scheduled evolution of `/daily-inbox-triage`. It closes Justin's top
 
 This skill runs as a **Claude Code Desktop scheduled task**, NOT a manual trigger. Desktop tasks are triggered by the Claude Code Desktop app's built-in scheduler and have full local filesystem access. The Desktop app must be open and the machine must be awake for scheduled tasks to fire.
 
-**Cron expression:** `0 */2 7-19 * 1-5`
-This fires every 2 hours from 7am to 7pm CT, Monday through Friday. Reference D-01, D-02.
+**Cron expression:** `7 7-21/2 * * 1-5`
+This fires every 2 hours from 7am to 9pm CT (at :07 past the hour), Monday through Friday. Reference D-01, D-02.
 
 **Tradeoff note:** D-01 in CONTEXT.md mentions "fires even when laptop is closed" as a future goal. Desktop tasks are the correct mechanism for this workload because the skill's filesystem dependencies -- `todos/pending.md`, wiki `raw/aios/` directories, and `triage-overrides.json` -- require local filesystem access. Cloud Routines (which could fire while the laptop is closed) would require these files to be committed to git and synced, which is a future phase consideration. For now: Desktop tasks are the right call.
 

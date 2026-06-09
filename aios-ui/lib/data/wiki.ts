@@ -280,7 +280,7 @@ function detectKind(filename: string): PendingFile['kind'] {
  *   files are returned as pending and lastIngestAt is null.
  * - Files sorted by mtime DESC. Non-`.md` entries are ignored.
  * - kind is parsed from filename prefix (capture-, chat-decision-,
- *   chat-session-, other).
+ *   chat-session-, triage-dispatch-, other).
  */
 export async function readPendingIngest(
   wikiPath: string
