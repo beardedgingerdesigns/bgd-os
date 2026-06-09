@@ -401,9 +401,9 @@ Every run produces:
 
 1. **One Markdown brief** (Step 5) -- ranked queue with project context
 2. **One structured JSON envelope** (Step 5) -- feeds dashboard todo cards
-3. **Gmail drafts for all reply-needed threads** (Step 6) -- created automatically without confirmation
-4. **Action items appended to todos/pending.md** (Step 7) -- with 7-day dedup check
-5. **Dispatch files in matched project wikis** (Step 8) -- one file per thread per matched wiki, `raw/aios/` staging
+3. **Gmail drafts for all reply-needed threads** (Step 6) -- `mcp__claude_ai_Gmail__create_draft` called automatically without confirmation for each qualifying thread
+4. **Action items appended to todos/pending.md** (Step 7) -- with 7-day dedup check; absolute path `/Users/justinlobaito/repos/claude-os/todos/pending.md`
+5. **Dispatch files in matched project wikis** (Step 8) -- one `triage-dispatch-YYYY-MM-DD-{slug}.md` file per thread per matched wiki, written to `{wiki}/raw/aios/` staging
 6. **Updated triage-latest.json cache** (Step 9) -- for next run's lookback window computation
 7. **Push notification summary** (Step 9) -- nudges Justin to check Gmail
 
