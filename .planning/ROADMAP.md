@@ -108,12 +108,12 @@ Plans:
 4. Email threads containing project-relevant intelligence trigger a dispatch handoff written to the appropriate project wiki's `raw/aios/` staging directory.
 5. Dispatch classification uses heuristic categories first; LLM tiebreaker fires only for ambiguous threads, keeping routine cost predictable.
 
-**Plans:** 3 plans
+**Plans:** 2/3 plans executed
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
-- [ ] 08-01-PLAN.md — RawDropKind type extension + detectKind update + triage-dispatch tests
-- [ ] 08-02-PLAN.md — Scheduled triage SKILL.md (Steps 0-9: lookback, filter, score, context, output, drafts, action items, dispatch, cache+notification)
+- [x] 08-01-PLAN.md — RawDropKind type extension + detectKind update + triage-dispatch tests
+- [x] 08-02-PLAN.md — Scheduled triage SKILL.md (Steps 0-9: lookback, filter, score, context, output, drafts, action items, dispatch, cache+notification)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
