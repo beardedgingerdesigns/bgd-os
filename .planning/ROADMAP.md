@@ -108,7 +108,7 @@ Plans:
 4. Email threads containing project-relevant intelligence trigger a dispatch handoff written to the appropriate project wiki's `raw/aios/` staging directory.
 5. Dispatch classification uses heuristic categories first; LLM tiebreaker fires only for ambiguous threads, keeping routine cost predictable.
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 **Wave 1** *(parallel — no file overlap)*
 
@@ -117,7 +117,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 08-03-PLAN.md — Desktop scheduled task creation + end-to-end verification checkpoint
+- [x] 08-03-PLAN.md — Desktop scheduled task creation + end-to-end verification checkpoint
 
 ---
 

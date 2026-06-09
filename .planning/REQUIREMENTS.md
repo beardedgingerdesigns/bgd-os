@@ -9,11 +9,11 @@
 - [x] **STATE-04**: LLM summarizes session context into tight STATE.md when substance threshold is met
 
 ### Triage (TRIAGE)
-- [ ] **TRIAGE-01**: Triage runs as a scheduled routine (~2hr intervals during waking hours), not a manually triggered skill
-- [ ] **TRIAGE-02**: Triage output includes ranked email threads with inline draft replies ready for revision
-- [ ] **TRIAGE-03**: Triage extracts persistent action items (to-do list) from email content
-- [ ] **TRIAGE-04**: Triage auto-generates dispatch handoffs to project wikis when emails contain project-relevant intelligence
-- [ ] **TRIAGE-05**: Dispatch filter uses heuristic categories first, LLM tiebreaker for ambiguous cases
+- [x] **TRIAGE-01**: Triage runs as a scheduled routine (~2hr intervals during waking hours), not a manually triggered skill
+- [x] **TRIAGE-02**: Triage output includes ranked email threads with inline draft replies ready for revision
+- [x] **TRIAGE-03**: Triage extracts persistent action items (to-do list) from email content
+- [x] **TRIAGE-04**: Triage auto-generates dispatch handoffs to project wikis when emails contain project-relevant intelligence
+- [x] **TRIAGE-05**: Dispatch filter uses heuristic categories first, LLM tiebreaker for ambiguous cases
 
 ### Wiki Filtering (WIKI)
 - [x] **WIKI-01**: AIOS output filter classifies content as operational vs. project-relevant before staging to `raw/aios/`
