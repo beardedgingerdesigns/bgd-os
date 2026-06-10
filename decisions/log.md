@@ -938,3 +938,20 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 **Owner:** Justin (BGD).
 
 ---
+
+## 2026-06-10 — Fable 5 pilot: multi-agent product definition + solo GSD planning validated; execution approved
+
+**Decision:** The Fable 5 pilot on BrandOS (Marketing Materials Builder) passes its planning stages and proceeds to execution. The full chain ran in one day: 3-agent deliberation (7 rounds: positions, convergence, AI-handoff verdict, 24-source research, taxonomy grill) → adversarial grill-me with a fresh Fable defender (13 questions, one empirical Chromium render experiment) → operator corrections → solo single-agent GSD planning (7 plans, 5 waves, 24 tasks) → 5-round codex adversarial review (25 findings, all accepted and applied, funnel 15→10→5→4→1, operator accepted at cap). Output artifacts: brief ACTIVE at `repos/brandos/docs/wiki/plans/marketing-materials-builder-brief.md`, Phase 05 execution-ready in `repos/brandos/.planning/`.
+
+**Why:** Stage-gate evidence, not vibes. Fable one-shot the planning pipeline solo and caught its own requirements gap (artifact_type schema); the grill defender ran a real experiment instead of agreeing (rendered a 33"x80" PDF and inspected the objects) and admitted an invented argument when pressed; codex still found 25 real issues, meaning the cross-model loop remains load-bearing even on Fable-authored plans. Total burn ≈ 5M subagent tokens across all stages, all inside Max plan limits during the free Fable window (ends 2026-06-22).
+
+**Lessons that change how we work:**
+- Agent RESUMPTION is the hidden cost: resumed agents re-read their growing transcript every round (planner: ~179k first run → ~504k by round 5; six runs summed ≈ 2.3M). Prefer fewer, fatter exchanges; for execution, use FRESH executor agents per plan, never one long-lived resumed agent.
+- Sub-agent fan-out discipline held: single-agent planning matched multi-agent quality at a fraction of the cost — fan out for independent perspectives (deliberation, verification), not for pipeline stages.
+- Codex review on Fable plans: still worth it. 5 blockers in round 1 were code-verified facts (hardcoded GCS prefix, hardcoded cart nav, null MSRP, nonexistent ticket service) that would have surfaced mid-execution as rework.
+
+**Alternatives considered:** Skip codex review since Fable planned it (rejected — 25 findings say no). Run execution as one resumed agent for continuity (rejected — resumption economics).
+
+**Owner:** Justin (BGD).
+
+---
