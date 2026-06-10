@@ -108,11 +108,11 @@ Jon also noted: "I know there are a ton of efficiencies I can be employing." Hig
 
 ## 2026-05-23 — Inside Out wiki converted to AIOS canonical layout
 
-**Decision:** Reshaped the existing LLM-Wiki at `/Users/justinlobaito/repos/inside-out/wiki/` (+ companion `raw/`) into AIOS canonical `docs/wiki/` layout via `/convert-wiki`. Updated `clients.yaml` `docs_paths` for `inside-out-website` from `.../inside-out/wiki` → `.../inside-out/docs` so `detectWiki()` resolves via `docs/wiki/WIKI-CLAUDE.md`. Verbatim snapshots preserved under `docs/wiki/raw/external/{wiki,raw}-pre-aios-2026-05-23/`. Conversion record: `/Users/justinlobaito/repos/inside-out/docs/wiki/log/2026-05-23-wiki-converted-from-project-root.md`.
+**Decision:** Reshaped the existing LLM-Wiki at `/Users/justinlobaito/repos/inside-out/wiki/` (+ companion `raw/`) into AIOS canonical `docs/wiki/` layout via `/wiki convert`. Updated `clients.yaml` `docs_paths` for `inside-out-website` from `.../inside-out/wiki` → `.../inside-out/docs` so `detectWiki()` resolves via `docs/wiki/WIKI-CLAUDE.md`. Verbatim snapshots preserved under `docs/wiki/raw/external/{wiki,raw}-pre-aios-2026-05-23/`. Conversion record: `/Users/justinlobaito/repos/inside-out/docs/wiki/log/2026-05-23-wiki-converted-from-project-root.md`.
 
-**Why:** The Inside Out wiki was already llm-wiki-shaped (had SCHEMA.md, decisions/, sources/, overview.md, log.md) but lived at the project root (`wiki/`) rather than the AIOS-canonical `docs/wiki/` path. AIOS's `detectWiki()` walks one level under `docs_paths` to find `WIKI-CLAUDE.md`, so the old location was invisible to the OS. Reshape matches Iowa Everywhere / Wild Rose pattern: WIKI-CLAUDE.md as schema doc, decisions split into `active/deferred/implemented/superseded`, `log/` as folder with per-event files, plus `plans/`, `architecture/`, `strategy/`, `research/` sections. All curated content preserved; project-specific `brand/`, `services/`, `pages/` sections kept since they're load-bearing for this project.
+**Why:** The Inside Out wiki was already wiki-shaped (had SCHEMA.md, decisions/, sources/, overview.md, log.md) but lived at the project root (`wiki/`) rather than the AIOS-canonical `docs/wiki/` path. AIOS's `detectWiki()` walks one level under `docs_paths` to find `WIKI-CLAUDE.md`, so the old location was invisible to the OS. Reshape matches Iowa Everywhere / Wild Rose pattern: WIKI-CLAUDE.md as schema doc, decisions split into `active/deferred/implemented/superseded`, `log/` as folder with per-event files, plus `plans/`, `architecture/`, `strategy/`, `research/` sections. All curated content preserved; project-specific `brand/`, `services/`, `pages/` sections kept since they're load-bearing for this project.
 
-**Alternatives considered:** (a) Delete the old `wiki/` outright (rejected — convert-wiki skill explicitly forbids it; that's the project owner's call). (b) Move (`mv`) content into `docs/wiki/` to preserve git history (rejected — files were untracked anyway, and the cp-only approach left an undisturbed `wiki/` for Justin to remove on his own timeline). (c) Keep the old sequential `NNNN-<slug>.md` decision numbering (rejected — date-based slugs sort chronologically and match other BGD wikis).
+**Alternatives considered:** (a) Delete the old `wiki/` outright (rejected — `/wiki convert` explicitly forbids it; that's the project owner's call). (b) Move (`mv`) content into `docs/wiki/` to preserve git history (rejected — files were untracked anyway, and the cp-only approach left an undisturbed `wiki/` for Justin to remove on his own timeline). (c) Keep the old sequential `NNNN-<slug>.md` decision numbering (rejected — date-based slugs sort chronologically and match other BGD wikis).
 
 **Owner:** Justin (decides when to remove the now-redundant `/Users/justinlobaito/repos/inside-out/wiki/` and `/Users/justinlobaito/repos/inside-out/raw/` directories at project root).
 
@@ -684,7 +684,7 @@ With propagation tooling, the value proposition flips. Terraplex pays the platfo
 - *Register Partners For Sight directly as the client (no NPS layer).* Rejected — the billing relationship runs through NPS and they appear in active correspondence on the project. Future sessions reading `clients.yaml` need to see both sides.
 - *Use `@npsmediagroup.com` catch-all in contacts.* Rejected — Frank Lama and Jamie Fallon (NPS-wide fallbacks per auto-replies) would pollute Gmail queries with unrelated threads. Justin explicitly flagged them as noise during intake.
 - *Defer the reference doc until more context surfaces.* Rejected — even a scaffold with the engagement structure + grant-flow note is more useful than nothing. Doc has explicit TODO sections for Justin to expand over time.
-- *Bootstrap an llm-wiki at `/Users/justinlobaito/repos/partners-for-sight/docs/wiki/` immediately.* Deferred — currently maintenance mode, no year-two scope conversation in progress. Wiki bootstrap when (and if) a real scope-expansion moment arrives. Reference doc + memory + clients.yaml is right-sized for now.
+- *Bootstrap a project wiki at `/Users/justinlobaito/repos/partners-for-sight/docs/wiki/` immediately.* Deferred — currently maintenance mode, no year-two scope conversation in progress. Wiki bootstrap when (and if) a real scope-expansion moment arrives. Reference doc + memory + clients.yaml is right-sized for now.
 
 **Owner:** Justin (BGD).
 
@@ -757,7 +757,7 @@ The split going forward:
 - **`claude-os/decisions/log.md`** = cross-cutting AIOS / business / multi-project decisions.
 - **`{project-repo}/docs/wiki/decisions/`** = project-internal decisions with lifecycle (active/deferred/implemented/superseded).
 
-Justin is rolling the llm-wiki pattern out across every project. `/load {project}` needs to be the single command that answers "what decisions did I make on this project, and what's currently locked?" — which requires reading the wiki, not just claude-os's local decisions log.
+Justin is rolling the project wiki pattern out across every project. `/load {project}` needs to be the single command that answers "what decisions did I make on this project, and what's currently locked?" — which requires reading the wiki, not just claude-os's local decisions log.
 
 **Alternatives considered:**
 
@@ -773,7 +773,7 @@ Justin is rolling the llm-wiki pattern out across every project. `/load {project
 - Next `/load brandos` should now surface all 5 active + 3 deferred decisions in `site-builder-phase2/docs/wiki/decisions/` plus the most recent 10 log entries.
 - When adding a new project repo with a wiki, register the directory containing (or one level above) `WIKI-CLAUDE.md` in the project's `docs_paths:`. No other config needed.
 - If a future load run still misses wiki content, check (a) the wiki has one of the three detection markers and (b) the `docs_paths` entry points at or above the wiki root.
-- Project-internal decisions should land in the project's wiki via `/grill-with-docs` or the `llm-wiki` skill, not in `claude-os/decisions/log.md`. If a decision is project-internal but ends up in the cross-project log, treat as a routing miss and move it.
+- Project-internal decisions should land in the project's wiki via `/grill-with-docs` or the `/wiki` skill, not in `claude-os/decisions/log.md`. If a decision is project-internal but ends up in the cross-project log, treat as a routing miss and move it.
 
 **Open follow-ups:**
 
@@ -921,8 +921,20 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 
 - This decision shapes the next milestone for claude-os itself. GSD roadmap to follow.
 - Existing skills (`/daily-inbox-triage`, `/weekly-project-status`, `/load-project`, `/onboard-client`) are retained but evaluated against the two-job model.
-- Wiki ingest skill (`/llm-wiki`) gets a relevance-check upgrade: evaluate incoming content against what the project already knows before promoting from `raw/`.
+- Wiki ingest skill (`/wiki ingest`) gets a relevance-check upgrade: evaluate incoming content against what the project already knows before promoting from `raw/`.
 - Scheduled routines exploration begins — move daily triage and weekly status from manual triggers to automated schedules.
 - AIOS-to-wiki staging becomes a natural byproduct of triage, not a deliberate process.
+
+---
+
+## 2026-06-09 — Terraplex rollout plan doubles as the BrandOS pricing proposal
+
+**Decision:** No major BrandOS build work for Terraplex (site redesign, training section, portal rollout) until the Cherity + Jon pricing/rollout meeting happens. The rollout plan document carries the pricing structure (board-prepped 2026-06-06: $800/mo distributor + $15/mo per-dealer portal fee + $250/mo dealer sites), so that meeting approves a structure instead of opening a negotiation. Small already-owed Craft items (homepage I19 graphic, quote-request functionality) proceed on the existing retainer.
+
+**Why:** The 2026-06-09 monthly status landed the BrandOS introduction — Cherity aligned on implementing, redesign prioritized, her permissions question was a buying signal. But pricing was deliberately deferred ("determined as we move through implementation," "proof of concept"), six of eight action items landed on Justin, and no follow-up dates were set. That's the shape of the old model: scope expanding on a $600/mo retainer. The rollout plan is the leverage point — Cherity already wants it, so pricing arrives inside a document she asked for. Two dependencies stand between now and money (Jon demo, then the three-way meeting); getting the Jon demo scheduled this week protects momentum against the Dakota Fest timeline.
+
+**Alternatives considered:** Build first, price later (rejected — repeats the free-work pattern the pivot exists to kill). Separate pricing pitch (rejected — a standalone money conversation invites negotiation; anchoring inside the wanted rollout plan doesn't).
+
+**Owner:** Justin (BGD).
 
 ---
