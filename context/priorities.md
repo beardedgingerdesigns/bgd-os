@@ -9,6 +9,7 @@ Drive BrandOS to a launch state and keep current projects shipping. The "I solve
 ## 1. Ship BrandOS to a launch state (proof point #1)
 
 - Pricing board-prepped: $800/mo distributor + $15/mo per-dealer portal fee + $250/mo dealer sites. Arrives inside the rollout plan doc Cherity asked for, not as a standalone pitch (decision 2026-06-09).
+- Jon is Terraplex's CEO — the pilot/pricing sign-off genuinely runs through him. This is the **one legitimate Jon dependency** (vs. the don't-gate-on-Jon rule that applies to all other growth).
 - **No major build work until that pricing meeting.** Small already-owed Craft items (homepage I19 graphic, quote-request) proceed on the existing retainer.
 - Dealer network: Pyro Ag + Black Knight migrated to platform; New Heights + Great River still on Base 44; Truss blocked on domain transfer; Superior Drone stalled (no response).
 - Marketing Materials builder: Phase 05 execution approved 2026-06-10 (Fable pilot — fresh executor agents per plan).
