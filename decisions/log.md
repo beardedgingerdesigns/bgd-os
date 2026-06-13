@@ -1014,3 +1014,24 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 - Decide rebuild platform (Craft stays vs. migrate).
 
 ---
+
+## 2026-06-13 — Refocus: BrandOS to launch is the priority; AI-services research is a map, not a backlog
+
+**Decision:** Reorder current focus. **BrandOS-to-a-launch-state plus the in-flight client projects are the active priority.** The AI-services pivot (proof point #2) is reclassified from active work to **mapped exploration, parked.** The recent research wave (`brainstorm/research-*-2026-06-06.md` productization/competitive/cross-synthesis, plus the `overnight-*.md` set) is kept as a knowledge map to revisit when the pivot activates — it is explicitly NOT a list of immediate action items. The pricing forks it proposed ($2,500 retainer / $1,500 audit / kill the $750 tier, `/roi-track` build) are not ratified and not pending. priorities.md reordered to match; the stale "first paying AI-services client by end of June" target is removed.
+
+**Why:** The pivot's proof-point #2 was gated entirely on Jon selling it, and **Jon keeps punting — the 5/30 partnership conversation never happened.** With no sales motion, chasing AI-services pricing/automation now is building ahead of demand. BrandOS (proof point #1) is real, closer to revenue, and the thing Justin can move without waiting on anyone. Mapping the AI-services opportunity was valuable (it's captured); acting on it now is not. One concrete thread Justin does want to pursue: re-engaging Co-Line Manufacturing (existing $75/mo client, stalled redesign) — tracked as a todo, led by the relationship rather than an AI pitch.
+
+**Alternatives considered:**
+- *Keep AI-services as priority #1 and ratify the pricing now.* Rejected — no buyer in motion (Jon stalled); ratifying pricing for a sales channel that isn't selling is premature.
+- *Drop / archive the research.* Rejected — the mapping is genuinely useful; the call is to park it as reference, not discard it.
+- *Wait on Jon indefinitely with an open "log the 5/30 outcome" to-do.* Rejected — there's no outcome to log; the open to-do was a false premise. Reframed to "parked, re-activate if Jon initiates."
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- Treat `brainstorm/research-*` and `overnight-*` as a map. Do not surface their recommendations as overdue action items in `/brief` or `/weekly-project-status`.
+- Active focus = BrandOS launch + current projects (Thermal Kitchen 6/16, Wild Rose, Inside Out, ToneQuest, Global Ag Network).
+- Co-Line re-engagement is the one AI-adjacent thread to advance, and it leads with the existing relationship.
+- Re-activate the AI-services pivot only when Jon re-engages or another buyer appears.
+
+---
