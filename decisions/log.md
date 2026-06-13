@@ -1032,6 +1032,6 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 - Treat `brainstorm/research-*` and `overnight-*` as a map. Do not surface their recommendations as overdue action items in `/brief` or `/weekly-project-status`.
 - Active focus = BrandOS launch + current projects (Thermal Kitchen 6/16, Wild Rose, Inside Out, ToneQuest, Global Ag Network).
 - Co-Line re-engagement is the one AI-adjacent thread to advance, and it leads with the existing relationship.
-- Re-activate the AI-services pivot only when Jon re-engages or another buyer appears.
+- Re-activate the AI-services pivot when a buyer appears — and source that demand through non-Jon channels rather than waiting on Jon (don't gate the business on Jon; core memory `feedback_reduce_jon_dependence`).
 
 ---

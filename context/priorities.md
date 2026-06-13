@@ -17,7 +17,7 @@ Drive BrandOS to a launch state and keep current projects shipping. The "I solve
 ## 2. AI services pivot (proof point #2) — mapped, parked
 
 - **Status: exploration, not active work.** The opportunity is mapped; this is not a current build and has no paying-client target while parked.
-- Gated on Jon: the partnership pitch (setup 2026-05-28) keeps getting punted — the conversation hasn't happened. No action until Jon re-engages; don't treat it as an open to-do (decision 2026-06-13).
+- Stalled for lack of sales motion: the partnership pitch (setup 2026-05-28) keeps getting punted — the conversation hasn't happened. Re-activation comes from finding non-Jon demand, not from waiting on Jon (don't gate the business on Jon — core memory + decision 2026-06-13). Not an open to-do.
 - Knowledge map (revisit when activated): `brainstorm/overnight-*.md` (client problem audit — 27 opportunities across 6 clients; Des Moines landscape; competitive positioning) + `brainstorm/research-*-2026-06-06.md` (productization model, BrandOS competitive, cross-synthesis).
 - One live thread Justin wants to pursue: re-engage Co-Line Manufacturing (existing $75/mo Craft client, stalled redesign). Tracked in todos.
 
@@ -25,6 +25,7 @@ Drive BrandOS to a launch state and keep current projects shipping. The "I solve
 
 - Absorbs the pivot as the strategic thesis. Revenue model across BrandOS + AI services + legacy Craft. MRR target by end of year.
 - Nel + Alex partnership go/no-go: **GO** (2026-06-01). Open structural question: does BrandOS stay BGD-owned or fold under the Deploy Answers umbrella? Equity, IP, and roles are the next body of work.
+- **Reduce single-channel sales risk.** Jon is the primary sales channel but is spread thin and keeps punting; the plan needs demand sources that don't depend on him — existing-client expansion, Nel + Alex, inbound, productized self-serve. Don't gate growth on Jon (core memory; decision 2026-06-13).
 
 ## Hard constraint
 
