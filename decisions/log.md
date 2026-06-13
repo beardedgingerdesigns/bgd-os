@@ -955,3 +955,62 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 **Owner:** Justin (BGD).
 
 ---
+
+## 2026-06-12 — claude-os restructured: CLAUDE.md as router, single inbox, dispatch pipeline
+
+**Decision:** The AIOS repo is restructured around the router principle (Nate Herk, "Ultimate Second Brain" video, ingested 2026-06-10) and the 2026-06-03 dispatcher reframe. Five moves, executed same day as the deciding audit:
+
+1. **CLAUDE.md is a router, not a content store.** Evergreen identity stub + operating model + complete routing tree + rules + full skills table. Dated facts are banned from the file; they live in `context/` (priorities, about-business, about-me, financials), which is now the single source of truth. The router test (could Justin find it by hand; does the agent find it fast; do facts in the manual rot) becomes a standing maintenance rule and part of `/audit`.
+2. **One inbox.** `archives/raw/` is THE drop point. The empty root `raw/` is gone. Strays in `docs/` root (Gemini PDFs, docx, screenshot, txt) swept into `archives/raw/`; one-off meeting notes moved from `references/` to `archives/references/` (clients.yaml path updated).
+3. **`/dispatch` skill created** — the read-and-route pipeline: inventory inbox, classify with the two-layer filter ("does this change what the project knows about itself?"), route (wiki `raw/aios/` staging per ADR 0004, context/, references/, decisions, todos), update `state/<slug>.md`, log to `archives/raw/ROUTING-LOG.md`.
+4. **`/brief` skill created** — the springboard: state/ + todos + decisions tail + priorities + calendar → "what needs a decision today." No email fetch, no researcher agents.
+5. **`/load-project` retired** to `archives/skills/` (deprecated since 2026-06-04; project wikis are self-sufficient).
+
+**Why:** The 2026-06-12 audit found CLAUDE.md half router, half dumping ground: three facts already rotten (5/30 pitch listed as upcoming, $1,700 MRR vs actual $1,950, ToneQuest listed as in-flight), the routing tree blind to `state/`, `todos/`, `docs/wiki/` (the advisory board), and the skills table listing 3 of 9 installed skills. Duplication between CLAUDE.md and `context/` guaranteed drift; the fix is structural (one canonical home per fact, router points to it), not editorial.
+
+**Alternatives considered:** Patch the stale facts in place (rejected — same class of drift recurs; the audit's job is to kill the class). Adopt Nate's full monorepo "other worlds" pattern, moving project repos inside claude-os (rejected — BGD project repos are client deliverables that deploy and hand off independently; the hub-and-spoke two-tier model already delivers cross-project context via clients.yaml docs_paths).
+
+**Owner:** Justin (BGD). ADR: `docs/adr/0006-claude-md-as-router.md`.
+
+---
+
+## 2026-06-12 — /level-up: session-wrap automation scoped and shipped as /wrap (bike phase 1)
+
+**Decision:** This week's level-up artifact is `/wrap` — a user-level skill (`~/.claude/skills/wrap/SKILL.md`) that wraps any project session in one word: digest (accomplishments / decisions / struggles / next steps / open questions) staged to the project wiki's `raw/aios/`, STATE.md updated, breadcrumb appended to `~/.claude/session-wrap.log`. Bike Method phase 1: manual trigger only; the Stop/SessionEnd hook automation is phase 2, gated on a validated week of manual runs (known blocker: SessionEnd doesn't fire from the IDE extension, debugged 2026-06-04).
+
+**Method spec (3Ms):**
+- *Constraint:* knowledge capture depends on Justin remembering wrap-up commands at session end — ~23 manual asks/week across all repos (retros/retro-2026-06-12.md pattern #1); a lapse cost ToneQuest a month of inbox/wiki backfill.
+- *EAD:* Eliminate rejected (ToneQuest was the elimination experiment; it failed expensively). Delegate rejected (no person fits). Automate: ~60% deterministic (detection, writes, logging), ~30% AI (the digest), ~10% manual (wiki-ingest promotion stays the reviewed step per ADR 0004).
+- *Process:* trigger = /wrap now, hook later; sources = live session context; transform = session → structured digest with retro-minable Struggles section; decisions = substance gate, wiki-or-STATE-only, never curated pages; destination = wiki raw/aios/ + STATE.md + breadcrumb log.
+- *Autonomy:* L2 now (AI drafts in-session, Justin sees it), L3 at hook stage (staging inbox is the review buffer). No L4; curated content untouchable.
+- *KPI:* less-cost bucket. Primary metric: manual wrap-up asks/week counted by /retro — baseline 23 (2026-06-12), target <5 within two retros. Secondary: all active state files <7 days old (/brief flags).
+
+**Why this candidate:** highest-leverage pattern in the first retro (count, cross-repo spread, demonstrated failure cost), half-built already (scripts/state-hook), and its digest store becomes /retro's phase-2 clean input — one build feeds two systems.
+
+**Owner:** Justin (BGD). First retro checkpoint: 2026-06-19.
+
+---
+
+## 2026-06-13 — Onboard Global Ag Network: convert ad-hoc support into a paid rebuild engagement
+
+**Decision:** Formalize Global Ag Network (GAN) as a BGD engagement. Justin has been GAN's de facto web/tech support since ~2023 with no retainer, and already holds the Craft/SEOmatic/Ad Wizard licenses + the DigitalOcean account. Delaney Howell (Ag News Daily president, GAN host) emailed 2026-06-12 with two support asks plus an explicit request to re-engage on transitioning the site. The play: convert the unpaid ad-hoc relationship into a paid website rebuild + hosting-stabilization engagement. Project kicked off in its own repo (`repos/global-ag-network/`, private GitHub repo `beardedgingerdesigns/global-ag-network`), wiki seeded, `clients.yaml` entry added (bucket: prospects). Meeting locked: **Fri 2026-06-19 10:00am CT** ("GAN - Touchbase", Google Meet, invite sent to Delaney 2026-06-13).
+
+**Why:** It's a warm reinitiation, not a cold sale — Justin already does the work and holds the infrastructure, so the only thing missing is a contract. The DigitalOcean payment pause that broke podcast playback (fixed 2026-06-12 as the opening win) is exactly the kind of fragility a formal hosting engagement prevents, which makes the pitch self-evident. Bucket is `prospects` because there's no signed retainer yet (MRR $0); converting to a real number is the Friday goal. Fits the BGD pivot: solve the business problem (stop the site from biting her), productize the fix as recurring hosting + a rebuild, not a one-off.
+
+**Alternatives considered:**
+- *Keep doing it ad-hoc for free.* Rejected — Justin already carries the licenses + DO account cost with zero recurring revenue; the relationship is real but financially upside-down.
+- *Quote a one-off rebuild only.* Rejected — leaves the hosting fragility (and the unpaid support drip) unsolved. The recurring hosting-stabilization piece is the point.
+- *Push the engagement to a later quarter.* Rejected — Delaney initiated the re-engage now and there's a live, fixable pain (playback) to convert into momentum.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- Friday 6/19: resolve Buzzsprout vs self-hosted feed, confirm co-host (Mike vs Tanner), confirm Successful Farming ad-deal status, and turn the engagement into a real retainer number (update `clients.yaml` `mrr_monthly` + bucket once signed).
+- Email-license question (`delaney@globalagnetwork.com`): lean is "safe to drop," but confirm together Friday before she cancels — draft reply queued in Gmail.
+- Deep project state lives in `repos/global-ag-network/docs/wiki/`; thin state in `state/global-ag-network.md`.
+
+**Open follow-ups:**
+- Convert prospect → active client with a signed retainer after Friday.
+- Decide rebuild platform (Craft stays vs. migrate).
+
+---

@@ -1,8 +1,8 @@
-# Canonical client/project registry. Consumed by /load-project, /weekly-project-status,
-# /daily-inbox-triage, and future skills.
+# Canonical client/project registry — the AIOS master index. Consumed by /dispatch,
+# /brief, /weekly-project-status, /daily-inbox-triage, /kickoff-project, and future skills.
 #
-# Convention: project slugs should be globally unique within this file. /load-project
-# will prompt for the compound `client-slug/project-slug` form on collision.
+# Convention: project slugs should be globally unique within this file. Skills should
+# prompt for the compound `client-slug/project-slug` form on collision.
 #
 # Per-project fields:
 #   - slug, name, status (required)
@@ -59,7 +59,7 @@ clients:
         mrr_monthly: 300
         docs_paths:
           - references/thermal-kitchen-project-plan.md
-          - references/thermal-kitchen-call-2026-05-06.md
+          - archives/references/thermal-kitchen-call-2026-05-06.md
           - /Users/justinlobaito/repos/thermal-kitchen/docs
         contacts:
           - deann@thermalkitchen.com
@@ -369,3 +369,21 @@ clients:
           - fbrand@colinemfg.com
           - nolivier@colinemfg.com  # HR lead (needs confirmation)
           - "@colinemfg.com"
+  - slug: global-ag-network
+    name: Global Ag Network
+    bucket: prospects
+    notes: Existing BGD client (agriculture podcast network; flagship Ag News Daily, host Delaney Howell). Justin has been de facto web/tech support since ~2023 with no formal retainer, and holds the Craft/SEOmatic/Ad Wizard licenses + the DigitalOcean account. Reinitiating into a paid rebuild + hosting-stabilization engagement. Delaney emailed 2026-06-12 asking to re-engage on transitioning the site; live issues = broken podcast playback + an email-license question. Rebuild platform open; Buzzsprout vs self-hosted feed to confirm. Meeting Fri 2026-06-19 10:00am (personal hold on calendar; confirm with Delaney + send invite). Playback issue fixed 2026-06-12; email-license question still open.
+    projects:
+      - slug: global-ag-network-redesign
+        name: Website rebuild + hosting stabilization
+        status: active
+        contract: TBD - no formal retainer (Apr 2025 website-subscription pricing drafted)
+        mrr_monthly: 0
+        docs_paths:
+          - /Users/justinlobaito/repos/global-ag-network/docs
+        contacts:
+          - delaney@agnewsdaily.com
+          - mike@agnewsdaily.com
+          - michelle@agnewsdaily.com
+          - "@agnewsdaily.com"
+          - "@globalagnetwork.com"
