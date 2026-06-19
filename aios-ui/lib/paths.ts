@@ -14,3 +14,6 @@ export const MEMORY_ROOT = process.env.MEMORY_ROOT ?? DEFAULT_MEMORY_ROOT
 export const CLIENTS_YAML_PATH = path.join(CLAUDE_OS_ROOT, 'clients.yaml')
 export const DECISIONS_LOG_PATH = path.join(CLAUDE_OS_ROOT, 'decisions/log.md')
 export const REFERENCES_DIR = path.join(CLAUDE_OS_ROOT, 'references')
+export const TODOS_PENDING_PATH = path.join(CLAUDE_OS_ROOT, 'todos/pending.md')
+export const TODOS_COMPLETED_PATH = path.join(CLAUDE_OS_ROOT, 'todos/completed.md')
+export const STATE_DIR = path.join(CLAUDE_OS_ROOT, 'state')

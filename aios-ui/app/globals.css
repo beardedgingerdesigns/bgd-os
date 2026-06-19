@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-roboto-slab), Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-heading: var(--font-roboto-slab), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-ibm-plex-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-space-grotesk), system-ui, -apple-system, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,89 +54,71 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: #fdb414;
-  --brand: #fdb414;
-  --brand-foreground: #0a0a0a;
-  --brand-muted: rgb(253 180 20 / 0.14);
+  /* === AIOS Operator Console — BrandOS Light Direction ===
+     Light-first palette. Ink Navy anchors structure;
+     Orange accent (#ff980b) for active states + actions. */
+
+  /* Neutral ramp */
+  --background: #F6F8F9;
+  --foreground: #222E40;
+  --card: #FFFFFF;
+  --card-foreground: #111A2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #222E40;
+
+  /* Primary = Ink Navy */
+  --primary: #111A2E;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary = Steel */
+  --secondary: #E1E9ED;
+  --secondary-foreground: #38596E;
+
+  /* Muted */
+  --muted: #EEF1F3;
+  --muted-foreground: #5E6B76;
+
+  /* Accent = Orange */
+  --accent: #ff980b;
+  --accent-foreground: #FFFFFF;
+
+  /* Semantic */
+  --destructive: #E5533C;
+
+  /* Borders & inputs */
+  --border: #DEE4E8;
+  --input: #DEE4E8;
+  --ring: #ff980b;
+
+  /* Brand tokens */
+  --brand: #ff980b;
+  --brand-foreground: #FFFFFF;
+  --brand-muted: rgb(255 152 11 / 0.12);
   --brand-secondary: #f18821;
-  --brand-secondary-muted: rgb(241 136 33 / 0.14);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  --brand-secondary-muted: rgb(241 136 33 / 0.12);
 
-.dark {
-  /* Slate-toned dark base. Cards step up one lift level so elevation
-     hierarchy stays readable against the lighter background. */
-  --background: #282d37;
-  --foreground: #ffffff;
-  --card: #323845;
-  --card-foreground: #ffffff;
-  --popover: #323845;
-  --popover-foreground: #ffffff;
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: #1a1a1a;
-  --secondary: #3a4050;
-  --secondary-foreground: #ffffff;
-  --muted: #3a4050;
-  --muted-foreground: oklch(0.78 0.01 240);
-  --accent: #3a4050;
-  --accent-foreground: #ffffff;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 18%);
-  --ring: #fdb414;
-
-  /* BGD brand: gold #fdb414 primary, orange #f18821 secondary. Hex for exact match. */
-  --brand: #fdb414;
-  --brand-foreground: #0a0a0a;
-  --brand-muted: rgb(253 180 20 / 0.16);
-  --brand-secondary: #f18821;
-  --brand-secondary-muted: rgb(241 136 33 / 0.16);
-
-  /* Chart ramp: BGD gold → orange → deep amber. */
-  --chart-1: #fdb414;
+  /* Chart ramp */
+  --chart-1: #ff980b;
   --chart-2: #f18821;
-  --chart-3: oklch(0.6 0.14 50);
-  --chart-4: oklch(0.48 0.11 50);
-  --chart-5: oklch(0.36 0.08 55);
+  --chart-3: #38596E;
+  --chart-4: #222E40;
+  --chart-5: #5E6B76;
 
-  --sidebar: #2c313c;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #fdb414;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #3a4050;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: #fdb414;
+  --radius: 0.625rem;
+
+  /* Sidebar / toolbar */
+  --sidebar: #111A2E;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #ff980b;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1a2640;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  --sidebar-ring: #ff980b;
+
+  /* Shadow tokens */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-elevated: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 @layer base {
@@ -145,15 +127,66 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Atmospheric depth — two soft brand-tinted radials that fade out
-       within the first viewport. Cheap (CSS only), keeps the dark theme
-       from reading as a black void. */
-    background-image:
-      radial-gradient(ellipse 80% 50% at 15% -10%, rgb(253 180 20 / 0.08), transparent 60%),
-      radial-gradient(ellipse 70% 50% at 90% 0%, rgb(241 136 33 / 0.06), transparent 60%);
-    background-attachment: fixed;
   }
   html {
     @apply font-sans;
   }
+}
+
+/* Three-panel shell */
+.app-shell {
+  display: grid;
+  grid-template-columns: 56px 1fr 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-shell__toolbar {
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  gap: 0.25rem;
+  border-right: 1px solid var(--sidebar-border);
+}
+
+.app-shell__context {
+  overflow-y: auto;
+  padding: 1.5rem;
+  border-right: 1px solid var(--border);
+}
+
+.app-shell__chat {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Toolbar button */
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--sidebar-foreground);
+  opacity: 0.6;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.toolbar-btn:hover {
+  opacity: 1;
+  background: var(--sidebar-accent);
+}
+
+.toolbar-btn--active {
+  opacity: 1;
+  background: var(--sidebar-accent);
+  color: var(--brand);
 }

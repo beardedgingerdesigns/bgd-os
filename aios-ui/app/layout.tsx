@@ -1,28 +1,33 @@
 import type { Metadata } from 'next'
-import { Roboto_Slab } from 'next/font/google'
+import { Space_Grotesk, IBM_Plex_Sans } from 'next/font/google'
 import './globals.css'
 import { SSEListener } from '@/components/sse-listener'
-import { ReceiptFeed } from '@/components/receipt-feed'
 
-const robotoSlab = Roboto_Slab({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-roboto-slab',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+})
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-ibm-plex-sans',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
   title: 'AIOS',
-  description: 'Justin Lobaito AIOS — local tracker',
+  description: 'Justin Lobaito AIOS — Operator Console',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`dark ${robotoSlab.variable}`}>
-      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
+    <html lang="en" className={`${spaceGrotesk.variable} ${ibmPlexSans.variable}`}>
+      <body className="h-screen overflow-hidden bg-background text-foreground antialiased font-sans">
         <SSEListener />
         {children}
-        <ReceiptFeed />
       </body>
     </html>
   )

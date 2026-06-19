@@ -1035,3 +1035,61 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 - Re-activate the AI-services pivot when a buyer appears — and source that demand through non-Jon channels rather than waiting on Jon (don't gate the business on Jon; core memory `feedback_reduce_jon_dependence`).
 
 ---
+
+## 2026-06-14 — BrandOS marketing domain: brandosportal.com
+
+**Decision:** The BrandOS marketing/web domain is **brandosportal.com**, registered 2026-06-14. This is the first concrete step of standing up BrandOS marketing.
+
+**Why:** `brandos.com` and most exact-name TLDs (.io, .co, .app, .dev, etc.) were already taken. Four parallel research agents verified availability via authoritative RDAP + WHOIS. brandosportal.com was a zero-risk pick: legacy .com (no registry-premium tier), double-confirmed unregistered, no broker/parked hold. "Portal" also describes the product — it's literally what dealers and distributors log into.
+
+**Alternatives considered:** `usebrandos.com` (initially chosen, clean SaaS imperative); `brandos.network` (most on-message, matches the tagline word-for-word, but new-gTLD with premium-price uncertainty and lower .com trust); `brandossuite.com`, `brandosnetwork.com`, others. Justin pivoted from usebrandos.com to brandosportal.com at purchase.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- BrandOS web presence and marketing links point at brandosportal.com.
+- DNS not yet wired. Next step: point nameservers (likely at DigitalOcean, where Justin already runs DNS) and stand up a landing page.
+- Consider defensively registering close variants (brandos.com is taken; usebrandos.com / brandosnetwork.com were available) so nobody parks them during launch.
+
+---
+
+## 2026-06-18 — Drop DeployHQ — let subscription lapse
+
+**Decision:** Let the DeployHQ account expire. All active projects deploy through GitHub now. DeployHQ hasn't been used in long enough that Justin can't remember the last time he triggered a deploy there.
+
+**Why:** Dead cost for a tool that's been fully replaced. GitHub handles CI/CD across the portfolio. No active projects depend on DeployHQ anymore.
+
+**Alternatives considered:** Renewing and keeping as a backup deploy path. Not worth the ongoing cost for something unused.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-19 — AIOS UI v2: chat-native operator console
+
+**Decision:** Rebuild `aios-ui/` as a chat-native operator console. Three-panel layout: toolbar (10%) selects the context view (50%), persistent Claude chat (40%) always running.
+
+**Architecture:**
+- Next.js + React, stays inside `claude-os/aios-ui/`
+- Chat spawns `claude --print` headless pointed at `claude-os` — gets all skills, MCP, memory for free
+- SSE streaming for chat output + file watcher updates to panels
+- Localhost only, no auth
+- Session auto-starts on open, persists across tab close, ends on explicit wrap
+
+**Context views (toolbar-driven):**
+- Dashboard (default): MRR, project cards, triage count, calendar. The "brief on a screen."
+- Triage: ranked queue from `state/inbox-triage.md` with draft/approve email actions
+- Projects: state cards from `state/*.md`
+- Todos: checklist from `todos/pending.md`
+
+**Quick actions (no Claude round-trip):** mark replied, check todo, dismiss. Draft reply goes through Claude + Gmail MCP.
+
+**Done-state:** Chat works, dashboard renders, triage shows ranked queue, Claude has full skill access. Used 3 days in a row instead of terminal for AIOS work.
+
+**Why:** Terminal is great for project builds but AIOS operator work (triage, brief, brainstorm, decisions) benefits from persistent visual context alongside chat. Previous UI failed because data surfaces weren't stable. They are now (90/100 audit).
+
+**Alternatives considered:** Read-only dashboard (rejected — Justin always interacts), xterm.js terminal embed (rejected — no added value), Vue 3 (rejected — React is stronger hand, Next.js eliminates separate server).
+
+**Owner:** Justin (BGD).
+
+---
