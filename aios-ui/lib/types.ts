@@ -238,6 +238,10 @@ export interface StateUpdateStore {
   dismissed: string[]                          // dedupeKeys the operator dismissed; never re-proposed
 }
 
+// What the triage skill emits in the STATE_UPDATES_JSON envelope: semantic
+// fields only. The reconcile step derives id, createdAt, and dedupeKey.
+export type RawStateUpdateProposal = Omit<StateUpdateProposal, 'id' | 'createdAt' | 'dedupeKey'>
+
 export interface ChatLoadResult {
   status: 'success' | 'failed' | 'timeout'
   sessionId: string | null                // captured from stream-json; null on failure
