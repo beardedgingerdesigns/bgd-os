@@ -1112,3 +1112,19 @@ The triage state-writeback detector now emits proposals as a `STATE_UPDATES_JSON
 **Owner:** Justin (BGD).
 
 ---
+
+## 2026-06-19 — Triage hardening: show-what-they-said, recency anchor, pattern mute-list
+
+**Decision:** Harden the live inbox triage (`/daily-inbox-triage`; `scheduled-triage` is legacy and not touched) with four changes: (1) every reply candidate shows a 1-line summary of the latest **inbound** message via `get_thread`, alongside the existing project-memory snippet; (2) classify by the **latest** message, not Justin's last outbound — a same-day human reply surfaces in "Reply today" with its summary and a ~2h grace, replacing the blanket 18h hide; (3) split the FYI pile — keep a short "Needs action (not a reply)" ops tier (billing/renewals/access), drop pure FYI entirely; (4) new `state/triage-mutes.md` pattern-level mute-list (senders / subjects / categories), read every run, applied before the heuristic, additive to the existing thread-level `triage-overrides.json`.
+
+**Why:** The 6/19 afternoon run filed Melinda (Inside Out) under "consider nudge — 21 days since your last message" when she'd replied that morning — it anchored on Justin's last outbound and showed no message content, so a long-awaited reply was invisible. Noise (Camp Mitigwa personal, calendar accepts, Gemini notes) reached "Reply today" and even got drafts, because filtering is Gmail-query-only. Justin won't drive the UI-only thread-override, so a plain-text mute-list he controls is the durable fix and teaches future runs. What would change my mind: if a `get_thread` per candidate proves too slow at inbox scale.
+
+**Alternatives considered:** Tell-me-in-chat-only mute (rejected — the file is the durable source of truth; chat just appends to it). Collapse FYI to a one-line count, or kill all non-reply items (rejected — keep the ops-action tier so failed billing still surfaces). Keep the 18h rule and only fix framing (rejected — wouldn't surface a same-day reply, the Melinda case).
+
+**Deferred:** Automate Gemini meeting-notes / recaps handling — its own future feature; the mute-list just suppresses them for now.
+
+**Artifacts:** requirements `brainstorm/2026-06-19-triage-hardening-requirements.md`.
+
+**Owner:** Justin (BGD).
+
+---

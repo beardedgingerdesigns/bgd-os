@@ -114,3 +114,9 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Client: global-ag-network
   - Priority: low
   - Notes: Repo currently local-only at /repos/global-ag-network/.
+
+- [ ] **Automate Gemini meeting-notes / recaps handling** `#ops`
+  - Added: 2026-06-19
+  - Source: skill:wiki (triage hardening brainstorm)
+  - Priority: medium
+  - Notes: Future feature flagged during triage hardening. For now Gemini notes emails are just suppressed via the triage mute-list (state/triage-mutes.md). The real want: auto-route recaps into dispatch/state instead of dropping them on the floor. See brainstorm/2026-06-19-triage-hardening-requirements.md (Deferred) + decisions/log.md 2026-06-19.

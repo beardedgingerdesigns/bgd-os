@@ -58,23 +58,45 @@ For each candidate thread ID from Step 1, apply these rules **before** the inbou
 
 The override file is the operator's final word — it always wins over the heuristic.
 
-#### 2.1 — Gmail thread-participant check for borderline cases.
+#### 2.0b — Read the mute-list BEFORE evaluating any thread.
 
-The "last sender ≠ justin@beardedgingerdesigns.com AND >18h since last activity" heuristic misclassifies threads where Justin has already replied mid-thread (e.g., he answered yesterday, the contact replied this morning, but Justin is still effectively in the loop). For each thread that **passes** the heuristic in 2.2, additionally call `mcp__claude_ai_Gmail__get_thread(thread_id)` and inspect `messages[*].headers.From`.
+Read `state/triage-mutes.md`. If the file does not exist or is empty, skip muting (no-op, never error). `#` begins an inline comment; ignore blank lines.
 
-If `justin@beardedgingerdesigns.com` appears as the sender on **any** message in the thread (not just the last one), downgrade or drop — Justin is already engaged. Only surface as "owes a reply" if the contact has sent something since Justin's most recent reply AND >18h has elapsed.
+It has three sections; a thread is **suppressed entirely** (never surfaced, never drafted, never counted in any bucket or envelope) if it matches any line in any section:
 
-#### 2.2 — Heuristic (run AFTER 2.0 and feeding 2.1)
+- `senders` — glob/substring match against the thread's From address. `*@scouting.org` matches the whole domain; a bare address matches exactly.
+- `subjects` — substring or regex match against the thread subject (case-insensitive). `Notes:` catches Gemini recaps.
+- `categories` — a small known enum the skill detects:
+  - `calendar-accept` — subject begins `Accepted:` / `Declined:` / `Tentative:`, or the message is a calendar RSVP.
+  - `auto-notification` — sender is a no-reply / notification-class address and the body is machine-generated.
 
-A thread qualifies if **all** are true:
-- Last message in the thread is **inbound** (sender ≠ `justin@beardedgingerdesigns.com`).
-- Last message is **>18 hours old** (so same-morning threads don't get nagged).
-- Sender domain is not in the bot/no-reply exclude list (Bonsai notifications, Drive share notifications, Google Calendar invites, etc.).
-- Thread is not labeled `Archived` or `Done` (if such labels exist).
-- The override file (Step 2.0) does not skip this thread.
-- The Gmail thread-participant check (Step 2.1) does not downgrade this thread.
+The mute-list is the operator's standing pattern-level filter: like the override file, it **always wins over the heuristic**. Mutes (pattern-level, permanent) and overrides (per-thread, UI-driven) are independent layers — either one suppressing is enough.
 
-Drop everything else.
+#### 2.1 — Gmail thread-participant check + capture what they said.
+
+The latest-inbound heuristic misclassifies threads where Justin has already replied mid-thread (e.g., he answered yesterday, the contact replied this morning). For each thread that **passes** the heuristic in 2.2, call `mcp__claude_ai_Gmail__get_thread(thread_id)` and inspect `messages[*]` — both `headers.From` (to confirm direction) and the **latest inbound message's body** (to capture *what they said* for Step 5).
+
+Anchor on the **latest message**. If `justin@beardedgingerdesigns.com` is the sender of the *latest* message, Justin is not owed a reply — drop it (the ball is in their court). Only surface as "owes a reply" when the contact's message is the latest one AND at least ~2 hours have elapsed since it arrived (a brief grace so mail that landed minutes ago isn't surfaced half-read). A genuine same-day reply is still surfaced — never hold a real reply back to the next run.
+
+#### 2.2 — Heuristic (run AFTER 2.0 / 2.0b, feeding 2.1)
+
+A thread qualifies as **reply-owed** if **all** are true:
+- The **latest** message in the thread is **inbound** (sender ≠ `justin@beardedgingerdesigns.com`) — anchor on the latest message, never on Justin's last outbound.
+- The latest inbound message is at least **~2 hours old** (a brief grace so mail that just landed isn't surfaced half-read). A genuine same-day reply still qualifies — do not hold it to the next run.
+- Sender is a real person, not a bot / no-reply / notification address.
+- Neither the override file (2.0) nor the mute-list (2.0b) suppresses this thread.
+- The thread-participant check (2.1) does not drop this thread.
+
+Threads where the latest message is Justin's are **not** reply-owed. Action-needed signals are handled in 2.3. Everything else is dropped — there is no FYI pile.
+
+#### 2.3 — Action-needed signals (not replies)
+
+Some threads aren't replies but still need Justin to *do* something. Detect these even when machine-generated, and surface them under **Needs action (not a reply)**:
+
+- A failed/declined payment or billing charge, or a hosting/subscription renewal that failed or is lapsing (e.g. a Servd plan renewal failure).
+- An access/permission grant Justin must act on (e.g. analytics or repo access just granted that he needs to use).
+
+A muted thread (2.0b) is never surfaced here either. **Pure FYI is dropped, not surfaced** — payments *received*, maintenance notices, calendar accepts, auto-replies, newsletters, Gemini notes.
 
 ### Step 3 — Score each qualifying thread
 
@@ -91,11 +113,11 @@ Score = sum of:
 | Thread is from a new lead / first-time contact | +2 |
 | Thread relates to active Q2 priority (productize / Terraplex / business plan) | +2 |
 
-Tier the result:
-- **Reply today:** score ≥ 8
-- **Reply this week:** score 4–7
-- **FYI / context only:** score 1–3
-- **Archive candidate:** score 0
+Tier the **reply-owed** threads:
+- **Reply today:** score ≥ 8 — plus any genuine same-day human reply (a real person re-engaging on a thread), which always belongs here once past the ~2h grace.
+- **Reply this week:** every other reply-owed thread.
+
+Low-scoring threads are **not** downgraded to an FYI pile — a thread is either reply-owed (one of the two buckets above), action-needed (2.3), or already dropped by the filters. There is no FYI or Archive bucket.
 
 ### Step 4 — Attach project memory context (via `project-researcher` agent)
 
@@ -131,12 +153,13 @@ Print a Markdown brief in chat:
 
 ```
 # Inbox Triage — {today}
-**{N} threads need reply. {X} today, {Y} this week.**
+**{N} threads need a reply. {X} today, {Y} this week.**
 
 ## Reply today
 1. **{Sender Name}** ({sender domain}) — *{score}*
    Subject: {thread subject}
    Last inbound: {days waiting} days ago
+   What they said: {1-line summary of the latest inbound message — what they actually wrote, from Step 2.1}
    Project context: {memory snippet}
    Suggested next step: {1-line action}
    Thread: {message ID for direct reply}
@@ -144,12 +167,11 @@ Print a Markdown brief in chat:
 ## Reply this week
 ...
 
-## FYI / context only
-- {Sender} — {subject} ({days waiting}d)
-
-## Archive candidates
-- {Sender} — {subject}
+## Needs action (not a reply)
+- {Sender / source} — {what needs doing} ({days}d)
 ```
+
+`What they said` is the verbatim gist of the latest inbound message and is distinct from `Project context` (the memory snippet). Both appear on each reply-owed thread. Omit the `Needs action` section entirely when there are no action-needed signals. There is no FYI or Archive section.
 
 ### Step 6 — Offer to draft a reply
 
@@ -188,7 +210,7 @@ Emit exactly this shape, wrapped in the marker tags so the UI can extract it det
 ````
 
 **Rules for the envelope:**
-- Include **only** "Reply today" and "Reply this week" threads. Skip FYI + archive candidates — those aren't actionable todos.
+- Include **only** "Reply today" and "Reply this week" (reply-owed) threads. Needs-action items (2.3) and dropped noise do not go in the envelope — its shape is unchanged.
 - `type` should match the work the todo represents:
   - `email_reply` for any inbox thread that needs a reply (the default for this skill).
   - `follow_up` for a thread where Justin already replied but is waiting on response (use sparingly).
@@ -312,11 +334,11 @@ No Gmail drafts created without confirmation. No sending — ever.
 
 1. **Minimal writes.** The only file written is `state/inbox-triage.md` (overwritten each run; it now carries both the `TODOS_JSON` and `STATE_UPDATES_JSON` envelopes). Do not modify memory, the proposal store, or other files. `state/<slug>.md` is NEVER written here — only proposed via the envelope. Only additional side effect on confirmation is creating a Gmail draft via `mcp__claude_ai_Gmail__create_draft`.
 2. **Never send.** No matter how clear the reply seems.
-3. **Don't fabricate "days waiting."** Use the actual `date` field of the last inbound message.
-4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Show them under FYI only if they have a deadline.
+3. **Don't fabricate "days waiting," and anchor on the latest inbound message.** Use the actual `date` field of the latest inbound message. Never describe a reply-owed thread by "days since your last message" (Justin's outbound) — if the contact's reply is the latest message, that thread is reply-owed, not a stale nudge.
+4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Surface one only if it carries a hard deadline, under "Needs action"; otherwise drop it.
 5. **Don't surface internal Justin-to-Justin or system-generated email.** Bot exclusions in Step 1.
 6. **If zero threads qualify**, say so cheerfully — "Inbox is clean as of {time}." That's a real outcome, not a failure.
-7. **Stay under ~60s wall-clock.** Cap thread fetches; don't call `get_thread` until a draft is requested.
+7. **Stay under ~60s wall-clock.** Call `get_thread` only for threads that survive the filters (reply-owed candidates) — to confirm direction and summarize the latest inbound message (2.1). Never fetch bodies for dropped or muted threads.
 8. **Never conflate two contacts by first name alone.** Different email addresses → different people, unless memory/clients.yaml explicitly says otherwise. No "same person, different project" framing without an evidence trail.
 9. **Render the actual sender name from the email header.** Don't substitute or "correct" a name based on what memory says the contact's name should be. If memory disagrees with the header, surface the discrepancy in the context line; don't silently overwrite.
 
@@ -334,7 +356,7 @@ After each run, optionally track replied-within-24hr counts manually for the fir
 - **Phase 1:** Manual run each morning. Justin reads queue + decides + replies himself.
 - **Phase 2 (current):** Scheduled via Cowork (morning 7am + afternoon 1pm CST). Results persist to `state/inbox-triage.md` so any session can read them.
 - **Phase 3:** Auto-draft replies for top-N threads (still draft, not send). Skill creates Gmail drafts proactively.
-- **Phase 4:** L3 supervised — skill bulk-archives obvious "archive candidates" without asking. Justin reviews weekly.
+- **Phase 4:** L3 supervised — skill proposes new mute-list lines for recurring noise it keeps dropping (appends to `state/triage-mutes.md`). Justin reviews weekly.
 
 Advance phases by explicit edit to the frontmatter `bike-method-phase` value. Do not auto-advance.
 
