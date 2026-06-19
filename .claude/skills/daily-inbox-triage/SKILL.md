@@ -208,7 +208,8 @@ The file should contain:
 
 1. A frontmatter block with the run timestamp and source (morning/afternoon/manual)
 2. The full Markdown brief (same as chat output from Step 5)
-3. The JSON envelope (same as Step 7)
+3. The `TODOS_JSON` envelope (same as Step 7)
+4. The `STATE_UPDATES_JSON` envelope (same as Step 9)
 
 ```markdown
 ---
@@ -219,16 +220,20 @@ threads_needing_reply: {N}
 
 {Full Markdown brief from Step 5}
 
-{JSON envelope from Step 7}
+{TODOS_JSON envelope from Step 7}
+
+{STATE_UPDATES_JSON envelope from Step 9}
 ```
 
 This file is the **handoff surface** — any future session (Claude Code, Cowork, Desktop) can read `state/inbox-triage.md` to know what the last triage found without needing to re-run the full Gmail scan.
 
-### Step 9 — Reconcile project state (draft state-update proposals)
+### Step 9 — Reconcile project state (emit state-update proposals)
 
 The write-back loop that keeps the dashboard's source of truth current. You
 DRAFT proposals here; Justin reviews and applies them from the UI's **Sync**
-queue. You never edit `state/<slug>.md` directly.
+queue. You never edit `state/<slug>.md` directly, and you never hand-write the
+proposal store — you **emit** proposals as a `STATE_UPDATES_JSON` envelope
+(below) and the UI's reconcile step persists and dedupes them.
 
 For each thread that resolved a `project_slug` (Step 4) AND carries a
 state-relevant signal — a launch/date change, a status change, or a blocker
@@ -237,47 +242,59 @@ raised or cleared — reconcile it against the project's state file:
 1. Read `/Users/justinlobaito/repos/claude-os/state/<slug>.md`. If it does not
    exist, skip and note it in the run summary (creating state files is
    `/dispatch` / `/kickoff-project` work, not triage's).
-2. Compare the email's claim to the matching field. Only draft a proposal when
-   the email **contradicts** what's there — a thread that merely confirms the
-   current state produces nothing.
+2. Draft a proposal when the email either **contradicts** the matching field OR
+   introduces a **materially-new, explicit, attributable** state fact the file
+   does not yet track (e.g., a go-live date when none is recorded). A thread that
+   merely confirms the current state produces nothing.
 
    | field | maps to |
    |---|---|
    | `status` | the `**Status:**` value |
-   | `current_status` | the `## Current Status` body |
+   | `current_status` | the `## Current Status` body — **also the target for launch/date changes** (applied as a dated bullet) |
    | `next_step` | a `## Next Steps` bullet |
    | `blocker` | a `## Blockers` bullet (raise = add; clear = empty `proposed`) |
 
 3. Set `confidence`: `high` only when the email states an explicit, attributable
-   fact ("we're pushing launch to mid-July"); `low` for inference ("sounds like
-   they're behind"). An implied-but-unstated change is at most low-confidence —
-   never invent an outcome (the `/dispatch` rule).
-4. Compute `dedupeKey = "<slug>:<field>:<short hash of proposed>"`. Read the
-   store at `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/pending-state-updates.json`
-   (shape `{ "proposals": [...], "dismissed": [...] }`; missing file → both
-   empty). **Skip** if `dedupeKey` is already in `proposals` OR `dismissed` —
-   never re-raise a pending or operator-dismissed change.
-5. Append a proposal and write the store back (2-space JSON, preserving the
-   existing `proposals` and `dismissed`):
+   fact ("we're pushing launch to mid-July"); `low` for inference. A **new fact**
+   (not a contradiction of an existing value) must be `high` — an
+   implied-but-unstated change is never emitted. Never invent an outcome (the
+   `/dispatch` rule).
+4. Set `current` to the value being contradicted (shown in the diff); for a new
+   fact the file doesn't track, use a short note like `(not yet tracked)`. Set
+   `stateUpdatedAt` to the file's `**Updated:**` date **verbatim** — it is the
+   clobber guard; reformat or omit it and the operator can't apply.
 
+Emit the proposals as a single envelope, appended after the `TODOS_JSON` envelope
+and written into `state/inbox-triage.md` (Step 8). Emit **semantic fields only**
+— the UI derives `id`, `createdAt`, and `dedupeKey`, reads the store, dedupes
+against pending + dismissed, and persists. You do **not** read or write
+`pending-state-updates.json`.
+
+````
+<!-- STATE_UPDATES_JSON_START -->
 ```json
 {
-  "id": "su-<8 hex>",
-  "slug": "<slug>",
-  "field": "status | current_status | next_step | blocker",
-  "current": "<value being contradicted — shown in the diff>",
-  "proposed": "<drafted replacement value>",
-  "evidence": { "source": "triage", "threadId": "<id>", "sender": "<addr>", "date": "YYYY-MM-DD" },
-  "confidence": "high | low",
-  "stateUpdatedAt": "<the file's **Updated:** date, verbatim — the clobber guard>",
-  "dedupeKey": "<as computed>",
-  "createdAt": "<ISO now>"
+  "generated_at": "{ISO timestamp now}",
+  "proposals": [
+    {
+      "slug": "<slug>",
+      "field": "status | current_status | next_step | blocker",
+      "current": "<value being contradicted, or a short (not yet tracked) note>",
+      "proposed": "<drafted replacement / new value>",
+      "evidence": { "source": "triage", "threadId": "<id or null>", "sender": "<addr or null>", "date": "YYYY-MM-DD" },
+      "confidence": "high | low",
+      "stateUpdatedAt": "<the file's **Updated:** date, verbatim>"
+    }
+  ]
 }
 ```
+<!-- STATE_UPDATES_JSON_END -->
+````
 
-This step writes **only** the proposal store. It never edits `state/<slug>.md`
-(Justin applies from Sync, behind a clobber guard) and never touches a project
-wiki (ADR 0004 / 0007).
+If zero proposals, still emit the envelope with `"proposals": []`. Emit valid
+JSON (no trailing commas, no comments). **Do not** announce the envelope in the
+chat. This step never edits `state/<slug>.md` (Justin applies from Sync, behind a
+clobber guard) and never touches a project wiki (ADR 0004 / 0007).
 
 ## Output contract
 
@@ -286,14 +303,14 @@ Every run produces:
 1. **One Markdown brief in chat** — ranked queue with project context attached.
 2. **One structured JSON envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; envelope is the machine surface.
 3. **One file write to `state/inbox-triage.md`** (Step 8) — overwrites previous run. Single file, no accumulation. Any session can read the latest triage results.
-4. **State-update proposals appended to `pending-state-updates.json`** (Step 9) — drafted diffs for contradicted state fields, reviewed in the UI's Sync queue. Never edits `state/<slug>.md` directly.
+4. **A `STATE_UPDATES_JSON` envelope** in `state/inbox-triage.md` (Step 9) — drafted state-update proposals the UI's reconcile step persists to the Sync queue. Never edits `state/<slug>.md` or the proposal store directly.
 5. **(Optional, on Justin's request)** drafted replies for threads he picks.
 
 No Gmail drafts created without confirmation. No sending — ever.
 
 ## Critical implementation rules
 
-1. **Minimal writes.** The files written are `state/inbox-triage.md` (overwritten each run) and `pending-state-updates.json` (appended in Step 9). Do not modify memory or write other files. `state/<slug>.md` is NEVER written here — only proposed. Only additional side effect on confirmation is creating a Gmail draft via `mcp__claude_ai_Gmail__create_draft`.
+1. **Minimal writes.** The only file written is `state/inbox-triage.md` (overwritten each run; it now carries both the `TODOS_JSON` and `STATE_UPDATES_JSON` envelopes). Do not modify memory, the proposal store, or other files. `state/<slug>.md` is NEVER written here — only proposed via the envelope. Only additional side effect on confirmation is creating a Gmail draft via `mcp__claude_ai_Gmail__create_draft`.
 2. **Never send.** No matter how clear the reply seems.
 3. **Don't fabricate "days waiting."** Use the actual `date` field of the last inbound message.
 4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Show them under FYI only if they have a deadline.
