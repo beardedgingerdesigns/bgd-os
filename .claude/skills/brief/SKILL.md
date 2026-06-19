@@ -12,6 +12,7 @@ Read these, synthesize a decision-ready dashboard in under 40 lines. No email fe
 - `context/priorities.md` — the quarter's frame
 - `state/*.md` — per-project state (flag Updated dates >7 days as possibly stale)
 - `state/inbox-triage.md` — latest triage (flag `last_run` >14h on weekdays as dead schedule; surface "Reply today" count and any score >=10 by name)
+- `aios-ui/.aios-cache/pending-state-updates.json` — triage-drafted state-update proposals awaiting review (read the `proposals` array; count only)
 - `todos/pending.md`
 - `decisions/log.md` — last 2-3 entries
 - Google Calendar: today + next 3 days (skip silently if MCP unavailable)
@@ -29,5 +30,6 @@ End with calendar collisions or deadline pressure within 72h.
 
 - Every line earns its place by changing what Justin does today. Synthesize, don't dump.
 - Surface staleness — don't paper over state files or priorities that look overtaken.
+- If `pending-state-updates.json` has proposals, surface the count once near the staleness flags: "N state updates proposed — review in Sync." Brief is read-only: never apply or write state; the Sync view owns that.
 - If Justin makes a decision, suggest `decisions/log.md`.
 - Route follow-ups: project deep-dive → that repo. Email → `/daily-inbox-triage`. Full board → `/weekly-project-status`.
