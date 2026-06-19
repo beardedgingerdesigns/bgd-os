@@ -209,6 +209,35 @@ export interface SlashCommand {
   description: string  // one-line summary (may be truncated for display)
 }
 
+// ---------- state write-back: triage-drafted proposals reviewed in Sync ----------
+
+// Proposable state-file fields. `**Updated:**` is not here — Apply always bumps
+// it as a side effect, it is never proposed on its own.
+export type StateUpdateField = 'status' | 'current_status' | 'next_step' | 'blocker'
+
+export interface StateUpdateProposal {
+  id: string                                   // su-<8 hex>
+  slug: string                                 // state/<slug>.md
+  field: StateUpdateField
+  current: string                              // value being contradicted (for the diff / matching)
+  proposed: string                             // drafted replacement value
+  evidence: {
+    source: 'triage'
+    threadId: string | null
+    sender: string | null
+    date: string                               // YYYY-MM-DD of the evidence
+  }
+  confidence: 'high' | 'low'                   // high = explicit attributable fact; low = inference
+  stateUpdatedAt: string | null                // state file's **Updated:** date at draft time (clobber guard)
+  dedupeKey: string                            // slug:field:hash(proposed) — blocks re-proposal
+  createdAt: string                            // ISO timestamp the proposal was drafted
+}
+
+export interface StateUpdateStore {
+  proposals: StateUpdateProposal[]
+  dismissed: string[]                          // dedupeKeys the operator dismissed; never re-proposed
+}
+
 export interface ChatLoadResult {
   status: 'success' | 'failed' | 'timeout'
   sessionId: string | null                // captured from stream-json; null on failure
