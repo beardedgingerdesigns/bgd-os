@@ -94,10 +94,7 @@ export function DashboardView() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between gap-3">
-        <h1 className="text-xl font-heading font-semibold tracking-tight">Dashboard</h1>
-        <RunTriageButton onComplete={load} />
-      </div>
+      <h1 className="text-xl font-heading font-semibold tracking-tight mb-6">Dashboard</h1>
 
       {error && (
         <p className="text-sm text-destructive mb-6">Could not load dashboard: {error}</p>
@@ -131,6 +128,15 @@ export function DashboardView() {
               tone="neutral"
             />
           </div>
+
+          <section className="mb-8">
+            <h2 className="text-[11px] font-heading font-semibold mb-3 text-muted-foreground uppercase tracking-wider">
+              Quick Actions
+            </h2>
+            <div className="flex flex-wrap items-start gap-2">
+              <RunTriageButton onComplete={load} />
+            </div>
+          </section>
 
           <h2 className="text-[11px] font-heading font-semibold mb-3 text-muted-foreground uppercase tracking-wider">
             Project State
