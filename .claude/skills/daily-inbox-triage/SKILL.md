@@ -301,7 +301,7 @@ clobber guard) and never touches a project wiki (ADR 0004 / 0007).
 Every run produces:
 
 1. **One Markdown brief in chat** — ranked queue with project context attached.
-2. **One structured JSON envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; envelope is the machine surface.
+2. **The `TODOS_JSON` envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; the envelopes are the machine surface. (The `STATE_UPDATES_JSON` envelope is item 4.)
 3. **One file write to `state/inbox-triage.md`** (Step 8) — overwrites previous run. Single file, no accumulation. Any session can read the latest triage results.
 4. **A `STATE_UPDATES_JSON` envelope** in `state/inbox-triage.md` (Step 9) — drafted state-update proposals the UI's reconcile step persists to the Sync queue. Never edits `state/<slug>.md` or the proposal store directly.
 5. **(Optional, on Justin's request)** drafted replies for threads he picks.

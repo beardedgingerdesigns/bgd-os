@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { readStateUpdates, removeProposal } from '@/lib/cache/state-updates'
+import { readStateUpdates, markApplied } from '@/lib/cache/state-updates'
 import { applyProposal } from '@/lib/data/state-merge'
 import { STATE_DIR } from '@/lib/data/state'
 import { invalidationBus } from '@/lib/invalidation-bus'
@@ -63,7 +63,9 @@ export async function POST(
   }
 
   await atomicWrite(filePath, result.markdown)
-  await removeProposal(id)
+  // markApplied (not removeProposal) so the frozen triage envelope can't
+  // resurrect this proposal on the next reconcile-on-read GET.
+  await markApplied(id)
   invalidationBus.publish({
     scope: { kind: 'admin' },
     reason: `state update applied: ${proposal.slug}`,

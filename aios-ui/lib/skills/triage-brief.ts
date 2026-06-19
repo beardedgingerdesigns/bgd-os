@@ -13,6 +13,8 @@
 // view can render readable, ranked rows even when the envelope is empty (the
 // common "clean inbox, here's the watch list" case in the current cache).
 
+import { stripTriageEnvelopes } from '@/lib/skills/triage-envelopes'
+
 export type TriageSectionKind =
   | 'reply_today'
   | 'reply_week'
@@ -112,13 +114,10 @@ function parseThread(bullet: string): TriageThread {
   }
 }
 
-// Drop the TODOS_JSON / STATE_UPDATES_JSON envelopes before prose parsing so
-// their fenced JSON never gets mistaken for a section body. `g` so both strip.
-const ENVELOPE_RE =
-  /<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_START\s*-->[\s\S]*?<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_END\s*-->/gi
-
 export function parseTriageBrief(markdown: string): TriageBrief {
-  const body = markdown.replace(ENVELOPE_RE, '')
+  // Drop the TODOS_JSON / STATE_UPDATES_JSON envelopes before prose parsing so
+  // their fenced JSON never gets mistaken for a section body.
+  const body = stripTriageEnvelopes(markdown)
   const lines = body.split('\n')
 
   let heading: string | null = null

@@ -214,5 +214,26 @@ describe('state-updates API routes', () => {
       const body = (await (await GET()).json()) as StateUpdateStore
       expect(body.proposals).toHaveLength(1)
     })
+
+    it('does not resurrect an applied proposal on the next reconcile-on-read', async () => {
+      await seedStore({ proposals: [], dismissed: [] })
+      await fs.writeFile(triagePath(), triageEnvelopeMd([ENV_PROPOSAL]), 'utf-8')
+      const { GET, POST } = await loadRoutes()
+
+      // First GET reconciles the envelope into the store.
+      const first = (await (await GET()).json()) as StateUpdateStore
+      expect(first.proposals).toHaveLength(1)
+      const { id, dedupeKey } = first.proposals[0]
+
+      // Apply it (state file Updated 2026-06-09 matches the proposal's stateUpdatedAt).
+      const res = await POST(new Request('http://test/apply', { method: 'POST' }), asParams(id))
+      expect(res.status).toBe(200)
+
+      // The triage file is unchanged (still carries the envelope). The next GET
+      // must NOT re-add the applied proposal — markApplied recorded its dedupeKey.
+      const second = (await (await GET()).json()) as StateUpdateStore
+      expect(second.proposals).toHaveLength(0)
+      expect(second.dismissed).toContain(dedupeKey)
+    })
   })
 })

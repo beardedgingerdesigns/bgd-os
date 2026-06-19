@@ -10,6 +10,7 @@ import {
   removeProposal,
   dismissProposal,
   reconcileStateUpdates,
+  markApplied,
   dedupeKeyFor,
   stateUpdatesPath,
 } from '@/lib/cache/state-updates'
@@ -178,6 +179,24 @@ describe('state-updates store', () => {
     it('dedupeKeyFor is stable for identical proposed and differs otherwise', () => {
       expect(dedupeKeyFor('s', 'status', 'same')).toBe(dedupeKeyFor('s', 'status', 'same'))
       expect(dedupeKeyFor('s', 'status', 'a')).not.toBe(dedupeKeyFor('s', 'status', 'b'))
+    })
+
+    it('markApplied removes the proposal and records its dedupeKey in dismissed', async () => {
+      await addProposal(makeProposal())
+      const applied = await markApplied('su-abc12345')
+      expect(applied?.id).toBe('su-abc12345')
+      const store = await readStateUpdates()
+      expect(store.proposals).toHaveLength(0)
+      expect(store.dismissed).toContain('wild-rose:current_status:hash1')
+    })
+
+    it('after markApplied, re-reconciling the same envelope does not resurrect the proposal', async () => {
+      const md = envelopeMd([rawProposal()])
+      await reconcileStateUpdates(md, '2026-06-19T16:30:00Z')
+      const { proposals } = await readStateUpdates()
+      await markApplied(proposals[0].id)
+      expect(await reconcileStateUpdates(md, '2026-06-19T17:00:00Z')).toBe(0)
+      expect((await readStateUpdates()).proposals).toHaveLength(0)
     })
   })
 })

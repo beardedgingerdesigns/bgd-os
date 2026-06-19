@@ -39,12 +39,19 @@ export async function readStateUpdates(): Promise<StateUpdateStore> {
 
 // Atomic write (temp + rename) so a concurrent reader never sees a torn file.
 // Mirrors the apply route's atomicWrite (app/api/state-updates/[id]/apply/route.ts).
+// Cleans up the temp file if rename fails (cross-device, ENOSPC) so failures
+// don't accumulate orphaned .tmp files.
 export async function writeStateUpdates(store: StateUpdateStore): Promise<void> {
   const dest = stateUpdatesPath()
   await fs.mkdir(cacheDir(), { recursive: true })
   const tmp = `${dest}.${process.pid}.${Date.now()}.tmp`
   await fs.writeFile(tmp, JSON.stringify(store, null, 2), 'utf-8')
-  await fs.rename(tmp, dest)
+  try {
+    await fs.rename(tmp, dest)
+  } catch (err) {
+    await fs.unlink(tmp).catch(() => undefined)
+    throw err
+  }
 }
 
 // Shared dedupe predicate: a dedupeKey already pending or dismissed is a dup.
@@ -70,13 +77,30 @@ export async function addProposal(proposal: StateUpdateProposal): Promise<boolea
   })
 }
 
-// Remove a proposal by id (used after a successful apply). Returns it, or null.
+// Remove a proposal by id. Returns it, or null. Does not touch `dismissed`.
 export async function removeProposal(id: string): Promise<StateUpdateProposal | null> {
   return withLock(async () => {
     const store = await readStateUpdates()
     const idx = store.proposals.findIndex(p => p.id === id)
     if (idx === -1) return null
     const [removed] = store.proposals.splice(idx, 1)
+    await writeStateUpdates(store)
+    return removed
+  })
+}
+
+// Remove a proposal after it was applied AND record its dedupeKey in `dismissed`.
+// Without this, the still-frozen STATE_UPDATES_JSON envelope in inbox-triage.md
+// would be re-reconciled on the next GET and resurrect the applied proposal —
+// now clobber-stale, so un-appliable (a permanent ghost) until the next triage
+// run overwrites the file. Suppressing the dedupeKey closes that loop.
+export async function markApplied(id: string): Promise<StateUpdateProposal | null> {
+  return withLock(async () => {
+    const store = await readStateUpdates()
+    const idx = store.proposals.findIndex(p => p.id === id)
+    if (idx === -1) return null
+    const [removed] = store.proposals.splice(idx, 1)
+    if (!store.dismissed.includes(removed.dedupeKey)) store.dismissed.push(removed.dedupeKey)
     await writeStateUpdates(store)
     return removed
   })
