@@ -15,6 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { RunTriageButton } from '@/components/run-triage-button'
 import { extractTodosEnvelope } from '@/lib/skills/todos-envelope'
 import {
   parseTriageBrief,
@@ -345,18 +346,21 @@ export function TriageView() {
             </p>
           )}
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => void fetchLatest()}
-          disabled={load.kind === 'loading'}
-          aria-label="Refresh triage"
-        >
-          <RefreshCw
-            className={`h-3.5 w-3.5 ${load.kind === 'loading' ? 'animate-spin' : ''}`}
-          />
-          <span className="ml-1">Refresh</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <RunTriageButton onComplete={fetchLatest} />
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => void fetchLatest()}
+            disabled={load.kind === 'loading'}
+            aria-label="Refresh triage"
+          >
+            <RefreshCw
+              className={`h-3.5 w-3.5 ${load.kind === 'loading' ? 'animate-spin' : ''}`}
+            />
+            <span className="ml-1">Refresh</span>
+          </Button>
+        </div>
       </div>
 
       {isStale && (

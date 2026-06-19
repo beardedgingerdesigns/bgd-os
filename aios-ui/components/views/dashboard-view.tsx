@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { RunTriageButton } from '@/components/run-triage-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StatTile } from '@/components/stat-tile'
@@ -76,27 +77,27 @@ export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let cancelled = false
-    fetch('/api/dashboard')
-      .then(res => {
-        if (!res.ok) throw new Error(`dashboard fetch failed (${res.status})`)
-        return res.json() as Promise<DashboardData>
-      })
-      .then(d => {
-        if (!cancelled) setData(d)
-      })
-      .catch(err => {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err))
-      })
-    return () => {
-      cancelled = true
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard', { cache: 'no-store' })
+      if (!res.ok) throw new Error(`dashboard fetch failed (${res.status})`)
+      setData((await res.json()) as DashboardData)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
     }
   }, [])
 
+  useEffect(() => {
+    void load()
+  }, [load])
+
   return (
     <div>
-      <h1 className="text-xl font-heading font-semibold tracking-tight mb-6">Dashboard</h1>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <h1 className="text-xl font-heading font-semibold tracking-tight">Dashboard</h1>
+        <RunTriageButton onComplete={load} />
+      </div>
 
       {error && (
         <p className="text-sm text-destructive mb-6">Could not load dashboard: {error}</p>
