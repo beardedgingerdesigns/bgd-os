@@ -31,11 +31,12 @@ const THREAD_ID_REGEX = /Thread:\s*`?([0-9a-f]{12,20})`?/g
 // daily-inbox-triage SKILL.md Step 5 output template.
 const BLOCK_BOUNDARY = /^(##+\s|\d+\.\s|-\s\*\*|Thread:\s)/
 
-// Strip the TODOS_JSON envelope (markers + fenced JSON) from rendered output.
-// We never want operators to see the system envelope as text — it's a machine
-// surface for the UI's structured renderer (see GAP-04-01).
-const TODOS_ENVELOPE_STRIP_RE =
-  /<!--\s*TODOS_JSON_START\s*-->[\s\S]*?<!--\s*TODOS_JSON_END\s*-->\s*/i
+// Strip the TODOS_JSON / STATE_UPDATES_JSON envelopes (markers + fenced JSON)
+// from rendered output. We never want operators to see a system envelope as
+// text — they're machine surfaces for the UI's structured renderer (GAP-04-01).
+// `g` so both envelopes strip when present.
+const ENVELOPE_STRIP_RE =
+  /<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_START\s*-->[\s\S]*?<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_END\s*-->\s*/gi
 
 interface ThreadBlock {
   lines: string[]
@@ -186,7 +187,7 @@ export function TriageOutput({
   // by contacts and render the markdown with Gmail-link rewrites in place.
   // We still strip the envelope markers if any happen to be present, so the
   // operator never sees the raw <!-- TODOS_JSON_START --> markers as text.
-  const withoutEnvelope = markdown.replace(TODOS_ENVELOPE_STRIP_RE, '')
+  const withoutEnvelope = markdown.replace(ENVELOPE_STRIP_RE, '')
 
   const filtered =
     projectSlug && projectContacts && projectContacts.length > 0

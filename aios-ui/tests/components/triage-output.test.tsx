@@ -231,3 +231,30 @@ describe('TriageOutput — admin dashboard mode (renderRowActions=false)', () =>
     expect(html).not.toContain('"generated_at"')
   })
 })
+
+describe('TriageOutput — STATE_UPDATES_JSON envelope suppression (U5)', () => {
+  const STATE_ENVELOPE_OUTPUT = `# Inbox Triage — 2026-06-19
+
+Prose the operator should see.
+
+<!-- STATE_UPDATES_JSON_START -->
+\`\`\`json
+{ "generated_at": "2026-06-19T16:00:00Z", "proposals": [ { "slug": "wild-rose-redesign", "field": "current_status", "proposed": "Go-live July 13", "confidence": "high" } ] }
+\`\`\`
+<!-- STATE_UPDATES_JSON_END -->`
+
+  it('strips the STATE_UPDATES_JSON envelope from prose output', () => {
+    const html = renderToStaticMarkup(<TriageOutput markdown={STATE_ENVELOPE_OUTPUT} />)
+    expect(html).toContain('Prose the operator should see.')
+    expect(html).not.toContain('STATE_UPDATES_JSON_START')
+    expect(html).not.toContain('STATE_UPDATES_JSON_END')
+    expect(html).not.toContain('Go-live July 13') // proposed value must not leak as text
+  })
+
+  it('strips both envelopes when both are present', () => {
+    const html = renderToStaticMarkup(<TriageOutput markdown={REAL_SKILL_OUTPUT + '\n' + STATE_ENVELOPE_OUTPUT} />)
+    expect(html).not.toContain('TODOS_JSON_START')
+    expect(html).not.toContain('STATE_UPDATES_JSON_START')
+    expect(html).not.toContain('Go-live July 13')
+  })
+})

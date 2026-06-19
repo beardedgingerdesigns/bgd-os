@@ -112,10 +112,10 @@ function parseThread(bullet: string): TriageThread {
   }
 }
 
-// Drop the TODOS_JSON envelope before prose parsing so its fenced JSON never
-// gets mistaken for a section body.
+// Drop the TODOS_JSON / STATE_UPDATES_JSON envelopes before prose parsing so
+// their fenced JSON never gets mistaken for a section body. `g` so both strip.
 const ENVELOPE_RE =
-  /<!--\s*TODOS_JSON_START\s*-->[\s\S]*?<!--\s*TODOS_JSON_END\s*-->/i
+  /<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_START\s*-->[\s\S]*?<!--\s*(?:TODOS_JSON|STATE_UPDATES_JSON)_END\s*-->/gi
 
 export function parseTriageBrief(markdown: string): TriageBrief {
   const body = markdown.replace(ENVELOPE_RE, '')
