@@ -1,65 +1,18 @@
 'use client'
 
-import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, Play } from 'lucide-react'
+import { useTriageRun } from '@/components/triage-run-provider'
 
 interface Props {
-  // Called once the run finishes successfully — the host view re-fetches its data.
-  onComplete?: () => void
   className?: string
 }
 
-// Runs /daily-inbox-triage via the existing /api/triage/run SSE endpoint (which
-// now also drafts Sync state proposals via the skill's reconcile step). Compact
-// inline control: shows a spinner while running, surfaces errors, and calls
-// onComplete on success. The run route publishes an invalidation, so the Sync
-// badge updates on its own.
-export function RunTriageButton({ onComplete, className }: Props) {
-  const [running, setRunning] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const run = useCallback(async () => {
-    setRunning(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/triage/run', { method: 'POST' })
-      if (!res.body) throw new Error('No response body')
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-      let failure: string | null = null
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-        const events = buffer.split('\n\n')
-        buffer = events.pop() ?? ''
-        for (const event of events) {
-          const dataLine = event.split('\n').find(l => l.startsWith('data: '))
-          if (!dataLine) continue
-          let payload: { status?: string; error?: string }
-          try {
-            payload = JSON.parse(dataLine.slice(6))
-          } catch {
-            continue
-          }
-          if (payload.status === 'failed' || payload.status === 'timeout') {
-            failure = payload.error ?? `triage ${payload.status}`
-          }
-        }
-      }
-      if (failure) {
-        setError(failure)
-        return
-      }
-      onComplete?.()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e))
-    } finally {
-      setRunning(false)
-    }
-  }, [onComplete])
+// Thin control over the shared triage run (see TriageRunProvider). Running state
+// is global, so this button reflects an in-flight run no matter which view
+// started it.
+export function RunTriageButton({ className }: Props) {
+  const { running, error, run } = useTriageRun()
 
   return (
     <div className={className}>

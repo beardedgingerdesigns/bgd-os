@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RunTriageButton } from '@/components/run-triage-button'
+import { useTriageRun } from '@/components/triage-run-provider'
 import { extractTodosEnvelope } from '@/lib/skills/todos-envelope'
 import {
   parseTriageBrief,
@@ -290,6 +291,7 @@ interface LoadState {
 
 export function TriageView() {
   const [load, setLoad] = useState<LoadState>({ kind: 'loading' })
+  const { completedCount } = useTriageRun()
 
   const fetchLatest = useCallback(async () => {
     setLoad({ kind: 'loading' })
@@ -307,9 +309,10 @@ export function TriageView() {
     }
   }, [])
 
+  // Fetch on mount and whenever a triage run completes (from any view).
   useEffect(() => {
     void fetchLatest()
-  }, [fetchLatest])
+  }, [fetchLatest, completedCount])
 
   const brief = useMemo(() => {
     if (load.kind !== 'ready' || !load.entry?.output) return null
@@ -347,7 +350,7 @@ export function TriageView() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <RunTriageButton onComplete={fetchLatest} />
+          <RunTriageButton />
           <Button
             size="sm"
             variant="ghost"

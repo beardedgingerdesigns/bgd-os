@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { RunTriageButton } from '@/components/run-triage-button'
+import { useTriageRun } from '@/components/triage-run-provider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StatTile } from '@/components/stat-tile'
@@ -76,6 +77,7 @@ function StateCard({ card }: { card: ProjectStateCard }) {
 export function DashboardView() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const { completedCount } = useTriageRun()
 
   const load = useCallback(async () => {
     try {
@@ -88,9 +90,10 @@ export function DashboardView() {
     }
   }, [])
 
+  // Load on mount and whenever a triage run completes (from any view).
   useEffect(() => {
     void load()
-  }, [load])
+  }, [load, completedCount])
 
   return (
     <div>
@@ -134,7 +137,7 @@ export function DashboardView() {
               Quick Actions
             </h2>
             <div className="flex flex-wrap items-start gap-2">
-              <RunTriageButton onComplete={load} />
+              <RunTriageButton />
             </div>
           </section>
 
