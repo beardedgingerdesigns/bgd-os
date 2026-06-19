@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, Play } from 'lucide-react'
 
@@ -12,23 +12,12 @@ interface Props {
 
 // Runs /daily-inbox-triage via the existing /api/triage/run SSE endpoint (which
 // now also drafts Sync state proposals via the skill's reconcile step). Compact
-// inline control: shows elapsed time while running, surfaces errors, and calls
+// inline control: shows a spinner while running, surfaces errors, and calls
 // onComplete on success. The run route publishes an invalidation, so the Sync
 // badge updates on its own.
 export function RunTriageButton({ onComplete, className }: Props) {
   const [running, setRunning] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!running) {
-      setElapsed(0)
-      return
-    }
-    const start = Date.now()
-    const id = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 500)
-    return () => clearInterval(id)
-  }, [running])
 
   const run = useCallback(async () => {
     setRunning(true)
@@ -76,7 +65,7 @@ export function RunTriageButton({ onComplete, className }: Props) {
     <div className={className}>
       <Button size="sm" variant="outline" onClick={run} disabled={running} aria-label="Run triage now">
         {running ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
-        <span className="ml-1.5 text-xs">{running ? `Running… ${elapsed}s` : 'Run triage'}</span>
+        <span className="ml-1.5 text-xs">{running ? 'process running' : 'Run triage'}</span>
       </Button>
       {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
     </div>
