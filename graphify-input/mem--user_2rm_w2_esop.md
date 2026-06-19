@@ -1,0 +1,1 @@
+/Users/justinlobaito/.claude/projects/-Users-justinlobaito-repos-claude-os/memory/user_2rm_w2_esop.md

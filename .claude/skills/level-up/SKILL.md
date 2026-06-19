@@ -33,6 +33,7 @@ This is the brain-rewire mechanism. The kit doesn't need cron jobs to anchor beh
 - `decisions/log.md` — recent decisions (what's already shipped or considered)
 - `.claude/skills/*/SKILL.md` frontmatter — what capabilities exist
 - Recent `audits/audit-{date}.md` if present
+- **Latest `retros/retro-{date}.md`** — the week's mined session evidence (repetition + friction patterns, ranked, with a #1 candidate). Primary Phase 1 input when present: open the interview from its top patterns instead of cold recall. If missing or stale (>7 days), suggest running `/retro` first.
 
 ## Execution — three phases
 
@@ -61,7 +62,7 @@ User picks one candidate. Walk the 5-step Method pipeline:
 
 **Step 2 — EAD: Eliminate / Automate / Delegate.**
 - **Eliminate first:** *"What happens if we just stop doing this?"* If the answer is "nothing breaks" → skill exits cheerfully. *"Don't automate waste."* This is a win, log to `decisions/log.md` and stop.
-- **Automate second:** apply 60/30/10 framing. ~60% deterministic, ~30% AI-assisted, ~10% manual.
+- **Automate second:** apply 60/30/10 framing. ~60% deterministic, ~30% AI-assisted, ~10% manual. Before proceeding, ask the **agent-vs-workflow gate:** *"Does this need AI reasoning (variable input, judgment, generation) — or is it deterministic (same trigger → same action every time)?"* Deterministic = workflow/script, no agent. Variable = AI-assisted. Default to the simplest thing that works. *"Vending machine or slot machine?"*
 - **Delegate third:** if too complex/variable/judgment-heavy → suggest a person. Skill exits with a delegation suggestion, log it.
 
 **Step 3 — Map the process.** Five elements:
@@ -92,7 +93,9 @@ If the user can't articulate any of the five: *"If you can't explain it to a per
 
 Plus a specific metric (response time, error rate, conversion rate, time-to-completion). **If the user can't name a bucket and a metric, skill stops.** *"If your automation doesn't move a number, why are you building it?"*
 
-**Output of Phase 2:** scoped automation spec written to `decisions/log.md` as a dated entry with all five answers + autonomy level + KPI. Durable record of what was decided and why.
+**Step 6 — Define done.** *"What's the specific condition where this moves from 'building' to 'maintenance'?"* One sentence, measurable, time-bound if possible. Examples: "done when 80% of inbound threads get a reply within 24 business hours for two consecutive weeks," or "done when the script runs 5 days in a row with zero errors." **If the user can't define done, skill stops.** *"If you can't say when to stop building, you'll never stop."* This prevents the scope-creep pattern flagged in retro-2026-06-12 and compounds with the Bike Method — Phase 1 is training wheels, done-state is when to take them off.
+
+**Output of Phase 2:** scoped automation spec written to `decisions/log.md` as a dated entry with all six answers + autonomy level + KPI + done-state + agent-vs-workflow verdict. Durable record of what was decided and why.
 
 ### Phase 3 — Machine handoff (build it)
 
@@ -143,9 +146,11 @@ Every `/level-up` run produces:
 4. **Default to the lowest autonomy level that works.** Push back on L4.
 5. **Boring-is-Beautiful default in Machine handoff.** Default = highest non-AI option.
 6. **Tie-to-KPI is mandatory.** If user can't name bucket + metric, skill stops.
-7. **Bike Method ships into every artifact.** `bike-method-phase: 1` in frontmatter.
-8. **Read-only on user files except `decisions/log.md` and the new artifact.** Don't modify other existing files.
-9. **Trademark + attribution on output.** Every report and every scaffolded artifact references the framework.
+7. **Done-state is mandatory.** If user can't define when to stop building, skill stops.
+8. **Agent-vs-workflow gate before automating.** Default to deterministic workflow; only reach for AI when reasoning/variability requires it.
+9. **Bike Method ships into every artifact.** `bike-method-phase: 1` in frontmatter.
+10. **Read-only on user files except `decisions/log.md` and the new artifact.** Don't modify other existing files.
+11. **Trademark + attribution on output.** Every report and every scaffolded artifact references the framework.
 
 ## Verification (for the implementer)
 

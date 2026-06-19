@@ -19,7 +19,7 @@ three-ms-attribution: |
 
 ### Why this changed
 
-The llm-wiki pattern makes each project's wiki the canonical knowledge home. Every project repo now has its own `docs/wiki/` with decisions, log entries, and context that Claude reads natively when you open the repo. The Phase 5 `state-session-end.js` hook auto-generates a `STATE.md` summary after every session, so project state persists without needing to hydrate from claude-os.
+The project wiki pattern makes each project's wiki the canonical knowledge home. Every project repo now has its own `docs/wiki/` with decisions, log entries, and context that Claude reads natively when you open the repo. The Phase 5 `state-session-end.js` hook auto-generates a `STATE.md` summary after every session, so project state persists without needing to hydrate from claude-os.
 
 Loading context into the AIOS session is no longer necessary. Work happens in project repos, not from claude-os.
 

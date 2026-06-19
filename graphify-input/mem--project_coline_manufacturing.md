@@ -1,0 +1,1 @@
+/Users/justinlobaito/.claude/projects/-Users-justinlobaito-repos-claude-os/memory/project_coline_manufacturing.md

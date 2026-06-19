@@ -1,0 +1,1 @@
+/Users/justinlobaito/.claude/projects/-Users-justinlobaito-repos-claude-os/memory/project_thermal_kitchen_launch_2026-05.md

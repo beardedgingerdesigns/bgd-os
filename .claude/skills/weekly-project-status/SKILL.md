@@ -19,7 +19,7 @@ Produces a **weekly project status board** across all active BGD engagements by 
 
 Closes the second half of stated top pain in `context/about-me.md` ("keeping all concurrent projects in one place") and the Tier-1 project/task tracking domain gap from the AIOS audit — without adopting a 4th external system.
 
-**LLM-wiki integration.** Justin is rolling the `llm-wiki` pattern out across every project. Going forward, project-internal decisions live in `{project-repo}/docs/wiki/decisions/` with lifecycle (active/deferred/implemented/superseded), not in `claude-os/decisions/log.md`. This skill samples each project's wiki for activity in the last 14 days and feeds that into the per-project synthesis — so "Thermal Kitchen status" reflects both what's in claude-os memory AND what just got locked in the Thermal Kitchen wiki. The skill stays **shallow** at the wiki (sampling, not full reads) to keep wall-clock under 90s and avoid context bloat. `/load-project` is the deep complement.
+**Project wiki integration.** Justin is rolling the project wiki pattern out across every project. Going forward, project-internal decisions live in `{project-repo}/docs/wiki/decisions/` with lifecycle (active/deferred/implemented/superseded), not in `claude-os/decisions/log.md`. This skill samples each project's wiki for activity in the last 14 days and feeds that into the per-project synthesis — so "Thermal Kitchen status" reflects both what's in claude-os memory AND what just got locked in the Thermal Kitchen wiki. The skill stays **shallow** at the wiki (sampling, not full reads) to keep wall-clock under 90s and avoid context bloat. `/load-project` is the deep complement.
 
 ## When to run
 

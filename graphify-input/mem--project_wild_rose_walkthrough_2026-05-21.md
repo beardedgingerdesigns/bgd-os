@@ -1,0 +1,1 @@
+/Users/justinlobaito/.claude/projects/-Users-justinlobaito-repos-claude-os/memory/project_wild_rose_walkthrough_2026-05-21.md

@@ -1,0 +1,1 @@
+/Users/justinlobaito/repos/claude-os/references/wild-rose-project.md

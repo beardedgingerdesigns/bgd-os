@@ -37,7 +37,7 @@ The rejected alternatives:
 
 - The "central hub" feeling becomes structural, not aspirational. Every write has a receipt; every project has a brief.
 - The CLI surface stays intact. Bidirectional doesn't mean the UI is the only entry point; CLI captures and wiki edits flow into the UI via the file watcher just as before.
-- Existing investments compound. `/load-project`, `/capture`, `llm-wiki`, daily-inbox-triage all stay canonical — the UI orchestrates them, doesn't replace them.
+- Existing investments compound. `/load-project`, `/capture`, `/wiki`, daily-inbox-triage all stay canonical — the UI orchestrates them, doesn't replace them.
 
 ### Negative / accepted trade-offs
 

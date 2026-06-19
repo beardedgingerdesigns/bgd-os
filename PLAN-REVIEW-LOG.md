@@ -1,176 +1,129 @@
-# Plan Review Log: Phase 8 — Scheduled Triage Automation
-Started 2026-06-08. MAX_ROUNDS=5.
+# Plan Review Log: Phase 9 — Prospect Pipeline
+Started 2026-06-09. MAX_ROUNDS=5.
 
 ## Round 1 — Codex
 
-14 critiques returned. VERDICT: REVISE.
+### Findings (10 issues)
 
-1. **Cron expression wrong:** `0 */2 7-19 * 1-5` means every 2 hours on days 7-19, not hours 7-19. Fix: `0 7-19/2 * * 1-5`.
-2. **Gmail `newer_than:` doesn't support hours:** Only d/m/y units. Fix: use day window + post-filter by timestamp.
-3. **triage-latest.json path ambiguity:** Root cwd vs aios-ui/.aios-cache. Fix: hardcode absolute path.
-4. **"Write cache last" causes duplicate side effects on retry:** Drafts, todos, dispatch files all re-created. Fix: per-thread processed ledger for idempotency.
-5. **Draft duplication unresolved:** `list_drafts` exists but plan doesn't use it. Fix: check existing drafts before creating.
-6. **Shared contacts dispatch to multiple projects unsafely:** Jon Liebl appears under multiple projects. Fix: dispatch only to high-confidence project or stage ambiguous threads.
-7. **Raw email in dispatch files could leak cross-client data.** Fix: minimize/redact dispatch bodies.
-8. **Email threads don't belong in persistent todos** — only extracted action items. Fix: persist only non-email tasks.
-9. **Todo dedup "similar summary" is vague/untestable.** Fix: dedup by `thread_id` + action type.
-10. **MCP/scheduler availability deferred to execution — too late.** Fix: add Wave 0 proof.
-11. **daily-inbox-triage has internal contradictions in Steps 1-5.** Fix: rewrite explicitly instead of copying verbatim.
+1. **PROSPECT-04 duplicate entries** — onboard-client would create duplicate clients.yaml entry since the entry already exists after bucket flip. VERDICT: Valid.
+2. **Unsafe archive ordering** — Archive/delete happens before onboard/kickoff completes, no rollback. VERDICT: Valid.
+3. **Contact matching shape inconsistency** — Root-level vs project-level contacts in clients.yaml. VERDICT: Valid.
+4. **bucket: prospect vs prospects typo** — CONTEXT.md line 54 says `prospect` (singular), actual value is `prospects`. VERDICT: Valid (CONTEXT.md has a typo, plans use correct value).
+5. **Partial dispatch failure silently processed** — Missing prospect doc logged as warning but thread still cached as processed. VERDICT: Valid.
+6. **Auto-flip needs status_changed_at** — "Recently cooled" detection in weekly status can't work without a timestamp field. VERDICT: Valid.
+7. **ask-the-board skill path wrong** — Plan references `.claude/skills/ask-the-board/` but skill is user-level at `~/.claude/skills/ask-the-board/`. VERDICT: Valid.
+8. **Pre-fill bucket as paying conflicts D-12** — Plan 03 pre-fills paying but D-12 says active. VERDICT: Valid.
+9. **Dual STATE.md creation** — Both convert-prospect and onboard-client create STATE.md. VERDICT: Valid.
+10. **Grep-based verification insufficient** — VERDICT: Partially valid — added manual dry-run scenarios but grep is appropriate for markdown skill verification.
+
+### Claude's Response
+
+All 10 findings addressed:
+
+1. **Duplicate entries**: Added "conversion mode" to onboard-client (Task 2, Plan 04). Detects existing clients.yaml entry with bucket: active and UPDATES instead of creating new.
+2. **Unsafe archive**: Rewrote Plan 04 with two-phase commit pattern. Step 2 sets status: converting (prevents triage race). Archive (Step 6) is the LAST step, only after all outputs verified. Failed conversion leaves doc at original location with status: converting.
+3. **Contact matching**: Added explicit note to Plan 01 Task 2 that prospect entries MUST use root-level contacts (same shape as existing clients). Added IMPORTANT callout.
+4. **Bucket typo**: CONTEXT.md line 54 is a pre-existing typo in the discuss-phase output. Plans use correct `prospects` value. Not changing CONTEXT.md (that's a separate artifact).
+5. **Partial dispatch**: Changed "skip and log warning" to deferred dispatch — failed dispatches recorded in triage-latest.json `deferredDispatches` array and retried on next triage run.
+6. **status_changed_at**: Added `status_changed_at` and `previous_status` fields to prospect doc frontmatter (Plan 01). Auto-flip writes both fields (Plan 02). Weekly status reads them (Plan 05).
+7. **ask-the-board path**: Fixed all references to `~/.claude/skills/ask-the-board/SKILL.md` (user-level skill).
+8. **Bucket pre-fill**: Changed from `paying` to `active` with note about D-12 in Plan 03.
+9. **STATE.md ownership**: Removed fallback STATE.md creation from convert-prospect. Single owner: /onboard-client → /kickoff-project chain. Convert-prospect only verifies it exists after chain completes.
+10. **Manual verification**: Added `<manual_verification>` sections to Plans 01, 02, and 04 with concrete dry-run scenarios.
+
+Rejected: None. All findings were legitimate.
 
 ## Round 2 — Codex
 
-10 critiques returned. VERDICT: REVISE.
+### Findings (8 issues)
 
-1. Gmail `newer_than:` hour units invalid (repeated claim)
-2. processedThreadIds skips threads forever even after new replies
-3. processedThreadIds written only at end — partial failure still causes duplicates
-4. Cache shape adds processedThreadIds but TriageCacheEntry type not updated
-5. Cache path still ambiguous in PLAN.md
-6. Todo dedup key not persisted in markdown format — can't find it on re-read
-7. list_drafts matching underspecified (thread_id, pagination, subject changes)
-8. Dispatch-to-all remains privacy hazard (repeated, cites shared contacts)
-9. Lock stale timeout 30 min too short for slow runs, no skip logging
-10. VALIDATION.md paths don't match actual repo structure
+1. **Contact shape mismatch** — Plan uses object contacts at root level, actual clients.yaml uses simple email strings under projects[].contacts. VERDICT: Valid — critical architectural issue.
+2. **Prospects have projects: [], triage dispatch loop never runs** — matched_projects empty for new prospects. VERDICT: Valid — critical routing issue.
+3. **Converting status not checked in dispatch or auto-flip** — Asserted but not specified. VERDICT: Valid.
+4. **Deferred dispatch too narrow** — Only covers doc-missing, not parse errors or write failures. VERDICT: Valid.
+5. **Plan 04 acceptance criteria stale** — Still references old step numbers after two-phase rewrite. VERDICT: Valid.
+6. **PROSPECT-05 weakened** — Warning instead of blocking failure for missing STATE.md. VERDICT: Valid.
+7. **CONTEXT.md typo** — `bucket: prospect` should be `bucket: prospects`. VERDICT: Valid.
+8. **Plan 05 mixed ask-the-board paths** — Inconsistent between files_modified, artifacts, and verify. VERDICT: Valid.
 
 ### Claude's Response
 
-**ACCEPTED (5 critiques):**
+All 8 findings addressed:
 
-2. **processedThreadIds forever skip** — Valid. Changed to `{thread_id, last_message_id}` pairs. If a thread has new messages since last processing, it's re-evaluated.
+1. **Contact shape**: Rewrote Plan 01 clients.yaml entry to use simple email strings (matching existing format). Added explicit note about two separate contact surfaces: clients.yaml (simple emails for triage matching) vs prospect doc frontmatter (rich objects for dossier).
+2. **Triage routing**: Rewrote Plan 02 Task 1 with TWO changes: (a) extend Step 4 to check root-level `client.contacts` in addition to `projects[].contacts`, (b) change Step 8 from "for each matched_project" to "for each matched_entity" with `{client_slug, bucket, project_slug?}`. Prospect dispatch keyed on client_slug even when project_slug is null.
+3. **Converting status guards**: Added explicit `status in [converting, converted, dead]` check to prospect dispatch (before write) AND to auto-flip (skip converting alongside converted/dead).
+4. **Deferred dispatch broadened**: Now covers all failure modes with reason codes: `prospect-doc-missing`, `frontmatter-parse-error`, `timeline-section-missing`, `write-failed`, `status-blocked`. 3-retry cap per thread/slug pair.
+5. **Plan 04 acceptance criteria**: Rewritten to match two-phase flow. Step numbers corrected. Added `converting` grep check.
+6. **PROSPECT-05 blocking**: Missing STATE.md is now a BLOCKING failure that prevents archive (Phase B). Conversion stays in `converting` state until STATE.md exists.
+7. **CONTEXT.md fixed**: Changed `bucket: prospect` to `bucket: prospects` on line 54.
+8. **Plan 05 paths unified**: All artifact, key_link, verify, and files_modified paths now consistently use `~/.claude/skills/ask-the-board/SKILL.md`.
 
-6. **Todo dedup key not in markdown** — Valid. Added `- Key: triage:{thread_id}:{action_type}` metadata line to the todo append format so future runs can find and match it deterministically.
-
-7. **list_drafts matching** — Partially valid. Specified: match by `thread_id` field on draft objects. Gmail drafts expose thread_id. If list_drafts doesn't paginate or returns >100 drafts, use `q: "in:draft is:unread"` filter.
-
-9. **Lock timeout + logging** — Partially valid. Increased stale timeout to 60 min. Added: log skipped runs to `aios-ui/.aios-cache/triage-skipped.log` with timestamp and lock owner PID.
-
-10. **VALIDATION.md paths** — Valid. Updated VALIDATION.md with correct absolute paths. Not a PLAN.md issue.
-
-**REJECTED (5 critiques):**
-
-1. **Gmail hour units** — Rejected again. Gmail search API supports `newer_than:Nh` syntax. The existing daily-inbox-triage skill uses this successfully in production. Codex has not provided evidence that it fails.
-
-3. **processedThreadIds at end** — Rejected. This is a skill (markdown instructions for an LLM agent), not compiled code with exception handling. The LLM executes steps sequentially. If the session dies, it dies completely. The per-side-effect idempotency (list_drafts check, todo dedup key, dispatch file existence check) handles individual retries. The cache is the macro-level retry guard.
-
-4. **TriageCacheEntry type update** — Rejected. The skill writes triage-latest.json directly via the Write tool, not through the TypeScript API. The UI reads `ranAt`, `output`, `exitCode`, `durationMs` and ignores unknown fields. Adding `processedThreadIds` as an extra field is backward-compatible. No type change needed.
-
-5. **Cache path ambiguity** — Rejected. The PLAN.md is a summary document for Codex review. The actual plan files (08-02-PLAN.md) specify the absolute path `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/triage-latest.json` in every reference. Added explicit path to PLAN.md for clarity.
-
-8. **Dispatch-to-all privacy** — Rejected for the third time. D-09 is a locked decision from discuss-phase. All project wikis are on the same local machine under the same single operator. Dispatch bodies are 3-5 sentence summaries, not raw email. There is no cross-client boundary to protect.
+Rejected: None. All findings were legitimate. Finding #1 and #2 were particularly important — they would have caused triage to silently ignore all new prospects.
 
 ## Round 3 — Codex
 
-9 critiques returned. VERDICT: REVISE.
+### Findings (4 issues)
 
-1. Inconsistent naming: processedThreads vs processedThreadIds in different locations
-2. Dispatch not idempotent on retry (writeRawDrop appends -2 on collision)
-3. Lock not atomic (race between check and create)
-4. list_drafts thread_id shape unverified
-5. Todo Key: line not in format contract
-6. Dispatch body not specified as summary/redacted in PLAN.md
-7. Shared cache file overwritten by manual triage
-8. Stale processedThreadIds reference in critical rules
-9. VALIDATION.md paths not updated
+1. **Bucket flip timing race** — Bucket flipped to active in Phase A, but triage sees active + no project = falls through to wiki dispatch (no wiki exists yet). VERDICT: Valid — subtle timing bug.
+2. **Retry not idempotent** — Re-running after failure finds bucket already flipped, Step 1 rejects `converting`. VERDICT: Valid.
+3. **Plan 03/04 ordering unsafe** — Plan 04 Task 2 depends on Plan 03's Step 0 addition. Both Wave 2, no dependency declared. VERDICT: Valid.
+4. **status-blocked deferred is wrong for terminal states** — Retrying dead/converted dispatches 3 times is noise. Only converting is transient. VERDICT: Valid.
 
 ### Claude's Response
 
-**ACCEPTED (6 critiques):**
+All 4 addressed:
 
-1. **Naming consistency** — Valid. Unified all references to `processedThreads: Array<{threadId: string, lastMessageId: string}>` throughout PLAN.md.
+1. **Bucket flip deferred to Phase B**: Bucket stays `prospects` throughout Phase A (converting status prevents dispatch). Bucket flips to `active` only in Phase B after wiki/STATE.md confirmed. This eliminates the active-with-no-wiki window.
+2. **Idempotent retry**: Step 1 now detects `converting` status as a retry case. Checks what state survived: if wiki+STATE.md exist → skip to Phase B; if not → resume from Step 3. No rejection on retry.
+3. **Dependency fixed**: Plan 04 `depends_on: [1, 3]` — must wait for Plan 03 (onboard-client Step 0) before Plan 04 Task 2 patches it.
+4. **Terminal vs transient**: `converted`/`dead` are terminal skips (marked handled, no deferred entry). Only `converting` is deferred with reason `status-converting` for retry.
 
-2. **Dispatch idempotency** — Valid. Added: check if dispatch file already exists at deterministic path before writing. Skip if present.
-
-3. **Atomic lock** — Valid. Changed to `mkdir /tmp/scheduled-triage.lock` (atomic on POSIX). Lock info written to file inside the dir.
-
-6. **Dispatch body specification** — Valid. Added explicit "3-5 sentence redacted summary, NOT raw email text" plus `routing_confidence` and `routing_reason` frontmatter fields.
-
-8. **Stale naming in critical rules** — Valid. Updated rule 12 to reference `processedThreads` with `{threadId, lastMessageId}` pair.
-
-9. **VALIDATION.md** — Valid. Updating now.
-
-**REJECTED (3 critiques):**
-
-4. **list_drafts shape** — Rejected. This is execution-time API discovery, appropriate for plan-level abstraction. The plan says "match by thread_id" — if the field doesn't exist, the executor will discover and adapt. Over-specifying API contracts in a plan document is premature.
-
-5. **Todo Key: line format contract** — Rejected. The plan says to add the Key: line. The format is specified inline. There is no separate "todo format contract" document that needs updating — todos/pending.md IS the format by example.
-
-7. **Shared cache overwrite** — Rejected for the same reason as Round 2: manual triage overwriting without `processedThreads` is correct behavior. The scheduled run builds its own processedThreads on each cycle from the current lookback window. It does not need historical processedThreads across runs.
+Rejected: None.
 
 ## Round 4 — Codex
 
-6 critiques returned. VERDICT: REVISE.
+### Findings (4 issues)
 
-1. Lock rmdir fails on non-empty dir (info file inside)
-2. Stale lock recovery not defined
-3. Dispatch deterministic path not specified
-4. Todo Key: line not indented (breaks markdown format)
-5. Stale processedThreadIds reference in tradeoffs section
-6. VALIDATION.md per-task commands still have wrong paths
+1. **Conversion mode detection wrong trigger** — Task 2 detects on bucket: active, but bucket is still prospects during Phase A. VERDICT: Valid.
+2. **Retry can skip wiki seeding** — Wiki + STATE.md exist but seed files didn't write. Skip to Phase B loses content. VERDICT: Valid.
+3. **Deferred dispatch after conversion loses intel** — After conversion completes, deferred entries retry but doc is archived and bucket is active. Need to reroute to wiki. VERDICT: Valid.
+4. **Stale step numbers in acceptance criteria** — Steps 4/5 swapped but criteria not updated. VERDICT: Valid.
 
 ### Claude's Response
 
-**ALL 6 ACCEPTED** — these are all valid and small fixes:
+All 4 addressed:
 
-1. Lock release: `rm lock/info && rmdir lock` (not just rmdir)
-2. Stale recovery: read timestamp, log takeover, remove stale lock, retry mkdir
-3. Dispatch path: `triage-dispatch-{YYYY-MM-DD}-{slugified-subject}.md` — specified as deterministic filename for existence check
-4. Key line: `  - Key: triage:...` (indented, same level as other metadata)
-5. Tradeoffs: updated to `processedThreads: Array<{threadId, lastMessageId}>`
-6. VALIDATION.md: updated per-task commands to correct paths
+1. **Conversion mode trigger**: Changed from `bucket: active` to `status: converting` in prospect doc frontmatter. onboard-client detects existing entry by slug match regardless of bucket value.
+2. **Retry checks seed files**: Added check for prospect seed files (prospect-timeline-*, prospect-problems-*) in wiki raw/aios/ before skipping to Phase B. Three resume points: Step 3 (no wiki), Step 4 (wiki exists, no seeds), Phase B (all present).
+3. **Deferred dispatch re-resolves target**: Retry logic now re-reads clients.yaml for current bucket. If bucket changed to active/paying with a wiki → reroute to wiki dispatch. If still prospects → retry prospect dispatch. If converted/dead → clear (terminal). Retry cap increased to 5 to handle conversion windows.
+4. **Step numbers aligned**: Acceptance criteria now correctly reference Step 3 (onboard), Step 4 (seed/verify), Step 5 (bucket flip), Step 6 (archive).
 
-## Round 5 — Codex (MAX_ROUNDS reached)
+Rejected: None.
 
-4 critiques returned. VERDICT: REVISE.
+## Round 5 — Codex
 
-1. Dispatch filename not unique per thread (same-subject collision)
-2. Lock recovery missing handler for corrupted/missing info file
-3. Draft dedupe depends on unverified list_drafts thread_id field
-4. Validation doesn't assert processedThreads schema
+VERDICT: APPROVED
 
-### Claude's Assessment — Deadlock Resolution
+No material blockers. Key improvements confirmed:
+- Prospect registry contacts as simple strings
+- Triage routes via matched_entity
+- Conversion keeps bucket: prospects until Phase B
+- Onboard conversion mode triggered by status: converting
+- Retry checks wiki/STATE/seed files before finalizing
+- Deferred dispatch re-resolves clients.yaml
+- Plan 04 depends on Plan 03
 
-All 4 are minor edge cases, not structural flaws:
+Residual risk: grep-heavy verification for markdown skills. Manual dry-runs are the real safety net.
 
-1. **Same-subject dispatch collision** — Extremely unlikely for this use case (different clients, different projects, unique subjects). Adding threadId to filenames would make them unreadable for human review. The wiki ingest pipeline handles duplicate content. **Accept risk.**
-2. **Corrupted lock info** — Valid edge case. Would treat missing/unparseable info as stale. **Minor — handle during execution.**
-3. **list_drafts API shape** — This is execution-time API discovery. Over-specifying API contracts in a plan is premature. The dry-run step in Plan 03 verifies Gmail MCP access. **Reject — appropriate plan-level abstraction.**
-4. **Validation schema assertion** — Valid but trivial. Add during execution when the cache shape is concrete. **Minor — handle during execution.**
+## Summary
 
-**Conclusion:** Plan survived 5 rounds of adversarial review. The structural decisions (Desktop task, separate skill, heuristic-first dispatch, deterministic dedup, idempotent retry, concurrency guard) are all sound. Remaining critiques are implementation-level details best handled during execution, not plan-level concerns.
-12. **PushNotification failure + "cache write last" conflict.** Fix: notification is best-effort after cache write.
-13. **Dispatch YAML frontmatter vulnerable to malformed subjects/senders.** Fix: YAML-safe serialization.
-14. **No concurrency guard for overlapping runs.** Fix: lock file with stale timeout.
+| Round | Issues Found | Issues Addressed | Key Improvement |
+|-------|-------------|------------------|-----------------|
+| 1 | 10 | 10 | Two-phase commit, deferred dispatch, status_changed_at |
+| 2 | 8 | 8 | Contact matching architecture, matched_entity routing |
+| 3 | 4 | 4 | Bucket flip deferred to Phase B, idempotent retry |
+| 4 | 4 | 4 | Conversion mode trigger, seed file checks, dispatch rerouting |
+| 5 | 0 | - | APPROVED |
 
-### Claude's Response
-
-**ACCEPTED (8 critiques):**
-
-1. **Cron expression** — Codex is right. `0 */2 7-19 * 1-5` is ambiguous in standard 5-field cron. Changed to `0 7-19/2 * * 1-5` (explicit hour-range/step). Fallback to 7 individual entries kept.
-
-4. **Idempotency on retry** — Valid. Added a `processedThreads` set written to triage-latest.json so retries skip already-processed threads. Cache shape extended with `processedThreadIds: string[]`.
-
-5. **Draft duplication** — Valid. Added explicit step: call `list_drafts` MCP tool, filter by thread_id, skip threads with existing unsent drafts.
-
-9. **Todo dedup by thread_id** — Valid. Changed from vague "similar summary" to deterministic key: `thread_id + action_type + client_slug`. Stable and testable.
-
-13. **YAML frontmatter safety** — Valid. Added instruction to escape/quote all string values in YAML frontmatter (subjects with colons, sender names with special chars).
-
-14. **Concurrency guard** — Valid. Added lock file (`/tmp/scheduled-triage.lock`) with 30-minute stale timeout. If lock exists and is < 30 min old, skip run silently.
-
-10. **Wave 0 proof** — Partially accepted. Added a "dry run" step to Plan 03 Task 1 that verifies Gmail MCP tools are accessible and local filesystem is writable before the full E2E test.
-
-12. **Notification ordering** — Valid. PushNotification moved to AFTER cache write. If notification fails, run is still considered complete. Log the failure but don't retry the whole run.
-
-**REJECTED (6 critiques) with reasons:**
-
-2. **Gmail `newer_than:` hours** — Rejected. Gmail API search DOES support hour units (`newer_than:4h` is valid in Gmail search syntax). The daily-inbox-triage skill already uses this pattern successfully. Codex's claim is incorrect.
-
-3. **triage-latest.json path** — Already addressed in the plan. The SKILL.md uses the absolute path `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/triage-latest.json` explicitly. No ambiguity exists in the actual plan files (08-02-PLAN.md specifies this).
-
-6. **Shared contacts multi-dispatch** — Rejected. D-09 explicitly says "Multi-project threads dispatch to ALL matched wikis." This is an intentional design decision from the discuss-phase. Dispatching to all matched wikis is correct — the wiki ingest pipeline (Layer 2) handles relevance filtering. Restricting to single-project defeats the intelligence fan-out purpose.
-
-7. **Cross-client data leakage in dispatch** — Rejected. Dispatch bodies are 3-5 sentence summaries, not raw email text. They contain project-relevant intelligence only. All project wikis are on the same local machine under the same operator. There is no cross-client boundary — Justin is the sole operator of all projects.
-
-8. **Email threads don't belong in todos** — Rejected. The plan explicitly extracts ACTION ITEMS from email content (commitments, deliverables, deadlines), not email threads themselves. The distinction is already clear in Step 7: "contains an explicit commitment, concrete request, or clear deliverable deadline." The format matches existing todo patterns perfectly.
-
-11. **daily-inbox-triage contradictions** — Rejected. Codex didn't specify what the contradiction is. The plan copies the filtering/scoring logic which is well-tested. If a specific contradiction exists, it should be named with line numbers. The scheduled skill's Steps 1-5 inherit proven behavior.
+Total: 26 issues found and addressed across 4 revision rounds.

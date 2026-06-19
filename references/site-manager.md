@@ -172,7 +172,7 @@ Keeps configs clean and makes "needs follow-up" visible.
 | `hubs/` | Per-channel-platform config. Currently just `hubs/terraplex/` |
 | `data/sites.json` | Registry of managed sites |
 | `scripts/` | Test + utility scripts (sync, ingest, snapshot, test runners) |
-| `docs/` | Internal docs: `dealer-onboarding.md`, `llm-wiki.md`, `refero-integration.md` |
+| `docs/` | Internal docs: `dealer-onboarding.md`, `wiki-pattern.md`, `refero-integration.md` |
 | `reference/` | Reference material (separate from docs/) |
 | `.claude/skills/` | Bundled Claude Code skills committed to repo |
 | `terraplex-platform-thesis.md` | 22KB strategy doc — the why behind the platform |
@@ -253,5 +253,5 @@ Phase 5 is where priority #1 (productize BGD) becomes a multi-tenant product, no
 
 - `docs/dealer-onboarding.md` — the full recipe from form submission → approved spoke
 - `terraplex-platform-thesis.md` — strategy / vision (22KB, save for when the why matters)
-- `docs/llm-wiki.md` — internal LLM knowledge base (likely how the manager's content generation pulls context)
+- `docs/wiki-pattern.md` — internal project wiki knowledge base (likely how the manager's content generation pulls context)
 - `docs/refero-integration.md` — Refero design reference flow

@@ -49,9 +49,10 @@ clients:
           - krystal.light@wildrosecorporate.com
           - john.carlson@wildrosecorporate.com
           - scott.ivers@wildrosecorporate.com
+          - meghan.wymore@wildrosecorporate.com
           - "@wildrosecorporate.com"
           - jon@lieblmg.com
-          - justin@beradedgingerdesigns.com
+          - justin@beardedgingerdesigns.com
       - slug: thermal-kitchen
         name: Thermal Kitchen redesign
         status: active
@@ -82,6 +83,7 @@ clients:
         status: active
         docs_paths:
           - references/tonequest-project.md
+          - /Users/justinlobaito/repos/toneuqest/docs
         contacts:
           - lwilson3grace@gmail.com
           - thetonequestreport@gmail.com
@@ -158,6 +160,12 @@ clients:
     bucket: paying
     notes: BrandOS platform participant network. Terraplex Ag is the distributor (hub); the dealers below are spokes running on the BrandOS platform.
     projects:
+      - slug: brandos-platform
+        name: BrandOS platform
+        status: active
+        docs_paths:
+          - /Users/justinlobaito/repos/brandos/docs/wiki
+        contacts: []
       - slug: terraplex-hub
         name: Terraplex Ag — distributor subscription
         status: active

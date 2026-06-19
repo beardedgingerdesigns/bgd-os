@@ -6,7 +6,7 @@
 
 **Architecture:** User-level skill at `~/.claude/skills/ask-the-board/SKILL.md` orchestrates advisor agents via agent teams (fallback: parallel Agent tool). Advisor knowledge lives in claude-os at `docs/wiki/advisors/`. Skill resolves advisors from the current project first, then claude-os.
 
-**Tech Stack:** Claude Code skills (SKILL.md), agent teams (TeamCreate/SendMessage), YAML roster, llm-wiki pattern for advisor knowledge storage.
+**Tech Stack:** Claude Code skills (SKILL.md), agent teams (TeamCreate/SendMessage), YAML roster, project wiki pattern for advisor knowledge storage.
 
 **Spec:** `docs/superpowers/specs/2026-06-03-ask-the-board-design.md`
 
@@ -137,7 +137,7 @@ git commit -m "feat: scaffold advisor board — roster + Nate Herk + Matt Pocock
 - Create: `docs/wiki/advisors/nate-herk/knowledge/*.md` (multiple files from ingested content)
 - Modify: `docs/wiki/advisors/nate-herk/persona.md` (update Known Positions after ingestion)
 
-This task uses `/research-to-wiki` or manual Exa/Firecrawl fetching to pull Nate Herk's public content and pre-analyze it into the knowledge directory. The goal is enough material for the advisor agent to reason from — at least 5-10 content pieces covering his core frameworks.
+This task uses `/wiki research` or manual Exa/Firecrawl fetching to pull Nate Herk's public content and pre-analyze it into the knowledge directory. The goal is enough material for the advisor agent to reason from — at least 5-10 content pieces covering his core frameworks.
 
 - [ ] **Step 1: Identify top content to ingest**
 

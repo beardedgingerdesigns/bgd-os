@@ -51,7 +51,7 @@ Build the knowledge-accumulation layer for inbound leads. Prospects live as full
 **Downstream agents MUST read these before planning or implementing.**
 
 ### Client Registry & Contact Matching
-- `clients.yaml` -- Client/project registry. Prospects use `bucket: prospect`. Contact matching for triage uses `contacts:` arrays. The `bucket:` field taxonomy expands to include `active` (between prospect and paying).
+- `clients.yaml` -- Client/project registry. Prospects use `bucket: prospects`. Contact matching for triage uses `contacts:` arrays (simple email strings and @domain patterns). The `bucket:` field taxonomy expands to include `active` (between prospect and paying).
 
 ### Prior Phase Outputs (Dependencies)
 - `.claude/skills/scheduled-triage/SKILL.md` -- Phase 8 triage skill. Steps 1-8 need to be extended to handle prospect-bucket entries (dispatch to prospect docs instead of wiki raw/aios/).

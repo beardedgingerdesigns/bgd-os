@@ -1,0 +1,1 @@
+/Users/justinlobaito/repos/claude-os/state/thermal-kitchen.md

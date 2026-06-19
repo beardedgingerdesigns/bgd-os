@@ -66,8 +66,8 @@ docs/wiki/advisors/nate-herk/
 
 Content gets into advisor knowledge via existing pipelines:
 
-- `/research-to-wiki` pointed at the advisor's directory
-- Direct drops into `raw/research/` followed by llm-wiki ingest
+- `/wiki research` pointed at the advisor's directory
+- Direct drops into `raw/research/` followed by `/wiki ingest`
 - Batch bootstrap (fetch 10-20 top videos/posts) to seed a usable persona on day one
 - Continuous drip as new content is consumed
 
@@ -196,7 +196,7 @@ The advisor/persona/roster layer is identical in both paths — only the orchest
 
 - **Routing layer** — with two advisors, both always participate. No "Chief of Staff" router until the board grows.
 - **Project/global board merging** — project board wins entirely or falls back to global. No mixing advisors across tiers.
-- **Advisor-specific ingestion skill** — use existing `/research-to-wiki` pipeline. A convenience wrapper ("add this to Nate's profile") can come later.
+- **Advisor-specific ingestion skill** — use existing `/wiki research` pipeline. A convenience wrapper ("add this to Nate's profile") can come later.
 - **Continuous auto-update of training data** — manual ingestion only. No background polling of YouTube channels.
 - **Internal focus group** — separate concept from the video (target audience simulation vs. expert advisors). Could be a future skill.
 

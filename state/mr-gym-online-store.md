@@ -1,28 +1,33 @@
 # Project State: Mr Gym Online Store
 
-**Updated:** 2026-06-04 | **Status:** On track
+**Updated:** 2026-06-12 | **Status:** On track
 
 ## Accomplishments (this session)
 
-- Completed impeccable audit of POC v2 — scored 13/20 (Acceptable)
-- Identified P0 blocker: CSS/HTML desync between styles.css (v3 VanMoof direction) and shop.html/product.html (v2 zine-brutalist classes)
-- Documented audit findings in wiki (source page, index entry, log)
-- Verified direction passes anti-patterns test — zine-brutalist concept is distinctive and grounded, not AI-generated
+- Clarified that POC is a static design reference, not directly Shopify-usable code, and locked the porting strategy: Dawn theme base + theme settings + custom CSS layer + Google Fonts + custom Liquid sections
+- Established the five-step build process: Partners account → dev store → local theme dev via Shopify CLI → review with Bradley → handover to his Basic plan
+- Created two decision documents (0017 & 0018) locking the implementation path (Dawn + custom sections) and build environment (BGD Partners account, free dev store, CLI-driven local dev)
+- Created session source document capturing the build process rundown and discrepancies discovered
+- Recovered missing POC homepage (`index.html`) from Netlify; verified POC is complete and ready to serve as design reference
 
 ## Current Status
 
-POC v2 audit complete with a solid directional verdict (13/20). The zine-brutalist aesthetic is distinctive and references are grounded. However, a P0 CSS/HTML desync is blocking — the rewritten styles.css targets a different design system than what the HTML currently references, causing broken renders on product pages.
+The POC is recovered and verified as the complete v4 design reference. The build path, development workflow, and account structure are fully locked. Ready to begin theme scaffolding and custom section development.
 
 ## Next Steps
 
-- [ ] Reconcile styles.css with shop.html and product.html — either revert CSS to v2 zine-brutalist or update HTML/screenshots to match v3 VanMoof
-- [ ] Address P1 issues before Shopify build: missing focus indicators, add skip-nav, fix text contrast failures, swap Space Mono for Martian Mono or Fragment Mono, optimize font payload
-- [ ] Carry forward six positive patterns into Shopify build: distinctive direction, semantic HTML, progressive enhancement, fluid typography, lean JS, duotone photo treatment
+- [ ] Create free Shopify Partners account for Bearded Ginger Designs
+- [ ] Spin up free development store from Partners dashboard
+- [ ] Install Shopify CLI and scaffold Dawn theme into repo
+- [ ] Port design tokens from `DESIGN.json` into theme: color scheme, 0px border-radius, shadows
+- [ ] Add Google Fonts (Big Shoulders Display, Archivo, Space Mono) to `theme.liquid`
+- [ ] Build custom Liquid sections for hero, manifesto band, lookbook grid
+- [ ] Load dev store with real product content (tee designs from `poc/assets/`)
 
 ## Blockers
 
-- P0: CSS/HTML desync renders shop.html and product.html broken in current POC state
+None.
 
 ## Key Dates
 
-- 2026-06-04: POC v2 impeccable audit completed
+- 2026-06-12: Build path and development environment locked; POC recovered and verified

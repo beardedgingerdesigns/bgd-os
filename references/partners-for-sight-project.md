@@ -64,7 +64,7 @@ Things to capture once known:
 
 ## Wiki candidate
 
-This project is a candidate for the **llm-wiki pattern** (see `site-builder-phase2/docs/wiki/` and `iowa-everywhere/docs/wiki/` for examples) once it grows past "maintenance mode" into a year-two scope conversation. Bootstrap then.
+This project is a candidate for the **project wiki pattern** (see `site-builder-phase2/docs/wiki/` and `iowa-everywhere/docs/wiki/` for examples) once it grows past "maintenance mode" into a year-two scope conversation. Bootstrap with `/wiki init` then.
 
 ## Related
 

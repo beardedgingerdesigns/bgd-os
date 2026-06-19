@@ -252,7 +252,7 @@ Raw drops are **immutable once written**. The AIOS UI NEVER writes into the wiki
 
 ## Pending ingestion
 
-The count and list of `raw/aios/*.md` files in a project's wiki whose modification time is newer than the most recent `## [YYYY-MM-DD] ingest |` entry in the wiki's `log.md`. Surfaced on each Project page as a section with a "Run wiki ingest" button that invokes the `llm-wiki` ingest workflow on the pending files.
+The count and list of `raw/aios/*.md` files in a project's wiki whose modification time is newer than the most recent `## [YYYY-MM-DD] ingest |` entry in the wiki's `log.md`. Surfaced on each Project page as a section with a "Run wiki ingest" button that invokes the `/wiki ingest` workflow on the pending files.
 
 Pending ingestion is the **visibility layer** for the gap between "AIOS captured something" and "the wiki has incorporated it." A zero count means everything AIOS has dropped has been promoted; a non-zero count means there's curation work to do.
 
