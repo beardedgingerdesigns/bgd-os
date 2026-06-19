@@ -156,6 +156,31 @@ export interface TodosCacheEntry {
   todos: Todo[]
 }
 
+// ---------- U6: persistent todos sourced from todos/pending.md ----------
+//
+// Distinct from the ephemeral `Todo`/`TodosCacheEntry` above (those are triage
+// output cached in .aios-cache/todos-today.json). PendingTodo mirrors the
+// markdown list at todos/pending.md: a durable, hand-and-skill-curated list
+// grouped by priority. Marking one done moves it to completed.md per that
+// file's own format rules.
+
+export type TodoPriority = 'high' | 'medium' | 'low'
+
+export interface PendingTodo {
+  id: string                    // stable hash of summary + added date
+  summary: string               // bold first-line text
+  hashtag?: string              // `#category` tag on the summary line
+  added?: string                // YYYY-MM-DD
+  source?: string               // manual | triage | onboard | skill:<name>
+  client?: string               // client-slug or client-slug / project-slug
+  priority: TodoPriority        // defaults to 'medium' when unspecified
+  notes?: string                // one-line context
+}
+
+export interface PendingTodosResult {
+  todos: PendingTodo[]
+}
+
 // ---------- v2: chat panel ----------
 
 export interface ChatSession {
@@ -177,6 +202,11 @@ export interface ChatMessage {
   content: string
   status?: 'streaming' | 'done' | 'error'
   error?: string
+}
+
+export interface SlashCommand {
+  name: string         // command/skill name, without the leading slash
+  description: string  // one-line summary (may be truncated for display)
 }
 
 export interface ChatLoadResult {

@@ -18,8 +18,8 @@ function statusVariant(status: string | null): 'success' | 'warning' | 'info' | 
 
 function StateCard({ card }: { card: ProjectStateCard }) {
   return (
-    <Card className="gap-3">
-      <CardHeader>
+    <Card className="gap-4 py-5 shadow-[var(--shadow-card)]">
+      <CardHeader className="px-5">
         <CardTitle className="flex items-center justify-between gap-2">
           <span className="truncate">{card.title}</span>
           {card.status && (
@@ -41,7 +41,7 @@ function StateCard({ card }: { card: ProjectStateCard }) {
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-4 px-5">
         {card.currentStatus && (
           <p className="text-sm leading-relaxed text-card-foreground/90 line-clamp-4">
             {card.currentStatus}
@@ -49,10 +49,10 @@ function StateCard({ card }: { card: ProjectStateCard }) {
         )}
         {card.nextSteps.length > 0 && (
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">
               Next Steps
             </div>
-            <ul className="space-y-1">
+            <ul className="space-y-1.5">
               {card.nextSteps.slice(0, 3).map((step, i) => (
                 <li key={i} className="flex gap-2 text-xs text-muted-foreground leading-snug">
                   <span className="text-brand mt-px shrink-0">→</span>
@@ -108,7 +108,7 @@ export function DashboardView() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatTile
               label="Total MRR"
               value={formatMRR(data.totalMRR)}
@@ -138,7 +138,7 @@ export function DashboardView() {
           {data.cards.length === 0 ? (
             <p className="text-sm text-muted-foreground">No project state files yet.</p>
           ) : (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
               {data.cards.map(card => (
                 <StateCard key={card.slug} card={card} />
               ))}
