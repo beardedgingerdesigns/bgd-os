@@ -1093,3 +1093,22 @@ Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy)
 **Owner:** Justin (BGD).
 
 ---
+
+## 2026-06-19 — Triage state-writeback: envelope transport + reconcile-on-read
+
+The triage state-writeback detector now emits proposals as a `STATE_UPDATES_JSON` envelope inside `state/inbox-triage.md` (mirroring the existing `TODOS_JSON` envelope) instead of the skill hand-writing `pending-state-updates.json`. A deterministic `reconcileStateUpdates` runs on `GET /api/state-updates` (reconcile-on-read), parses the envelope, and upserts proposals into the store.
+
+**Why:** the old design relied on the headless model performing a buried file-write side-effect (Step 9) — it narrated contradictions but skipped the write. Moving proposals to *output* (reliable) + a code-side consumer (deterministic) closes that gap. One consumer covers both triage paths because both run `/daily-inbox-triage` and write the same file. Confirmed: `scheduled-triage` is legacy; the live scheduled path is `/daily-inbox-triage` via Cowork.
+
+**Also decided:**
+- The detector fires on *new explicit attributable facts* the state file doesn't yet track (e.g. a go-live date), not only contradictions of existing fields. Date/launch changes map to `current_status` (non-lossy prepend via `state-merge`), avoiding a new schema field.
+- `markApplied` records an applied proposal's `dedupeKey` in `dismissed` so the still-frozen envelope can't resurrect it on the next reconcile-on-read (would otherwise become a clobber-stale ghost). Surfaced by adversarial code review.
+- Reconcile-on-read is best-effort (try/catch) so an I/O fault degrades to serving the persisted store rather than 500ing the Sync view + badge.
+
+**Deferred (P2/P3, not blocking):** parser code-fence over-capture (matches todos-envelope, fails closed), `atomicWrite`/`asString` DRY extraction, reconcile-recency guard, 32-bit dedupeKey truncation, multi-process file lock.
+
+**Artifacts:** spec `docs/superpowers/specs/2026-06-19-triage-state-detector-hardening-design.md`, plan `docs/plans/2026-06-19-003-feat-triage-state-detector-hardening-plan.md`. Branch `feat/aios-ui-v2-operator-console` (U1–U5 + review fixes). 369 tests / 49 files.
+
+**Owner:** Justin (BGD).
+
+---
