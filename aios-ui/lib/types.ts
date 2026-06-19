@@ -78,7 +78,7 @@ export interface PendingFile {
   filename: string              // e.g. "capture-2026-05-21-meghan-handoff.md"
   filePath: string              // absolute
   mtime: Date
-  kind: 'capture' | 'chat-decision' | 'chat-session' | 'other'  // parsed from filename prefix
+  kind: 'capture' | 'chat-decision' | 'chat-session' | 'triage-dispatch' | 'other'  // parsed from filename prefix
 }
 
 export interface PendingIngestResult {
@@ -156,6 +156,31 @@ export interface TodosCacheEntry {
   todos: Todo[]
 }
 
+// ---------- U6: persistent todos sourced from todos/pending.md ----------
+//
+// Distinct from the ephemeral `Todo`/`TodosCacheEntry` above (those are triage
+// output cached in .aios-cache/todos-today.json). PendingTodo mirrors the
+// markdown list at todos/pending.md: a durable, hand-and-skill-curated list
+// grouped by priority. Marking one done moves it to completed.md per that
+// file's own format rules.
+
+export type TodoPriority = 'high' | 'medium' | 'low'
+
+export interface PendingTodo {
+  id: string                    // stable hash of summary + added date
+  summary: string               // bold first-line text
+  hashtag?: string              // `#category` tag on the summary line
+  added?: string                // YYYY-MM-DD
+  source?: string               // manual | triage | onboard | skill:<name>
+  client?: string               // client-slug or client-slug / project-slug
+  priority: TodoPriority        // defaults to 'medium' when unspecified
+  notes?: string                // one-line context
+}
+
+export interface PendingTodosResult {
+  todos: PendingTodo[]
+}
+
 // ---------- v2: chat panel ----------
 
 export interface ChatSession {
@@ -178,6 +203,44 @@ export interface ChatMessage {
   status?: 'streaming' | 'done' | 'error'
   error?: string
 }
+
+export interface SlashCommand {
+  name: string         // command/skill name, without the leading slash
+  description: string  // one-line summary (may be truncated for display)
+}
+
+// ---------- state write-back: triage-drafted proposals reviewed in Sync ----------
+
+// Proposable state-file fields. `**Updated:**` is not here — Apply always bumps
+// it as a side effect, it is never proposed on its own.
+export type StateUpdateField = 'status' | 'current_status' | 'next_step' | 'blocker'
+
+export interface StateUpdateProposal {
+  id: string                                   // su-<8 hex>
+  slug: string                                 // state/<slug>.md
+  field: StateUpdateField
+  current: string                              // value being contradicted (for the diff / matching)
+  proposed: string                             // drafted replacement value
+  evidence: {
+    source: 'triage'
+    threadId: string | null
+    sender: string | null
+    date: string                               // YYYY-MM-DD of the evidence
+  }
+  confidence: 'high' | 'low'                   // high = explicit attributable fact; low = inference
+  stateUpdatedAt: string | null                // state file's **Updated:** date at draft time (clobber guard)
+  dedupeKey: string                            // slug:field:hash(proposed) — blocks re-proposal
+  createdAt: string                            // ISO timestamp the proposal was drafted
+}
+
+export interface StateUpdateStore {
+  proposals: StateUpdateProposal[]
+  dismissed: string[]                          // dedupeKeys the operator dismissed; never re-proposed
+}
+
+// What the triage skill emits in the STATE_UPDATES_JSON envelope: semantic
+// fields only. The reconcile step derives id, createdAt, and dedupeKey.
+export type RawStateUpdateProposal = Omit<StateUpdateProposal, 'id' | 'createdAt' | 'dedupeKey'>
 
 export interface ChatLoadResult {
   status: 'success' | 'failed' | 'timeout'
@@ -239,7 +302,7 @@ export interface RitualCacheEntry {
 
 // ---------- Phase 04: bidirectional hub (raw drops + receipts) ----------
 
-export type RawDropKind = 'capture' | 'chat-decision' | 'chat-session'
+export type RawDropKind = 'capture' | 'chat-decision' | 'chat-session' | 'triage-dispatch'
 
 export type ReceiptKind =
   | 'capture'

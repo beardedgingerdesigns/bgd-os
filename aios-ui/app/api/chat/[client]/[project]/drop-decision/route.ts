@@ -16,6 +16,8 @@ import { writeRawDrop, slugify } from '@/lib/raw-drops'
 import { appendReceipt } from '@/lib/cache/receipts'
 import { buildChatDecisionMarkdown } from '@/lib/skills/chat-writeback'
 import { getClient, getProject } from '@/lib/data/clients'
+import { classifyContent } from '@/lib/content-classifier'
+import matter from 'gray-matter'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -76,6 +78,19 @@ export async function POST(
     assistantTurn,
     dropAt: new Date(),
   })
+
+  // Phase 07 — Layer 1 classifier gate: classify before writing to raw/aios/.
+  const parsed = matter(md)
+  const classification = classifyContent({
+    frontmatter: parsed.data as Record<string, unknown>,
+    body: parsed.content,
+    source: 'chat-decision',
+    routeContext: { clientSlug: client, projectSlug: project },
+  })
+  if (classification.classification === 'operational') {
+    return Response.json({ ok: true, skipped: true, reason: 'classified as operational' })
+  }
+
   const { filePath, excerpt } = await writeRawDrop({
     wikiPath,
     kind: 'chat-decision',

@@ -1,6 +1,6 @@
 ---
 name: onboard-client
-description: Use when Justin says "/onboard-client", "add a new client", "set up a new project", "register {company} in the AIOS", "we have a new client", or any variant of intake/registration for a new client or new project under an existing client. Walks an interactive intake (8-10 questions), writes the new client/project into clients.yaml, scaffolds a memory file and reference doc, and logs the onboarding to decisions/log.md.
+description: Use when Justin says "/onboard-client", "add a new client", "set up a new project", "register {company} in the AIOS", "we have a new client", or any variant of intake/registration for a new client or new project under an existing client. Walks an interactive intake (8-10 questions), writes the new client/project into clients.yaml, scaffolds a memory file and reference doc, and logs the onboarding to decisions/log.md. Full lifecycle: intake interview, clients.yaml entry, /kickoff-project wiki seed, initial STATE.md, decisions log entry.
 bike-method-phase: 1
 three-ms-attribution: |
   Adapted from The Three Ms of AI™ © 2026 Nate Herk. All rights reserved.
@@ -205,7 +205,7 @@ If confirmed, perform all writes in sequence:
 5. **`decisions/log.md`** — append a dated entry:
 
    ```markdown
-   ## {date} — Onboarded {client-name} / {project-name}
+   ## {date} — Onboarded {client-name} / {project-name} (full lifecycle)
 
    **Decision:** Registered new {client-or-project} in the AIOS via /onboard-client.
 
@@ -215,19 +215,78 @@ If confirmed, perform all writes in sequence:
    - Bucket: {bucket}
    - Status: {status}
    - Contract: {contract or "not yet defined"}
+   - Wiki: seeded at ~/repos/{project-slug}/docs/wiki/ (or "not seeded -- kickoff deferred")
+   - STATE.md: initial version written to wiki root + state/{project-slug}.md (or "not written -- kickoff deferred")
    - docs_paths registered: {count}
    - Contacts registered: {count}
 
    **Owner:** Justin (BGD).
 
    **How to apply:**
-   - Run `/load {project-slug}` to verify context hydrates correctly.
+   - Open ~/repos/{project-slug}/ in a new terminal. Claude reads CLAUDE.md + wiki automatically.
    - Capture first project decision under a separate log entry after kickoff.
 
    ---
    ```
 
-### Phase 6 — Close
+### Phase 6 — Kickoff (chained)
+
+Core onboard writes are complete (clients.yaml, memory, reference doc, decisions log). This phase chains into `/kickoff-project` to seed the project wiki.
+
+**Before starting, confirm with the operator:**
+
+> Core onboard writes are complete (clients.yaml, memory, reference doc, decisions log). Ready to run `/kickoff-project {project-slug}` to seed the wiki. Continue, or skip for now?
+
+Use `AskUserQuestion` with two options:
+- "Continue with kickoff" — proceed to invoke `/kickoff-project`
+- "Skip for now" — note in the closing summary that kickoff was deferred; the operator should run `/kickoff-project {project-slug}` manually when ready
+
+**If operator says continue:**
+
+Now run `/kickoff-project {project-slug}`. Follow the kickoff-project skill instructions (11 phases: resolve, gather, interview, seed wiki, write CLAUDE.md, gut-check, dump raw docs, ingest, sync clients.yaml, git commit, report).
+
+**If operator says skip:**
+
+Print: "Kickoff deferred. Run `/kickoff-project {project-slug}` manually when ready." Continue to Phase 7 (which will also be skipped since kickoff was deferred).
+
+**Graceful failure handling (CRITICAL):**
+
+If `/kickoff-project` errors at any point (repo creation fails, user cancels the interview, filesystem error, sub-agent failure), catch the failure and continue to Phase 7 and Phase 8. The core onboard writes from Phase 5 are already on disk and committed. Print:
+
+> Kickoff encountered an issue: {error context}. Core onboard is complete. Run `/kickoff-project {project-slug}` manually when ready.
+
+Do NOT roll back Phase 5 writes because of a Phase 6 failure. The operator has a fully registered client/project regardless of what happens here.
+
+### Phase 7 — Initial STATE.md
+
+**Skip condition:** If Phase 6 (Kickoff) was skipped or failed, skip this phase. Print: "STATE.md skipped because kickoff was deferred/failed. The SessionEnd hook will generate STATE.md automatically after the first working session in the project repo."
+
+**If kickoff succeeded (wiki was seeded):**
+
+Write an initial STATE.md to the project wiki root at `~/repos/{project-slug}/docs/wiki/STATE.md` using the EXACT format from `scripts/state-hook/state-prompt.md`:
+
+```markdown
+# Project State: {project-name}
+
+**Updated:** {YYYY-MM-DD} | **Status:** On track
+
+## Current Status
+Newly onboarded via /onboard-client. Wiki seeded by /kickoff-project. Ready for first working session.
+
+## Next Steps
+- [ ] Run first working session in the project repo
+- [ ] Verify wiki seed accuracy
+- [ ] Capture first project decision in the wiki
+
+## Key Dates
+- {YYYY-MM-DD}: Onboarded into AIOS
+```
+
+Omit "## Accomplishments" and "## Blockers" sections (per the state-prompt.md rule: "Omit any section that has no content").
+
+Then copy the STATE.md to `state/{project-slug}.md` in the claude-os repo root. Both writes should be atomic (write to a temp file first, then rename to the final path).
+
+### Phase 8 — Final Close
 
 Print one-screen summary:
 
@@ -240,17 +299,20 @@ Print one-screen summary:
 - ✅ references/{project-slug}-project.md (if applicable)
 - ✅ MEMORY.md index updated
 - ✅ decisions/log.md entry appended
+- ✅ wiki seeded at ~/repos/{project-slug}/docs/wiki/ via /kickoff-project (or "⏭️ skipped -- run /kickoff-project {project-slug} manually")
+- ✅ STATE.md written to wiki root + state/{project-slug}.md (or "⏭️ skipped -- kickoff was deferred")
 
 ## Verify it works
 
-Run `/load {project-slug}` now and check:
+Open ~/repos/{project-slug}/ in a new terminal. Claude reads CLAUDE.md + wiki automatically. Check:
 - All registered docs_paths reachable
-- Contacts surface correctly in Gmail step
+- Contacts surface correctly
+- Wiki overview matches your understanding of the project
 - No collisions or errors
 
 ## What's next
 
-- First kickoff/discovery call → log it in decisions/log.md
+- Open the project repo and start your first working session. The wiki has everything.
 - As stakeholders confirmed, add to references/{project-slug}-project.md table
 - Next /weekly-project-status will pick up this project automatically
 ```
@@ -263,8 +325,10 @@ Every successful run produces:
 2. **One new memory file** with frontmatter + onboarding stub
 3. **One new reference doc** (optional, by user choice)
 4. **One updated `MEMORY.md` index entry**
-5. **One new `decisions/log.md` entry** documenting the onboarding
+5. **One new `decisions/log.md` entry** documenting the full lifecycle completion (onboard + kickoff + STATE.md status)
 6. **One closing summary** in chat
+7. **One initial STATE.md** in the project wiki root at `~/repos/{project-slug}/docs/wiki/STATE.md` (if kickoff completed)
+8. **One synced STATE.md copy** at `state/{project-slug}.md` in claude-os (if kickoff completed)
 
 ## Critical implementation rules
 
@@ -277,6 +341,8 @@ Every successful run produces:
 7. **Idempotent for "existing client" path.** If the user picks "adding to existing client," show the existing client's projects so they can confirm they're not duplicating an existing project name.
 8. **No external network calls.** Skill is purely local file operations.
 9. **One client per run, one project per run.** If they have 3 new projects under a new client, run the skill 3 times. Composable, not multi-project per call.
+10. **Graceful chain degradation.** Phase 5 (Write) completes ALL core registry writes before Phase 6 (Kickoff) begins. If kickoff fails or is skipped, the operator has a fully registered client/project. Never roll back Phase 5 writes because of a Phase 6 failure.
+11. **STATE.md format parity.** The initial STATE.md written in Phase 7 MUST match the format from `scripts/state-hook/state-prompt.md` exactly so the Phase 5 SessionEnd hook can update it seamlessly in future sessions.
 
 ## KPI (Method spec)
 

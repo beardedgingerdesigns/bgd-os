@@ -267,6 +267,7 @@ function detectKind(filename: string): PendingFile['kind'] {
   if (filename.startsWith('capture-')) return 'capture'
   if (filename.startsWith('chat-decision-')) return 'chat-decision'
   if (filename.startsWith('chat-session-')) return 'chat-session'
+  if (filename.startsWith('triage-dispatch-')) return 'triage-dispatch'
   return 'other'
 }
 
@@ -279,7 +280,7 @@ function detectKind(filename: string): PendingFile['kind'] {
  *   files are returned as pending and lastIngestAt is null.
  * - Files sorted by mtime DESC. Non-`.md` entries are ignored.
  * - kind is parsed from filename prefix (capture-, chat-decision-,
- *   chat-session-, other).
+ *   chat-session-, triage-dispatch-, other).
  */
 export async function readPendingIngest(
   wikiPath: string

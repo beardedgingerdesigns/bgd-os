@@ -3,7 +3,7 @@ import chokidar from 'chokidar'
 import { revalidatePath } from 'next/cache'
 
 import type { Client, InvalidationMessage, InvalidationScope } from '@/lib/types'
-import { CLAUDE_OS_ROOT, MEMORY_ROOT, CLIENTS_YAML_PATH, DECISIONS_LOG_PATH, REFERENCES_DIR } from '@/lib/paths'
+import { CLAUDE_OS_ROOT, MEMORY_ROOT, CLIENTS_YAML_PATH, DECISIONS_LOG_PATH, REFERENCES_DIR, TODOS_PENDING_PATH, STATE_DIR } from '@/lib/paths'
 import { loadClients } from '@/lib/data/clients'
 import { invalidationBus } from '@/lib/invalidation-bus'
 
@@ -86,6 +86,8 @@ export async function startWatcher(): Promise<WatcherHandle> {
     DECISIONS_LOG_PATH,
     REFERENCES_DIR,
     MEMORY_ROOT,
+    TODOS_PENDING_PATH,
+    STATE_DIR,
   ]
   for (const c of clients) {
     for (const p of c.projects) {

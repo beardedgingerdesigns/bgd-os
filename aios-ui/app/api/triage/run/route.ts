@@ -1,6 +1,7 @@
 import { extractTodosEnvelope, runDailyIngest } from '@/lib/skills/daily-ingest'
 import { writeTriageCache } from '@/lib/cache/triage'
 import { writeTodosCache } from '@/lib/cache/todos'
+import { invalidationBus } from '@/lib/invalidation-bus'
 import type { TriageCacheEntry } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -38,6 +39,13 @@ export async function POST() {
         // Cache miss = leave previous todos in place; cache hit = overwrite for today.
         const todos = extractTodosEnvelope(result.output)
         if (todos) await writeTodosCache(todos)
+        // Refresh dashboard counts, triage freshness, and the Sync badge
+        // (the run drafts state proposals via the skill's reconcile step).
+        invalidationBus.publish({
+          scope: { kind: 'admin' },
+          reason: 'triage run complete',
+          at: new Date().toISOString(),
+        })
       }
 
       try { controller.close() } catch (_) { /* already closed */ }

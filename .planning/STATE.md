@@ -1,23 +1,38 @@
+---
+gsd_state_version: 1.0
+milestone: v2.0
+milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
+status: planning
+last_updated: "2026-06-09T04:56:38.601Z"
+last_activity: 2026-06-09
+progress:
+  total_phases: 6
+  completed_phases: 4
+  total_plans: 10
+  completed_plans: 10
+  percent: 67
+---
+
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-21)
+See: .planning/PROJECT.md (updated 2026-06-04)
 
-**Core value:** The UI must render Justin's current operating reality and let him push captures + run rituals from the same page he's looking at, without losing continuity across sessions.
-**Current focus:** None — milestone v1.0 closed 2026-05-22. Run `/gsd-new-milestone` to scope next cycle.
+**Core value:** AIOS is the intelligence layer — dispatcher + strategic partner. Dispatches to project wikis, doesn't compete with them. Project work happens in project repos.
+**Current focus:** Phase 9 — prospect pipeline
 
 ## Current Position
 
-Milestone: v1.0 SHIPPED (4/4 phases complete). See [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md).
-Phase: n/a (no active phase)
-Last activity: 2026-05-22 — Milestone v1.0 closed: Phase 4 merged to main, code review (17 findings) + fix-pass (11 fixes) complete, 267/267 tests passing, UAT 7/9 + 2 gap re-tests verified in browser.
-
-Progress: [█████████████] 100% (milestone v1.0 shipped)
+Phase: 9
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-06-09
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: n/a (Phases 1-3 shipped before `.planning/` setup; no per-plan timing recorded)
 - Average duration: n/a
 - Total execution time: per ADR 0001 estimate, ~5-10 hours of Claude Code time for v0+v1+v3 across the historical phases
@@ -30,12 +45,24 @@ Progress: [█████████████] 100% (milestone v1.0 shipped
 | 2. AIOS UI v1 | — | — | — |
 | 3. AIOS UI v3 | 9 tasks (per plan) | — | — |
 | 4. AIOS UI v2 | 04-02: 2 tasks, ~25 min, 4 commits, 20 tests · 04-03: 3 tasks, ~12 min, 4 commits, 7 tests · 04-04: 3 tasks, ~8 min, 4 commits, 16 tests · 04-05: 2 tasks, ~8 min, 3 commits, 8 tests · 04-06: 3 tasks, ~24 min, 5 commits, 16 tests · 04-07: 4 tasks, ~30 min, 6 commits, 19 tests · 04-08: 3 tasks, ~35 min, 5 commits, 13 tests · 04-09: 3 tasks, ~35 min, 3 commits, 4 tests | ~18 min | ~18 min |
+| 05 | 2 | - | - |
+| 06 | 2 | - | - |
+| 07 | 3 | - | - |
+| 08 | 3 | - | - |
 
 **Recent Trend:**
+
 - Phase 3 (v3) shipped 2026-05-19 per implementation plan + recent commits (`502e751 feat(aios-ui): dashboard todos with subprocess action triggers`, etc.)
 - Trend: Stable — v3 landed cleanly; ADRs 0003/0004/0005 written 2026-05-21 to unblock Phase 4
 
 *Updated after each plan completion.*
+| Phase 05 P01 | 5min | 2 tasks | 3 files |
+| Phase 05 P02 | 7min | 2 tasks | 2 files |
+| Phase 06 P01 | 2min | 2 tasks | 3 files |
+| Phase 06 P02 | 3min | 1 task | 1 file |
+| Phase 07 P01 | 3min | 2 tasks | 5 files |
+| Phase 07 P02 | 4min | 2 tasks | 6 files |
+| Phase 07 P03 | 5min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -54,6 +81,13 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 - **Plan 04-07** (2026-05-22): `brief-meta` SSE event name carries `{ source, builtAt: ISO }` and is emitted by /load before subprocess start. `formatRelativeDate` from lib/format.ts not used for the drawer (only handles YYYY-MM-DD); inline `minutesAgo(date)` used instead. Message route /message/route.ts needed NO changes. HUB-03 contract test used `claudeBin` injection + argv-logging bash wrapper (not `vi.spyOn(spawn)`) because ESM import caching in vitest means `spawn` is captured at module-load time before the spy installs, so the spy never fires.
 - **Plan 04-08** (2026-05-22): `priorUserTurn` computed via role-walk backward (loop from assistantIdx-1 to 0) not index-1 offset — handles non-alternating sequences. drop-session fires on every collapse transition when messages exist (not deduplicated). "Dropped" button permanently disabled after 2s success — local React state, no persistence needed. `fileParallelism: false` added to vitest config to fix pre-existing race on shared YAML fixture (3+ test files concurrently patching clients.yaml).
 - **Plan 04-09** (2026-05-22): /ingest-aios-drops skill at project-local path (.claude/skills/) NOT user-global — confirmed correct per acceptance criteria check. INGEST_SUMMARY_RE is case-insensitive lazy multi-line. WikiIngestModal uses existing Dialog primitive. WikiIngestModal auto-starts POST on open=true via useEffect + hasStartedRef guard (no manual Run button needed since RunIngestButton is already the one-click entry). ProjectReceiptsSlice reads readRecentReceipts(100) and filters in-memory — no new indexed read needed at this scale.
+- [Phase ?]: Plan 05-01: PostToolUse metrics hook uses 5s stdin timeout, accumulates edits/writes/bash/commits/user_messages/cwd in /tmp/claude-state-{session_id}.json
+- [Phase ?]: Plan 05-02: SessionEnd hook uses 10s stdin timeout, 25s claude subprocess timeout, js-yaml from aios-ui node_modules, skips claude-os sessions, counts user messages from transcript JSONL
+- [Phase ?]: Plan 06-01: Persistent to-do list created at todos/pending.md with structured markdown format; /load-project retired with deprecation notice preserving all trigger phrases
+- [Phase ?]: Plan 06-02: /onboard-client rewired with full lifecycle chain. Phases 6-8 added (Kickoff with /kickoff-project chain, Initial STATE.md, Final Close). Graceful degradation: core writes complete before optional chain steps.
+- [Phase 07]: Plan 07-01: classifyContent pure function with 4-rule priority (route context > frontmatter > keywords > ambiguous). Operational threshold strict (opScore > projScore + 1). All 3 write surfaces (capture.ts, drop-decision, drop-session) gated before writeRawDrop. Zero new deps.
+- [Phase ?]: [Phase 07]: Plan 07-02: ContestedEntry/SkippedEntry types in wiki-ingest.ts with backward-compatible parser. SKILL.md gains evaluate-before-promote logic (promote/skip/flag per file). WikiIngestModal updated for new types.
+- [Phase ?]: [Phase 07]: Plan 07-03: WikiFlagDetail side-by-side contradiction viewer with .resolved/ metadata ledger for operator resolution. T-07-07 path traversal mitigated.
 
 ### Pending Todos
 
@@ -62,6 +96,7 @@ All decisions are logged in PROJECT.md Key Decisions table — 13 LOCKED decisio
 None yet (fresh `.planning/` initialization).
 
 Pre-v4 follow-ups carried over from ADR 0002:
+
 - BRDO-01: backfill `mrr_monthly:` on Inside Out, ToneQuest, IowaEverywhere, Partners For Sight, future Wild Rose / Thermal Kitchen
 - BRDO-02: run `/onboard-client` for the 5 BrandOS dealers; resolve "under terraplex Client vs. own Client" per dealer
 - BRDO-03: rename `terraplex-hub` → `terraplex-distributor` once dealer migration is no longer happening inside it
@@ -93,6 +128,6 @@ Items acknowledged and carried forward:
 
 ## Session Continuity
 
-Last session: 2026-05-22
-Stopped at: Completed Plan 04-09 — Pending Ingestion surface + wiki ingest endpoint + per-project receipts slice. 3 task commits. 265/265 tests pass, build clean. HUB-07 satisfied. PHASE 4 COMPLETE.
-Resume file: `.planning/phases/04-bidirectional-hub/04-09-SUMMARY.md`. Phase 4: 9/9 plans done. All phases complete.
+Last session: 2026-06-09T04:56:38.587Z
+Stopped at: Phase 9 context gathered
+Resume file: .planning/phases/09-prospect-pipeline/09-CONTEXT.md

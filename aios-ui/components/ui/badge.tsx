@@ -19,15 +19,14 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
-        // Pastel status pills. Background sits at ~15% alpha, foreground at
-        // the saturated hue. Pulled from the dashboard-style screenshots so
-        // status reads as a chip, not muted text.
+        // Status pills. Tinted wash background; foreground is a deep hue on
+        // light, pastel on dark, so the chip stays legible in either theme.
         success:
-          "bg-emerald-500/15 text-emerald-300 dark:bg-emerald-500/15 dark:text-emerald-300",
+          "bg-emerald-500/15 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
         warning:
-          "bg-amber-500/15 text-amber-300 dark:bg-amber-500/15 dark:text-amber-300",
+          "bg-amber-500/15 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
         info:
-          "bg-sky-500/15 text-sky-300 dark:bg-sky-500/15 dark:text-sky-300",
+          "bg-sky-500/15 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
         brand:
           "bg-brand-muted text-brand",
         accent:

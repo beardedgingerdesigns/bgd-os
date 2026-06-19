@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Loader2, X } from 'lucide-react'
-import type { WikiIngestSummary } from '@/lib/skills/wiki-ingest'
+import type { WikiIngestSummary, ContestedEntry, SkippedEntry } from '@/lib/skills/wiki-ingest'
+import { WikiFlagDetail } from '@/components/wiki-flag-detail'
 
 interface Props {
   clientSlug: string
@@ -31,6 +32,7 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
   const [status, setStatus] = useState<Status>('idle')
   const [summary, setSummary] = useState<WikiIngestSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [resolvedFlags, setResolvedFlags] = useState<Set<string>>(new Set())
   const hasStartedRef = useRef(false)
   const outputEndRef = useRef<HTMLDivElement>(null)
 
@@ -101,10 +103,38 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
               setStatus('success')
               if (p.summary && typeof p.summary === 'object') {
                 const s = p.summary as Record<string, unknown>
+                // Parse contested: supports both legacy string[] and new ContestedEntry[]
+                const rawContested = Array.isArray(s.contested) ? s.contested : []
+                const contested: ContestedEntry[] = rawContested.map((item: unknown) => {
+                  if (typeof item === 'object' && item !== null) {
+                    const obj = item as Record<string, unknown>
+                    if (typeof obj.file === 'string' && typeof obj.contradiction === 'object' && obj.contradiction !== null) {
+                      return obj as unknown as ContestedEntry
+                    }
+                  }
+                  return {
+                    file: typeof item === 'string' ? item : String(item),
+                    contradiction: { incoming_claim: 'unknown', existing_claim: 'unknown', existing_page: 'unknown', severity: 'medium' as const },
+                  }
+                })
+
+                // Parse skipped: supports both legacy string[] and new SkippedEntry[]
+                const rawSkipped = Array.isArray(s.skipped) ? s.skipped : []
+                const skipped: SkippedEntry[] = rawSkipped.map((item: unknown) => {
+                  if (typeof item === 'object' && item !== null) {
+                    const obj = item as Record<string, unknown>
+                    if (typeof obj.file === 'string' && typeof obj.reason === 'string') {
+                      return obj as unknown as SkippedEntry
+                    }
+                  }
+                  return { file: typeof item === 'string' ? item : String(item), reason: 'unknown' }
+                })
+
                 setSummary({
                   promoted: Array.isArray(s.promoted) ? (s.promoted as string[]) : [],
                   deferred: Array.isArray(s.deferred) ? (s.deferred as string[]) : [],
-                  contested: Array.isArray(s.contested) ? (s.contested as string[]) : [],
+                  skipped,
+                  contested,
                 })
               }
             } else {
@@ -166,8 +196,50 @@ export function WikiIngestModal({ clientSlug, projectSlug, open, onClose }: Prop
           <div className="rounded border border-emerald-500/30 bg-emerald-500/5 p-3 text-sm">
             <span className="font-medium text-emerald-300">Ingest complete:</span>{' '}
             <span className="text-foreground/80">
-              promoted {summary.promoted.length}, deferred {summary.deferred.length}, contested {summary.contested.length}
+              promoted {summary.promoted.length}, skipped {summary.skipped.length}, deferred {summary.deferred.length}, contested {summary.contested.length}
             </span>
+          </div>
+        )}
+
+        {status === 'success' && summary && summary.skipped.length > 0 && (
+          <details>
+            <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+              {summary.skipped.length} file(s) skipped (redundant)
+            </summary>
+            <ul className="mt-1 space-y-1 pl-4 text-sm">
+              {summary.skipped.map((s) => (
+                <li key={s.file} className="text-muted-foreground">
+                  <code className="font-mono text-xs">{s.file}</code>
+                  <span className="ml-1 text-xs">— {s.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+
+        {status === 'success' && summary && summary.contested.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-amber-400">
+                {summary.contested.length} file(s) flagged for review
+              </span>
+              {resolvedFlags.size > 0 && (
+                <span className="text-xs text-muted-foreground">
+                  {resolvedFlags.size}/{summary.contested.length} resolved
+                </span>
+              )}
+            </div>
+            {summary.contested.map((entry) => (
+              <WikiFlagDetail
+                key={entry.file}
+                entry={entry}
+                clientSlug={clientSlug}
+                projectSlug={projectSlug}
+                onResolved={(file) => {
+                  setResolvedFlags(prev => new Set(prev).add(file))
+                }}
+              />
+            ))}
           </div>
         )}
 

@@ -1,6 +1,7 @@
 import { ExternalLink } from 'lucide-react'
 import { TriageRowActions } from '@/components/triage-row-actions'
 import { extractTodosEnvelope } from '@/lib/skills/todos-envelope'
+import { stripTriageEnvelopes } from '@/lib/skills/triage-envelopes'
 import type { Todo } from '@/lib/types'
 
 interface TriageOutputProps {
@@ -31,11 +32,6 @@ const THREAD_ID_REGEX = /Thread:\s*`?([0-9a-f]{12,20})`?/g
 // daily-inbox-triage SKILL.md Step 5 output template.
 const BLOCK_BOUNDARY = /^(##+\s|\d+\.\s|-\s\*\*|Thread:\s)/
 
-// Strip the TODOS_JSON envelope (markers + fenced JSON) from rendered output.
-// We never want operators to see the system envelope as text — it's a machine
-// surface for the UI's structured renderer (see GAP-04-01).
-const TODOS_ENVELOPE_STRIP_RE =
-  /<!--\s*TODOS_JSON_START\s*-->[\s\S]*?<!--\s*TODOS_JSON_END\s*-->\s*/i
 
 interface ThreadBlock {
   lines: string[]
@@ -186,7 +182,7 @@ export function TriageOutput({
   // by contacts and render the markdown with Gmail-link rewrites in place.
   // We still strip the envelope markers if any happen to be present, so the
   // operator never sees the raw <!-- TODOS_JSON_START --> markers as text.
-  const withoutEnvelope = markdown.replace(TODOS_ENVELOPE_STRIP_RE, '')
+  const withoutEnvelope = stripTriageEnvelopes(markdown)
 
   const filtered =
     projectSlug && projectContacts && projectContacts.length > 0

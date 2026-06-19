@@ -74,6 +74,19 @@ describe('buildRawDropPath', () => {
     const out = buildRawDropPath({ wikiPath: '/tmp/w', kind: 'capture', slug: 'foo' })
     expect(out).toMatch(/\/tmp\/w\/raw\/aios\/capture-\d{4}-\d{2}-\d{2}-foo\.md$/)
   })
+
+  it('generates correct filename for triage-dispatch kind', () => {
+    const out = buildRawDropPath({
+      wikiPath: '/tmp/w',
+      kind: 'triage-dispatch',
+      date: new Date('2026-06-08T12:00:00Z'),
+      slug: 'pyro-trade-show-materials',
+    })
+    expect(out).toContain('triage-dispatch-')
+    expect(out).toMatch(/triage-dispatch-\d{4}-\d{2}-\d{2}-/)
+    expect(out).toMatch(/-pyro-trade-show-materials\.md$/)
+    expect(out).toBe('/tmp/w/raw/aios/triage-dispatch-2026-06-08-pyro-trade-show-materials.md')
+  })
 })
 
 describe('writeRawDrop', () => {
@@ -152,5 +165,34 @@ describe('writeRawDrop', () => {
     expect(third.filePath).toBe(
       path.join(tmpDir, 'raw', 'aios', 'capture-2026-05-21-dup-3.md'),
     )
+  })
+
+  it('writes triage-dispatch file to raw/aios/ directory', async () => {
+    const body = [
+      '---',
+      'kind: triage-dispatch',
+      'thread_id: test123',
+      'sender: test@example.com',
+      'date: 2026-06-08',
+      'subject: Test Subject',
+      '---',
+      '',
+      'Summary body text for the triage dispatch.',
+    ].join('\n')
+
+    const result = await writeRawDrop({
+      wikiPath: tmpDir,
+      kind: 'triage-dispatch',
+      slug: 'dakota-fest-materials',
+      body,
+      date: new Date('2026-06-08T12:00:00Z'),
+    })
+
+    expect(result.filePath).toBe(
+      path.join(tmpDir, 'raw', 'aios', 'triage-dispatch-2026-06-08-dakota-fest-materials.md'),
+    )
+    const contents = await fs.readFile(result.filePath, 'utf-8')
+    expect(contents).toContain('kind: triage-dispatch')
+    expect(contents).toContain('thread_id: test123')
   })
 })

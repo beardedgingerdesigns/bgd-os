@@ -108,11 +108,11 @@ Jon also noted: "I know there are a ton of efficiencies I can be employing." Hig
 
 ## 2026-05-23 — Inside Out wiki converted to AIOS canonical layout
 
-**Decision:** Reshaped the existing LLM-Wiki at `/Users/justinlobaito/repos/inside-out/wiki/` (+ companion `raw/`) into AIOS canonical `docs/wiki/` layout via `/convert-wiki`. Updated `clients.yaml` `docs_paths` for `inside-out-website` from `.../inside-out/wiki` → `.../inside-out/docs` so `detectWiki()` resolves via `docs/wiki/WIKI-CLAUDE.md`. Verbatim snapshots preserved under `docs/wiki/raw/external/{wiki,raw}-pre-aios-2026-05-23/`. Conversion record: `/Users/justinlobaito/repos/inside-out/docs/wiki/log/2026-05-23-wiki-converted-from-project-root.md`.
+**Decision:** Reshaped the existing LLM-Wiki at `/Users/justinlobaito/repos/inside-out/wiki/` (+ companion `raw/`) into AIOS canonical `docs/wiki/` layout via `/wiki convert`. Updated `clients.yaml` `docs_paths` for `inside-out-website` from `.../inside-out/wiki` → `.../inside-out/docs` so `detectWiki()` resolves via `docs/wiki/WIKI-CLAUDE.md`. Verbatim snapshots preserved under `docs/wiki/raw/external/{wiki,raw}-pre-aios-2026-05-23/`. Conversion record: `/Users/justinlobaito/repos/inside-out/docs/wiki/log/2026-05-23-wiki-converted-from-project-root.md`.
 
-**Why:** The Inside Out wiki was already llm-wiki-shaped (had SCHEMA.md, decisions/, sources/, overview.md, log.md) but lived at the project root (`wiki/`) rather than the AIOS-canonical `docs/wiki/` path. AIOS's `detectWiki()` walks one level under `docs_paths` to find `WIKI-CLAUDE.md`, so the old location was invisible to the OS. Reshape matches Iowa Everywhere / Wild Rose pattern: WIKI-CLAUDE.md as schema doc, decisions split into `active/deferred/implemented/superseded`, `log/` as folder with per-event files, plus `plans/`, `architecture/`, `strategy/`, `research/` sections. All curated content preserved; project-specific `brand/`, `services/`, `pages/` sections kept since they're load-bearing for this project.
+**Why:** The Inside Out wiki was already wiki-shaped (had SCHEMA.md, decisions/, sources/, overview.md, log.md) but lived at the project root (`wiki/`) rather than the AIOS-canonical `docs/wiki/` path. AIOS's `detectWiki()` walks one level under `docs_paths` to find `WIKI-CLAUDE.md`, so the old location was invisible to the OS. Reshape matches Iowa Everywhere / Wild Rose pattern: WIKI-CLAUDE.md as schema doc, decisions split into `active/deferred/implemented/superseded`, `log/` as folder with per-event files, plus `plans/`, `architecture/`, `strategy/`, `research/` sections. All curated content preserved; project-specific `brand/`, `services/`, `pages/` sections kept since they're load-bearing for this project.
 
-**Alternatives considered:** (a) Delete the old `wiki/` outright (rejected — convert-wiki skill explicitly forbids it; that's the project owner's call). (b) Move (`mv`) content into `docs/wiki/` to preserve git history (rejected — files were untracked anyway, and the cp-only approach left an undisturbed `wiki/` for Justin to remove on his own timeline). (c) Keep the old sequential `NNNN-<slug>.md` decision numbering (rejected — date-based slugs sort chronologically and match other BGD wikis).
+**Alternatives considered:** (a) Delete the old `wiki/` outright (rejected — `/wiki convert` explicitly forbids it; that's the project owner's call). (b) Move (`mv`) content into `docs/wiki/` to preserve git history (rejected — files were untracked anyway, and the cp-only approach left an undisturbed `wiki/` for Justin to remove on his own timeline). (c) Keep the old sequential `NNNN-<slug>.md` decision numbering (rejected — date-based slugs sort chronologically and match other BGD wikis).
 
 **Owner:** Justin (decides when to remove the now-redundant `/Users/justinlobaito/repos/inside-out/wiki/` and `/Users/justinlobaito/repos/inside-out/raw/` directories at project root).
 
@@ -684,7 +684,7 @@ With propagation tooling, the value proposition flips. Terraplex pays the platfo
 - *Register Partners For Sight directly as the client (no NPS layer).* Rejected — the billing relationship runs through NPS and they appear in active correspondence on the project. Future sessions reading `clients.yaml` need to see both sides.
 - *Use `@npsmediagroup.com` catch-all in contacts.* Rejected — Frank Lama and Jamie Fallon (NPS-wide fallbacks per auto-replies) would pollute Gmail queries with unrelated threads. Justin explicitly flagged them as noise during intake.
 - *Defer the reference doc until more context surfaces.* Rejected — even a scaffold with the engagement structure + grant-flow note is more useful than nothing. Doc has explicit TODO sections for Justin to expand over time.
-- *Bootstrap an llm-wiki at `/Users/justinlobaito/repos/partners-for-sight/docs/wiki/` immediately.* Deferred — currently maintenance mode, no year-two scope conversation in progress. Wiki bootstrap when (and if) a real scope-expansion moment arrives. Reference doc + memory + clients.yaml is right-sized for now.
+- *Bootstrap a project wiki at `/Users/justinlobaito/repos/partners-for-sight/docs/wiki/` immediately.* Deferred — currently maintenance mode, no year-two scope conversation in progress. Wiki bootstrap when (and if) a real scope-expansion moment arrives. Reference doc + memory + clients.yaml is right-sized for now.
 
 **Owner:** Justin (BGD).
 
@@ -757,7 +757,7 @@ The split going forward:
 - **`claude-os/decisions/log.md`** = cross-cutting AIOS / business / multi-project decisions.
 - **`{project-repo}/docs/wiki/decisions/`** = project-internal decisions with lifecycle (active/deferred/implemented/superseded).
 
-Justin is rolling the llm-wiki pattern out across every project. `/load {project}` needs to be the single command that answers "what decisions did I make on this project, and what's currently locked?" — which requires reading the wiki, not just claude-os's local decisions log.
+Justin is rolling the project wiki pattern out across every project. `/load {project}` needs to be the single command that answers "what decisions did I make on this project, and what's currently locked?" — which requires reading the wiki, not just claude-os's local decisions log.
 
 **Alternatives considered:**
 
@@ -773,7 +773,7 @@ Justin is rolling the llm-wiki pattern out across every project. `/load {project
 - Next `/load brandos` should now surface all 5 active + 3 deferred decisions in `site-builder-phase2/docs/wiki/decisions/` plus the most recent 10 log entries.
 - When adding a new project repo with a wiki, register the directory containing (or one level above) `WIKI-CLAUDE.md` in the project's `docs_paths:`. No other config needed.
 - If a future load run still misses wiki content, check (a) the wiki has one of the three detection markers and (b) the `docs_paths` entry points at or above the wiki root.
-- Project-internal decisions should land in the project's wiki via `/grill-with-docs` or the `llm-wiki` skill, not in `claude-os/decisions/log.md`. If a decision is project-internal but ends up in the cross-project log, treat as a routing miss and move it.
+- Project-internal decisions should land in the project's wiki via `/grill-with-docs` or the `/wiki` skill, not in `claude-os/decisions/log.md`. If a decision is project-internal but ends up in the cross-project log, treat as a routing miss and move it.
 
 **Open follow-ups:**
 
@@ -880,5 +880,235 @@ Also corrected CLAUDE.md (line 29): dropped "— Iowa State Fair, etc." from the
 - Capacity: partnership operating load against Justin's already-maxed hours (the pivot exists to escape the hours ceiling — partnership must reduce load, not add it).
 
 **Owner:** Justin (BGD). Partners: Nel (filing/technical), Alex (commercial/ops).
+
+---
+
+## 2026-06-03 — AIOS reframe: dispatcher + strategic partner, not project worker
+
+**Decision:** AIOS (claude-os) is being reframed around two jobs only:
+
+1. **Strategic business partner.** Cross-cutting intelligence that no single project wiki holds — BGD thesis, pivot strategy, revenue targets, pricing, client relationships, positioning. The thinking room for "should I take this deal?" and "what's my MRR gap?"
+
+2. **Dispatcher/receptionist.** Thin awareness of every project and client. Triages incoming work, routes with the right context slice to a focused project session via `/load-project`. Doesn't do deep project work itself.
+
+What AIOS keeps: daily inbox view (lighter/dashboard-style), email reply drafting with inline interaction, project snapshot board, MRR view, client onboarding (creates project wikis then lets them go), calendar awareness.
+
+What AIOS stops doing: deep project-level work (that's the project wiki + project repo session), heavy process rituals requiring manual triggers.
+
+**Two-layer knowledge filtering (new):** Not everything that crosses Justin's desk is project-relevant. AIOS applies a filter before staging to a wiki: "Does this change what the project knows about itself?" Client moved a launch date → wiki. New stakeholder → wiki. Scope/pricing shift → wiki. "Yeah Tuesday works" → stays at AIOS operational layer. "Can you resend the logo files?" → operational, dies at AIOS.
+
+Defense on both sides: AIOS filters on the way out (deciding what's wiki-worthy). Wiki ingest filters on the way in (evaluating against what the project already knows — redundant? skip; contradicts something? flag; genuinely new? promote). The wiki becomes self-curating, not just a bucket.
+
+**Routines over manual triggers:** Daily triage, project snapshot refresh, MRR reconciliation should run on schedules. AIOS does its morning prep before Justin sits down. He opens to a ready dashboard, not a process to run.
+
+**Why:**
+
+1. **AIOS feels cumbersome at the project layer** (feedback logged 2026-05-23). Justin works in project repos directly, not from claude-os. The friction is because AIOS tries to be both dispatcher and worker.
+2. **Project wikis are working phenomenally.** The compounding knowledge pattern is proven across BrandOS, Iowa Everywhere, Wild Rose, Inside Out, Mr Gym. AIOS should dispatch to them, not compete with them.
+3. **Inspired by Matt Pocock's "handoff" concept** (YouTube, May 2026). Core insight: small, focused context beats large, diluted context. LLMs have a "smart zone" (~0-120k tokens) and a "dumb zone" (everything past). AIOS as the thin routing layer that stays permanently in the smart zone by never going deep into implementation.
+4. **The strategic partner role is where AIOS earns its keep.** Business model, client relationships, BGD direction, what to say yes/no to — this is cross-cutting intelligence that lives nowhere else. No project wiki holds this view.
+5. **Daily triage has the right intelligence but wrong ergonomics.** AIOS understands projects well enough to write good replies. It understands Justin's voice. The understanding is there; the interaction layer isn't. Too many steps between seeing an email and acting on it.
+
+**Alternatives considered:**
+
+- *Keep AIOS as-is and iterate incrementally.* Rejected — the friction is architectural (trying to be two things), not incremental (needs polish). Polish won't fix the identity problem.
+- *Move everything into project wikis and eliminate AIOS.* Rejected — cross-cutting strategic intelligence has no home in any single project wiki. The dispatcher/receptionist role is genuinely needed.
+- *Build a separate UI/dashboard app.* Premature — validate the reframed model inside Claude Code first. If the CLI interaction model proves insufficient for the dashboard use case, that's a future decision.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- This decision shapes the next milestone for claude-os itself. GSD roadmap to follow.
+- Existing skills (`/daily-inbox-triage`, `/weekly-project-status`, `/load-project`, `/onboard-client`) are retained but evaluated against the two-job model.
+- Wiki ingest skill (`/wiki ingest`) gets a relevance-check upgrade: evaluate incoming content against what the project already knows before promoting from `raw/`.
+- Scheduled routines exploration begins — move daily triage and weekly status from manual triggers to automated schedules.
+- AIOS-to-wiki staging becomes a natural byproduct of triage, not a deliberate process.
+
+---
+
+## 2026-06-09 — Terraplex rollout plan doubles as the BrandOS pricing proposal
+
+**Decision:** No major BrandOS build work for Terraplex (site redesign, training section, portal rollout) until the Cherity + Jon pricing/rollout meeting happens. The rollout plan document carries the pricing structure (board-prepped 2026-06-06: $800/mo distributor + $15/mo per-dealer portal fee + $250/mo dealer sites), so that meeting approves a structure instead of opening a negotiation. Small already-owed Craft items (homepage I19 graphic, quote-request functionality) proceed on the existing retainer.
+
+**Why:** The 2026-06-09 monthly status landed the BrandOS introduction — Cherity aligned on implementing, redesign prioritized, her permissions question was a buying signal. But pricing was deliberately deferred ("determined as we move through implementation," "proof of concept"), six of eight action items landed on Justin, and no follow-up dates were set. That's the shape of the old model: scope expanding on a $600/mo retainer. The rollout plan is the leverage point — Cherity already wants it, so pricing arrives inside a document she asked for. Two dependencies stand between now and money (Jon demo, then the three-way meeting); getting the Jon demo scheduled this week protects momentum against the Dakota Fest timeline.
+
+**Alternatives considered:** Build first, price later (rejected — repeats the free-work pattern the pivot exists to kill). Separate pricing pitch (rejected — a standalone money conversation invites negotiation; anchoring inside the wanted rollout plan doesn't).
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-10 — Fable 5 pilot: multi-agent product definition + solo GSD planning validated; execution approved
+
+**Decision:** The Fable 5 pilot on BrandOS (Marketing Materials Builder) passes its planning stages and proceeds to execution. The full chain ran in one day: 3-agent deliberation (7 rounds: positions, convergence, AI-handoff verdict, 24-source research, taxonomy grill) → adversarial grill-me with a fresh Fable defender (13 questions, one empirical Chromium render experiment) → operator corrections → solo single-agent GSD planning (7 plans, 5 waves, 24 tasks) → 5-round codex adversarial review (25 findings, all accepted and applied, funnel 15→10→5→4→1, operator accepted at cap). Output artifacts: brief ACTIVE at `repos/brandos/docs/wiki/plans/marketing-materials-builder-brief.md`, Phase 05 execution-ready in `repos/brandos/.planning/`.
+
+**Why:** Stage-gate evidence, not vibes. Fable one-shot the planning pipeline solo and caught its own requirements gap (artifact_type schema); the grill defender ran a real experiment instead of agreeing (rendered a 33"x80" PDF and inspected the objects) and admitted an invented argument when pressed; codex still found 25 real issues, meaning the cross-model loop remains load-bearing even on Fable-authored plans. Total burn ≈ 5M subagent tokens across all stages, all inside Max plan limits during the free Fable window (ends 2026-06-22).
+
+**Lessons that change how we work:**
+- Agent RESUMPTION is the hidden cost: resumed agents re-read their growing transcript every round (planner: ~179k first run → ~504k by round 5; six runs summed ≈ 2.3M). Prefer fewer, fatter exchanges; for execution, use FRESH executor agents per plan, never one long-lived resumed agent.
+- Sub-agent fan-out discipline held: single-agent planning matched multi-agent quality at a fraction of the cost — fan out for independent perspectives (deliberation, verification), not for pipeline stages.
+- Codex review on Fable plans: still worth it. 5 blockers in round 1 were code-verified facts (hardcoded GCS prefix, hardcoded cart nav, null MSRP, nonexistent ticket service) that would have surfaced mid-execution as rework.
+
+**Alternatives considered:** Skip codex review since Fable planned it (rejected — 25 findings say no). Run execution as one resumed agent for continuity (rejected — resumption economics).
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-12 — claude-os restructured: CLAUDE.md as router, single inbox, dispatch pipeline
+
+**Decision:** The AIOS repo is restructured around the router principle (Nate Herk, "Ultimate Second Brain" video, ingested 2026-06-10) and the 2026-06-03 dispatcher reframe. Five moves, executed same day as the deciding audit:
+
+1. **CLAUDE.md is a router, not a content store.** Evergreen identity stub + operating model + complete routing tree + rules + full skills table. Dated facts are banned from the file; they live in `context/` (priorities, about-business, about-me, financials), which is now the single source of truth. The router test (could Justin find it by hand; does the agent find it fast; do facts in the manual rot) becomes a standing maintenance rule and part of `/audit`.
+2. **One inbox.** `archives/raw/` is THE drop point. The empty root `raw/` is gone. Strays in `docs/` root (Gemini PDFs, docx, screenshot, txt) swept into `archives/raw/`; one-off meeting notes moved from `references/` to `archives/references/` (clients.yaml path updated).
+3. **`/dispatch` skill created** — the read-and-route pipeline: inventory inbox, classify with the two-layer filter ("does this change what the project knows about itself?"), route (wiki `raw/aios/` staging per ADR 0004, context/, references/, decisions, todos), update `state/<slug>.md`, log to `archives/raw/ROUTING-LOG.md`.
+4. **`/brief` skill created** — the springboard: state/ + todos + decisions tail + priorities + calendar → "what needs a decision today." No email fetch, no researcher agents.
+5. **`/load-project` retired** to `archives/skills/` (deprecated since 2026-06-04; project wikis are self-sufficient).
+
+**Why:** The 2026-06-12 audit found CLAUDE.md half router, half dumping ground: three facts already rotten (5/30 pitch listed as upcoming, $1,700 MRR vs actual $1,950, ToneQuest listed as in-flight), the routing tree blind to `state/`, `todos/`, `docs/wiki/` (the advisory board), and the skills table listing 3 of 9 installed skills. Duplication between CLAUDE.md and `context/` guaranteed drift; the fix is structural (one canonical home per fact, router points to it), not editorial.
+
+**Alternatives considered:** Patch the stale facts in place (rejected — same class of drift recurs; the audit's job is to kill the class). Adopt Nate's full monorepo "other worlds" pattern, moving project repos inside claude-os (rejected — BGD project repos are client deliverables that deploy and hand off independently; the hub-and-spoke two-tier model already delivers cross-project context via clients.yaml docs_paths).
+
+**Owner:** Justin (BGD). ADR: `docs/adr/0006-claude-md-as-router.md`.
+
+---
+
+## 2026-06-12 — /level-up: session-wrap automation scoped and shipped as /wrap (bike phase 1)
+
+**Decision:** This week's level-up artifact is `/wrap` — a user-level skill (`~/.claude/skills/wrap/SKILL.md`) that wraps any project session in one word: digest (accomplishments / decisions / struggles / next steps / open questions) staged to the project wiki's `raw/aios/`, STATE.md updated, breadcrumb appended to `~/.claude/session-wrap.log`. Bike Method phase 1: manual trigger only; the Stop/SessionEnd hook automation is phase 2, gated on a validated week of manual runs (known blocker: SessionEnd doesn't fire from the IDE extension, debugged 2026-06-04).
+
+**Method spec (3Ms):**
+- *Constraint:* knowledge capture depends on Justin remembering wrap-up commands at session end — ~23 manual asks/week across all repos (retros/retro-2026-06-12.md pattern #1); a lapse cost ToneQuest a month of inbox/wiki backfill.
+- *EAD:* Eliminate rejected (ToneQuest was the elimination experiment; it failed expensively). Delegate rejected (no person fits). Automate: ~60% deterministic (detection, writes, logging), ~30% AI (the digest), ~10% manual (wiki-ingest promotion stays the reviewed step per ADR 0004).
+- *Process:* trigger = /wrap now, hook later; sources = live session context; transform = session → structured digest with retro-minable Struggles section; decisions = substance gate, wiki-or-STATE-only, never curated pages; destination = wiki raw/aios/ + STATE.md + breadcrumb log.
+- *Autonomy:* L2 now (AI drafts in-session, Justin sees it), L3 at hook stage (staging inbox is the review buffer). No L4; curated content untouchable.
+- *KPI:* less-cost bucket. Primary metric: manual wrap-up asks/week counted by /retro — baseline 23 (2026-06-12), target <5 within two retros. Secondary: all active state files <7 days old (/brief flags).
+
+**Why this candidate:** highest-leverage pattern in the first retro (count, cross-repo spread, demonstrated failure cost), half-built already (scripts/state-hook), and its digest store becomes /retro's phase-2 clean input — one build feeds two systems.
+
+**Owner:** Justin (BGD). First retro checkpoint: 2026-06-19.
+
+---
+
+## 2026-06-13 — Onboard Global Ag Network: convert ad-hoc support into a paid rebuild engagement
+
+**Decision:** Formalize Global Ag Network (GAN) as a BGD engagement. Justin has been GAN's de facto web/tech support since ~2023 with no retainer, and already holds the Craft/SEOmatic/Ad Wizard licenses + the DigitalOcean account. Delaney Howell (Ag News Daily president, GAN host) emailed 2026-06-12 with two support asks plus an explicit request to re-engage on transitioning the site. The play: convert the unpaid ad-hoc relationship into a paid website rebuild + hosting-stabilization engagement. Project kicked off in its own repo (`repos/global-ag-network/`, private GitHub repo `beardedgingerdesigns/global-ag-network`), wiki seeded, `clients.yaml` entry added (bucket: prospects). Meeting locked: **Fri 2026-06-19 10:00am CT** ("GAN - Touchbase", Google Meet, invite sent to Delaney 2026-06-13).
+
+**Why:** It's a warm reinitiation, not a cold sale — Justin already does the work and holds the infrastructure, so the only thing missing is a contract. The DigitalOcean payment pause that broke podcast playback (fixed 2026-06-12 as the opening win) is exactly the kind of fragility a formal hosting engagement prevents, which makes the pitch self-evident. Bucket is `prospects` because there's no signed retainer yet (MRR $0); converting to a real number is the Friday goal. Fits the BGD pivot: solve the business problem (stop the site from biting her), productize the fix as recurring hosting + a rebuild, not a one-off.
+
+**Alternatives considered:**
+- *Keep doing it ad-hoc for free.* Rejected — Justin already carries the licenses + DO account cost with zero recurring revenue; the relationship is real but financially upside-down.
+- *Quote a one-off rebuild only.* Rejected — leaves the hosting fragility (and the unpaid support drip) unsolved. The recurring hosting-stabilization piece is the point.
+- *Push the engagement to a later quarter.* Rejected — Delaney initiated the re-engage now and there's a live, fixable pain (playback) to convert into momentum.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- Friday 6/19: resolve Buzzsprout vs self-hosted feed, confirm co-host (Mike vs Tanner), confirm Successful Farming ad-deal status, and turn the engagement into a real retainer number (update `clients.yaml` `mrr_monthly` + bucket once signed).
+- Email-license question (`delaney@globalagnetwork.com`): lean is "safe to drop," but confirm together Friday before she cancels — draft reply queued in Gmail.
+- Deep project state lives in `repos/global-ag-network/docs/wiki/`; thin state in `state/global-ag-network.md`.
+
+**Open follow-ups:**
+- Convert prospect → active client with a signed retainer after Friday.
+- Decide rebuild platform (Craft stays vs. migrate).
+
+---
+
+## 2026-06-13 — Refocus: BrandOS to launch is the priority; AI-services research is a map, not a backlog
+
+**Decision:** Reorder current focus. **BrandOS-to-a-launch-state plus the in-flight client projects are the active priority.** The AI-services pivot (proof point #2) is reclassified from active work to **mapped exploration, parked.** The recent research wave (`brainstorm/research-*-2026-06-06.md` productization/competitive/cross-synthesis, plus the `overnight-*.md` set) is kept as a knowledge map to revisit when the pivot activates — it is explicitly NOT a list of immediate action items. The pricing forks it proposed ($2,500 retainer / $1,500 audit / kill the $750 tier, `/roi-track` build) are not ratified and not pending. priorities.md reordered to match; the stale "first paying AI-services client by end of June" target is removed.
+
+**Why:** The pivot's proof-point #2 was gated entirely on Jon selling it, and **Jon keeps punting — the 5/30 partnership conversation never happened.** With no sales motion, chasing AI-services pricing/automation now is building ahead of demand. BrandOS (proof point #1) is real, closer to revenue, and the thing Justin can move without waiting on anyone. Mapping the AI-services opportunity was valuable (it's captured); acting on it now is not. One concrete thread Justin does want to pursue: re-engaging Co-Line Manufacturing (existing $75/mo client, stalled redesign) — tracked as a todo, led by the relationship rather than an AI pitch.
+
+**Alternatives considered:**
+- *Keep AI-services as priority #1 and ratify the pricing now.* Rejected — no buyer in motion (Jon stalled); ratifying pricing for a sales channel that isn't selling is premature.
+- *Drop / archive the research.* Rejected — the mapping is genuinely useful; the call is to park it as reference, not discard it.
+- *Wait on Jon indefinitely with an open "log the 5/30 outcome" to-do.* Rejected — there's no outcome to log; the open to-do was a false premise. Reframed to "parked, re-activate if Jon initiates."
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- Treat `brainstorm/research-*` and `overnight-*` as a map. Do not surface their recommendations as overdue action items in `/brief` or `/weekly-project-status`.
+- Active focus = BrandOS launch + current projects (Thermal Kitchen 6/16, Wild Rose, Inside Out, ToneQuest, Global Ag Network).
+- Co-Line re-engagement is the one AI-adjacent thread to advance, and it leads with the existing relationship.
+- Re-activate the AI-services pivot when a buyer appears — and source that demand through non-Jon channels rather than waiting on Jon (don't gate the business on Jon; core memory `feedback_reduce_jon_dependence`).
+
+---
+
+## 2026-06-14 — BrandOS marketing domain: brandosportal.com
+
+**Decision:** The BrandOS marketing/web domain is **brandosportal.com**, registered 2026-06-14. This is the first concrete step of standing up BrandOS marketing.
+
+**Why:** `brandos.com` and most exact-name TLDs (.io, .co, .app, .dev, etc.) were already taken. Four parallel research agents verified availability via authoritative RDAP + WHOIS. brandosportal.com was a zero-risk pick: legacy .com (no registry-premium tier), double-confirmed unregistered, no broker/parked hold. "Portal" also describes the product — it's literally what dealers and distributors log into.
+
+**Alternatives considered:** `usebrandos.com` (initially chosen, clean SaaS imperative); `brandos.network` (most on-message, matches the tagline word-for-word, but new-gTLD with premium-price uncertainty and lower .com trust); `brandossuite.com`, `brandosnetwork.com`, others. Justin pivoted from usebrandos.com to brandosportal.com at purchase.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+- BrandOS web presence and marketing links point at brandosportal.com.
+- DNS not yet wired. Next step: point nameservers (likely at DigitalOcean, where Justin already runs DNS) and stand up a landing page.
+- Consider defensively registering close variants (brandos.com is taken; usebrandos.com / brandosnetwork.com were available) so nobody parks them during launch.
+
+---
+
+## 2026-06-18 — Drop DeployHQ — let subscription lapse
+
+**Decision:** Let the DeployHQ account expire. All active projects deploy through GitHub now. DeployHQ hasn't been used in long enough that Justin can't remember the last time he triggered a deploy there.
+
+**Why:** Dead cost for a tool that's been fully replaced. GitHub handles CI/CD across the portfolio. No active projects depend on DeployHQ anymore.
+
+**Alternatives considered:** Renewing and keeping as a backup deploy path. Not worth the ongoing cost for something unused.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-19 — AIOS UI v2: chat-native operator console
+
+**Decision:** Rebuild `aios-ui/` as a chat-native operator console. Three-panel layout: toolbar (10%) selects the context view (50%), persistent Claude chat (40%) always running.
+
+**Architecture:**
+- Next.js + React, stays inside `claude-os/aios-ui/`
+- Chat spawns `claude --print` headless pointed at `claude-os` — gets all skills, MCP, memory for free
+- SSE streaming for chat output + file watcher updates to panels
+- Localhost only, no auth
+- Session auto-starts on open, persists across tab close, ends on explicit wrap
+
+**Context views (toolbar-driven):**
+- Dashboard (default): MRR, project cards, triage count, calendar. The "brief on a screen."
+- Triage: ranked queue from `state/inbox-triage.md` with draft/approve email actions
+- Projects: state cards from `state/*.md`
+- Todos: checklist from `todos/pending.md`
+
+**Quick actions (no Claude round-trip):** mark replied, check todo, dismiss. Draft reply goes through Claude + Gmail MCP.
+
+**Done-state:** Chat works, dashboard renders, triage shows ranked queue, Claude has full skill access. Used 3 days in a row instead of terminal for AIOS work.
+
+**Why:** Terminal is great for project builds but AIOS operator work (triage, brief, brainstorm, decisions) benefits from persistent visual context alongside chat. Previous UI failed because data surfaces weren't stable. They are now (90/100 audit).
+
+**Alternatives considered:** Read-only dashboard (rejected — Justin always interacts), xterm.js terminal embed (rejected — no added value), Vue 3 (rejected — React is stronger hand, Next.js eliminates separate server).
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-19 — Triage state-writeback: envelope transport + reconcile-on-read
+
+The triage state-writeback detector now emits proposals as a `STATE_UPDATES_JSON` envelope inside `state/inbox-triage.md` (mirroring the existing `TODOS_JSON` envelope) instead of the skill hand-writing `pending-state-updates.json`. A deterministic `reconcileStateUpdates` runs on `GET /api/state-updates` (reconcile-on-read), parses the envelope, and upserts proposals into the store.
+
+**Why:** the old design relied on the headless model performing a buried file-write side-effect (Step 9) — it narrated contradictions but skipped the write. Moving proposals to *output* (reliable) + a code-side consumer (deterministic) closes that gap. One consumer covers both triage paths because both run `/daily-inbox-triage` and write the same file. Confirmed: `scheduled-triage` is legacy; the live scheduled path is `/daily-inbox-triage` via Cowork.
+
+**Also decided:**
+- The detector fires on *new explicit attributable facts* the state file doesn't yet track (e.g. a go-live date), not only contradictions of existing fields. Date/launch changes map to `current_status` (non-lossy prepend via `state-merge`), avoiding a new schema field.
+- `markApplied` records an applied proposal's `dedupeKey` in `dismissed` so the still-frozen envelope can't resurrect it on the next reconcile-on-read (would otherwise become a clobber-stale ghost). Surfaced by adversarial code review.
+- Reconcile-on-read is best-effort (try/catch) so an I/O fault degrades to serving the persisted store rather than 500ing the Sync view + badge.
+
+**Deferred (P2/P3, not blocking):** parser code-fence over-capture (matches todos-envelope, fails closed), `atomicWrite`/`asString` DRY extraction, reconcile-recency guard, 32-bit dedupeKey truncation, multi-process file lock.
+
+**Artifacts:** spec `docs/superpowers/specs/2026-06-19-triage-state-detector-hardening-design.md`, plan `docs/plans/2026-06-19-003-feat-triage-state-detector-hardening-plan.md`. Branch `feat/aios-ui-v2-operator-console` (U1–U5 + review fixes). 369 tests / 49 files.
+
+**Owner:** Justin (BGD).
 
 ---

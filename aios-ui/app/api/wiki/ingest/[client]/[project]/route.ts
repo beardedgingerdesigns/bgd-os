@@ -63,8 +63,8 @@ export async function POST(
         // Build a one-line summary for the receipt excerpt.
         let summaryStr: string
         if (result.summary) {
-          const { promoted, deferred, contested } = result.summary
-          summaryStr = `promoted ${promoted.length}, deferred ${deferred.length}, contested ${contested.length}`
+          const { promoted, deferred, skipped, contested } = result.summary
+          summaryStr = `promoted ${promoted.length}, skipped ${skipped.length}, deferred ${deferred.length}, contested ${contested.length}`
         } else {
           summaryStr = 'ingest complete (no structured summary)'
         }
