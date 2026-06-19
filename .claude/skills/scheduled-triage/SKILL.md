@@ -360,6 +360,65 @@ score: {numeric triage score from Step 3}
 
 ---
 
+### Step 8.5 -- Reconcile project state (draft state-update proposals)
+
+The write-back loop that keeps the dashboard's source of truth current. You
+DRAFT proposals here; Justin reviews and applies them from the UI's **Sync**
+queue. You never edit `state/<slug>.md` directly.
+
+For each thread that resolved a `project_slug` (Step 4) AND carries a
+state-relevant signal -- a launch/date change, a status change, or a blocker
+raised or cleared -- reconcile it against the project's state file:
+
+1. Read `/Users/justinlobaito/repos/claude-os/state/<slug>.md`. If it does not
+   exist, skip and note it in the run summary (creating state files is
+   `/dispatch` / `/kickoff-project` work, not triage's).
+2. Compare the email's claim to the matching field. Only draft a proposal when
+   the email **contradicts** what's there -- a thread that merely confirms the
+   current state produces nothing.
+
+   | field | maps to |
+   |---|---|
+   | `status` | the `**Status:**` value |
+   | `current_status` | the `## Current Status` body |
+   | `next_step` | a `## Next Steps` bullet |
+   | `blocker` | a `## Blockers` bullet (raise = add; clear = empty `proposed`) |
+
+3. Set `confidence`: `high` only when the email states an explicit, attributable
+   fact ("we're pushing launch to mid-July"); `low` for inference ("sounds like
+   they're behind"). An implied-but-unstated change is at most low-confidence --
+   never invent an outcome (the `/dispatch` rule).
+4. Compute `dedupeKey = "<slug>:<field>:<short hash of proposed>"`. Read the
+   store at `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/pending-state-updates.json`
+   (shape `{ "proposals": [...], "dismissed": [...] }`; missing file -> both
+   empty). **Skip** if `dedupeKey` is already in `proposals` OR `dismissed` --
+   never re-raise a pending or operator-dismissed change.
+5. Append a proposal and write the store back (2-space JSON, preserving the
+   existing `proposals` and `dismissed`):
+
+```json
+{
+  "id": "su-<8 hex>",
+  "slug": "<slug>",
+  "field": "status | current_status | next_step | blocker",
+  "current": "<value being contradicted -- shown in the diff>",
+  "proposed": "<drafted replacement value>",
+  "evidence": { "source": "triage", "threadId": "<id>", "sender": "<addr>", "date": "YYYY-MM-DD" },
+  "confidence": "high | low",
+  "stateUpdatedAt": "<the file's **Updated:** date, verbatim -- the clobber guard>",
+  "dedupeKey": "<as computed>",
+  "createdAt": "<ISO now>"
+}
+```
+
+This step writes **only** the proposal store. It never edits `state/<slug>.md`
+(Justin applies from Sync, behind a clobber guard) and never touches a project
+wiki (Step 8 owns wiki staging; ADR 0004 / 0007). It is independent of the
+`triage-latest.json` lookback cache -- the "write cache LAST" rule below still
+governs that file only.
+
+---
+
 ### Step 9 -- Write cache, send notification, release lock (per D-04)
 
 **Write cache LAST.** If any earlier step fails, do not write `triage-latest.json` -- this ensures the next run re-processes the same window with the same lookback. This is a critical correctness guarantee.
@@ -406,12 +465,13 @@ Every run produces:
 5. **Dispatch files in matched project wikis** (Step 8) -- one `triage-dispatch-YYYY-MM-DD-{slug}.md` file per thread per matched wiki, written to `{wiki}/raw/aios/` staging
 6. **Updated triage-latest.json cache** (Step 9) -- for next run's lookback window computation
 7. **Push notification summary** (Step 9) -- nudges Justin to check Gmail
+8. **State-update proposals appended to `pending-state-updates.json`** (Step 8.5) -- drafted diffs for contradicted state fields, reviewed in the UI's Sync queue. Never edits `state/<slug>.md` directly.
 
 ---
 
 ## Critical implementation rules
 
-1. **Read-only by default for unconfirmed sends.** Gmail drafts are created automatically (Step 6), but are never sent. The only write side effects are: Gmail drafts, `todos/pending.md` appends, `raw/aios/` dispatch files, and `triage-latest.json` cache.
+1. **Read-only by default for unconfirmed sends.** Gmail drafts are created automatically (Step 6), but are never sent. The only write side effects are: Gmail drafts, `todos/pending.md` appends, `raw/aios/` dispatch files, `pending-state-updates.json` proposals (Step 8.5), and `triage-latest.json` cache. State files (`state/<slug>.md`) are NEVER written here -- only proposed.
 2. **Never send.** No matter how clear the reply seems. Draft only. Always.
 3. **Don't fabricate "days waiting."** Use the actual `date` field of the last inbound message.
 4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Show them under FYI only if they have a deadline.

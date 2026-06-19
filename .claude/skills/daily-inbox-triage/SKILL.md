@@ -224,6 +224,61 @@ threads_needing_reply: {N}
 
 This file is the **handoff surface** — any future session (Claude Code, Cowork, Desktop) can read `state/inbox-triage.md` to know what the last triage found without needing to re-run the full Gmail scan.
 
+### Step 9 — Reconcile project state (draft state-update proposals)
+
+The write-back loop that keeps the dashboard's source of truth current. You
+DRAFT proposals here; Justin reviews and applies them from the UI's **Sync**
+queue. You never edit `state/<slug>.md` directly.
+
+For each thread that resolved a `project_slug` (Step 4) AND carries a
+state-relevant signal — a launch/date change, a status change, or a blocker
+raised or cleared — reconcile it against the project's state file:
+
+1. Read `/Users/justinlobaito/repos/claude-os/state/<slug>.md`. If it does not
+   exist, skip and note it in the run summary (creating state files is
+   `/dispatch` / `/kickoff-project` work, not triage's).
+2. Compare the email's claim to the matching field. Only draft a proposal when
+   the email **contradicts** what's there — a thread that merely confirms the
+   current state produces nothing.
+
+   | field | maps to |
+   |---|---|
+   | `status` | the `**Status:**` value |
+   | `current_status` | the `## Current Status` body |
+   | `next_step` | a `## Next Steps` bullet |
+   | `blocker` | a `## Blockers` bullet (raise = add; clear = empty `proposed`) |
+
+3. Set `confidence`: `high` only when the email states an explicit, attributable
+   fact ("we're pushing launch to mid-July"); `low` for inference ("sounds like
+   they're behind"). An implied-but-unstated change is at most low-confidence —
+   never invent an outcome (the `/dispatch` rule).
+4. Compute `dedupeKey = "<slug>:<field>:<short hash of proposed>"`. Read the
+   store at `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/pending-state-updates.json`
+   (shape `{ "proposals": [...], "dismissed": [...] }`; missing file → both
+   empty). **Skip** if `dedupeKey` is already in `proposals` OR `dismissed` —
+   never re-raise a pending or operator-dismissed change.
+5. Append a proposal and write the store back (2-space JSON, preserving the
+   existing `proposals` and `dismissed`):
+
+```json
+{
+  "id": "su-<8 hex>",
+  "slug": "<slug>",
+  "field": "status | current_status | next_step | blocker",
+  "current": "<value being contradicted — shown in the diff>",
+  "proposed": "<drafted replacement value>",
+  "evidence": { "source": "triage", "threadId": "<id>", "sender": "<addr>", "date": "YYYY-MM-DD" },
+  "confidence": "high | low",
+  "stateUpdatedAt": "<the file's **Updated:** date, verbatim — the clobber guard>",
+  "dedupeKey": "<as computed>",
+  "createdAt": "<ISO now>"
+}
+```
+
+This step writes **only** the proposal store. It never edits `state/<slug>.md`
+(Justin applies from Sync, behind a clobber guard) and never touches a project
+wiki (ADR 0004 / 0007).
+
 ## Output contract
 
 Every run produces:
@@ -231,13 +286,14 @@ Every run produces:
 1. **One Markdown brief in chat** — ranked queue with project context attached.
 2. **One structured JSON envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; envelope is the machine surface.
 3. **One file write to `state/inbox-triage.md`** (Step 8) — overwrites previous run. Single file, no accumulation. Any session can read the latest triage results.
-4. **(Optional, on Justin's request)** drafted replies for threads he picks.
+4. **State-update proposals appended to `pending-state-updates.json`** (Step 9) — drafted diffs for contradicted state fields, reviewed in the UI's Sync queue. Never edits `state/<slug>.md` directly.
+5. **(Optional, on Justin's request)** drafted replies for threads he picks.
 
 No Gmail drafts created without confirmation. No sending — ever.
 
 ## Critical implementation rules
 
-1. **Minimal writes.** The only file written is `state/inbox-triage.md` (overwritten each run). Do not create Gmail drafts, do not modify memory, do not write other files. Only additional side effect on confirmation is creating a Gmail draft via `mcp__claude_ai_Gmail__create_draft`.
+1. **Minimal writes.** The files written are `state/inbox-triage.md` (overwritten each run) and `pending-state-updates.json` (appended in Step 9). Do not modify memory or write other files. `state/<slug>.md` is NEVER written here — only proposed. Only additional side effect on confirmation is creating a Gmail draft via `mcp__claude_ai_Gmail__create_draft`.
 2. **Never send.** No matter how clear the reply seems.
 3. **Don't fabricate "days waiting."** Use the actual `date` field of the last inbound message.
 4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Show them under FYI only if they have a deadline.
