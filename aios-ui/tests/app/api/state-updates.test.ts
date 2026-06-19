@@ -3,6 +3,23 @@ import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
 import type { StateUpdateProposal, StateUpdateStore } from '@/lib/types'
+import { dedupeKeyFor } from '@/lib/cache/state-updates'
+
+// state/inbox-triage.md carrying a STATE_UPDATES_JSON envelope (what triage writes).
+function triageEnvelopeMd(proposals: Array<Record<string, unknown>>): string {
+  const json = JSON.stringify({ generated_at: '2026-06-19T16:00:00Z', proposals })
+  return `---\nlast_run: 2026-06-19T16:00:00Z\n---\n\n# brief\n\n<!-- STATE_UPDATES_JSON_START -->\n\`\`\`json\n${json}\n\`\`\`\n<!-- STATE_UPDATES_JSON_END -->\n`
+}
+
+const ENV_PROPOSAL = {
+  slug: 'wild-rose',
+  field: 'current_status',
+  current: '(not yet tracked)',
+  proposed: 'Go-live July 13',
+  evidence: { source: 'triage', threadId: null, sender: null, date: '2026-06-19' },
+  confidence: 'high',
+  stateUpdatedAt: '2026-06-09',
+}
 
 // STATE_DIR is captured from CLAUDE_OS_ROOT at module load, so the routes must
 // be re-imported fresh per test after the env is set (same pattern as the
@@ -148,5 +165,54 @@ describe('state-updates API routes', () => {
     const store = await readStore()
     expect(store.proposals).toHaveLength(0)
     expect(store.dismissed).toContain('wild-rose:current_status:hash1')
+  })
+
+  describe('GET reconciles the STATE_UPDATES_JSON envelope (U4)', () => {
+    const triagePath = () => path.join(tmpRoot, 'state/inbox-triage.md')
+
+    it('surfaces a proposal emitted in the triage envelope', async () => {
+      await seedStore({ proposals: [], dismissed: [] })
+      await fs.writeFile(triagePath(), triageEnvelopeMd([ENV_PROPOSAL]), 'utf-8')
+      const { GET } = await loadRoutes()
+      const body = (await (await GET()).json()) as StateUpdateStore
+      expect(body.proposals).toHaveLength(1)
+      expect(body.proposals[0].proposed).toBe('Go-live July 13')
+      expect(body.proposals[0].id).toMatch(/^su-[0-9a-f]{8}$/)
+    })
+
+    it('is idempotent across two GETs', async () => {
+      await seedStore({ proposals: [], dismissed: [] })
+      await fs.writeFile(triagePath(), triageEnvelopeMd([ENV_PROPOSAL]), 'utf-8')
+      const { GET } = await loadRoutes()
+      await (await GET()).json()
+      const body = (await (await GET()).json()) as StateUpdateStore
+      expect(body.proposals).toHaveLength(1)
+    })
+
+    it('leaves the store unchanged when the triage file has no envelope', async () => {
+      await seedStore({ proposals: [proposal()], dismissed: [] })
+      await fs.writeFile(triagePath(), '# brief, no envelope here', 'utf-8')
+      const { GET } = await loadRoutes()
+      const body = (await (await GET()).json()) as StateUpdateStore
+      expect(body.proposals).toHaveLength(1)
+      expect(body.proposals[0].id).toBe('su-1')
+    })
+
+    it('does not resurrect a dismissed proposal', async () => {
+      const key = dedupeKeyFor('wild-rose', 'current_status', 'Go-live July 13')
+      await seedStore({ proposals: [], dismissed: [key] })
+      await fs.writeFile(triagePath(), triageEnvelopeMd([ENV_PROPOSAL]), 'utf-8')
+      const { GET } = await loadRoutes()
+      const body = (await (await GET()).json()) as StateUpdateStore
+      expect(body.proposals).toHaveLength(0)
+    })
+
+    it('returns the store without error when no triage file exists', async () => {
+      await seedStore({ proposals: [proposal()], dismissed: [] })
+      // no inbox-triage.md written
+      const { GET } = await loadRoutes()
+      const body = (await (await GET()).json()) as StateUpdateStore
+      expect(body.proposals).toHaveLength(1)
+    })
   })
 })
