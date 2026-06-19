@@ -9,9 +9,30 @@ import {
   addProposal,
   removeProposal,
   dismissProposal,
+  reconcileStateUpdates,
+  dedupeKeyFor,
   stateUpdatesPath,
 } from '@/lib/cache/state-updates'
 import type { StateUpdateProposal } from '@/lib/types'
+
+// Build a state/inbox-triage.md-shaped string carrying a STATE_UPDATES_JSON envelope.
+function envelopeMd(proposals: Array<Record<string, unknown>>): string {
+  const json = JSON.stringify({ generated_at: '2026-06-19T16:00:00Z', proposals })
+  return `# brief\n\n<!-- STATE_UPDATES_JSON_START -->\n\`\`\`json\n${json}\n\`\`\`\n<!-- STATE_UPDATES_JSON_END -->\n`
+}
+
+function rawProposal(over: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    slug: 'wild-rose',
+    field: 'current_status',
+    current: '(not yet tracked)',
+    proposed: 'Go-live moved July 1 to July 13',
+    evidence: { source: 'triage', threadId: 't1', sender: 'meghan@x.com', date: '2026-06-19' },
+    confidence: 'high',
+    stateUpdatedAt: '2026-06-09',
+    ...over,
+  }
+}
 
 function makeProposal(over: Partial<StateUpdateProposal> = {}): StateUpdateProposal {
   return {
@@ -86,5 +107,77 @@ describe('state-updates store', () => {
     const store = await readStateUpdates()
     expect(store.proposals.map(p => p.id)).toEqual(['su-2'])
     expect(store.dismissed).toEqual([])
+  })
+
+  describe('reconcileStateUpdates', () => {
+    it('adds a new proposal from an envelope with derived id/createdAt/dedupeKey', async () => {
+      const added = await reconcileStateUpdates(envelopeMd([rawProposal()]), '2026-06-19T16:30:00Z')
+      expect(added).toBe(1)
+      const [p] = (await readStateUpdates()).proposals
+      expect(p.slug).toBe('wild-rose')
+      expect(p.proposed).toBe('Go-live moved July 1 to July 13')
+      expect(p.id).toMatch(/^su-[0-9a-f]{8}$/)
+      expect(p.createdAt).toBe('2026-06-19T16:30:00Z')
+      expect(p.dedupeKey).toBe(dedupeKeyFor('wild-rose', 'current_status', 'Go-live moved July 1 to July 13'))
+    })
+
+    it('is idempotent — reconciling the same markdown twice adds once', async () => {
+      const md = envelopeMd([rawProposal()])
+      expect(await reconcileStateUpdates(md, '2026-06-19T16:30:00Z')).toBe(1)
+      expect(await reconcileStateUpdates(md, '2026-06-19T17:00:00Z')).toBe(0)
+      expect((await readStateUpdates()).proposals).toHaveLength(1)
+    })
+
+    it('respects dismissed dedupeKeys', async () => {
+      const key = dedupeKeyFor('wild-rose', 'current_status', 'Go-live moved July 1 to July 13')
+      await writeStateUpdates({ proposals: [], dismissed: [key] })
+      expect(await reconcileStateUpdates(envelopeMd([rawProposal()]), '2026-06-19T16:30:00Z')).toBe(0)
+      expect((await readStateUpdates()).proposals).toHaveLength(0)
+    })
+
+    it('does not duplicate a proposal already pending', async () => {
+      await reconcileStateUpdates(envelopeMd([rawProposal()]), '2026-06-19T16:30:00Z')
+      // same proposed → same dedupeKey, even via a different id path
+      const again = await reconcileStateUpdates(envelopeMd([rawProposal({ current: 'changed note' })]), '2026-06-19T17:00:00Z')
+      expect(again).toBe(0)
+      expect((await readStateUpdates()).proposals).toHaveLength(1)
+    })
+
+    it('writes once for a multi-proposal envelope (batch)', async () => {
+      const added = await reconcileStateUpdates(
+        envelopeMd([
+          rawProposal({ slug: 'a', proposed: 'A live' }),
+          rawProposal({ slug: 'b', proposed: 'B blocked' }),
+        ]),
+        '2026-06-19T16:30:00Z',
+      )
+      expect(added).toBe(2)
+      expect((await readStateUpdates()).proposals.map(p => p.slug)).toEqual(['a', 'b'])
+    })
+
+    it('dedupes identical proposals within one envelope', async () => {
+      const added = await reconcileStateUpdates(envelopeMd([rawProposal(), rawProposal()]), '2026-06-19T16:30:00Z')
+      expect(added).toBe(1)
+    })
+
+    it('serializes concurrent reconciles without dropping a proposal', async () => {
+      const [a, b] = await Promise.all([
+        reconcileStateUpdates(envelopeMd([rawProposal({ slug: 'x', proposed: 'X' })]), '2026-06-19T16:30:00Z'),
+        reconcileStateUpdates(envelopeMd([rawProposal({ slug: 'y', proposed: 'Y' })]), '2026-06-19T16:30:01Z'),
+      ])
+      expect(a + b).toBe(2)
+      expect((await readStateUpdates()).proposals.map(p => p.slug).sort()).toEqual(['x', 'y'])
+    })
+
+    it('returns 0 and writes nothing when there is no envelope', async () => {
+      expect(await reconcileStateUpdates('# brief with no envelope', '2026-06-19T16:30:00Z')).toBe(0)
+      // store file should not have been created
+      await expect(fs.access(stateUpdatesPath())).rejects.toThrow()
+    })
+
+    it('dedupeKeyFor is stable for identical proposed and differs otherwise', () => {
+      expect(dedupeKeyFor('s', 'status', 'same')).toBe(dedupeKeyFor('s', 'status', 'same'))
+      expect(dedupeKeyFor('s', 'status', 'a')).not.toBe(dedupeKeyFor('s', 'status', 'b'))
+    })
   })
 })
