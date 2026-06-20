@@ -1,21 +1,30 @@
-# Project State: ToneQuest — Knowledge Graph Generation
+# Project State: ToneQuest PDF Ingest Pipeline
 
-**Updated:** 2026-06-18 | **Status:** On track
+**Updated:** 2026-06-19 | **Status:** At risk
 
 ## Accomplishments (this session)
 
-- Generated complete knowledge graph from 170-file corpus (code, docs, images) using `/graphify` with 30 parallel semantic extraction agents
-- Built graph with 1,949 nodes, 2,351 edges, and 206 communities; identified 8 "god nodes" (getSession, db, columns, Wiki Index) and key connection patterns
-- Created three outputs: interactive HTML visualization, structured GRAPH_REPORT.md audit, and raw graph.json for downstream analysis
-- Discovered semantic bridges between archive and application (design system constraints, pricing model, repo restructure rationale)
+- Fixed article segmentation (fix #1): moved from 78%/43% match to 100%/86% by analyzing content signals (`TQ—` sign-offs, `-continued-` markers) instead of TOC lines only.
+- Fixed image injection (fix #2): replaced unstable freehand image HTML with deterministic `<figure>` rendering from structured placement data; jumped from ~35% unstable to ~100% stable across Dec/Apr.
+- Built eval harness with frozen gold answer keys (Dec: 9 articles, Apr: 7 articles).
+- Ran generalization test on September 2025 (held-out issue); identified token limit bug as blocker.
+- Captured session findings to wiki (`decisions/0002-pdf-engine-fidelity-target`, `log.md`, `product/roadmap.md`, `architecture/ingest-pipeline.md`).
 
 ## Current Status
 
-Knowledge graph is complete and ready for exploration. The graph reveals the system's central hubs (auth, database, schema) and suggests structural gaps: 1,224 weakly-connected documentation nodes and two low-cohesion modules (Ingest Pipeline 0.08, PDF Processing 0.07) that may benefit from refactoring.
+The engine correctly segments articles and renders images on normal-sized issues (verified on Dec/Apr). However, it crashes on very large articles (18+ pages) because the 16k output-token limit truncates `body_html`, causing the entire issue to fail with no retry. This blocks scaling to the 270-issue backlog.
 
 ## Next Steps
 
-- [ ] Open `graphify-out/graph.html` in browser to interactively explore the knowledge graph
-- [ ] Review `graphify-out/GRAPH_REPORT.md` to understand identified communities and god node relationships
-- [ ] Investigate the 1,224 weakly-connected nodes — identify whether they represent documentation gaps or missing semantic links
-- [ ] Evaluate whether Ingest Pipeline Architecture and PDF Processing Pipeline modules should be split based on low cohesion scores
+- [ ] Bump `INGEST_MAX_TOKENS` from 16k to ~32k in `pipeline.ts`
+- [ ] Add per-article failure isolation: flag truncated/malformed articles and continue instead of crashing
+- [ ] Re-run September 2025 to verify fixes on large-article case
+- [ ] Prepare deliverables for Friday's Liz launch status meeting (see `docs/wiki/sources/2026-06-17-launch-status-meeting.md`)
+
+## Blockers
+
+- Engine truncates output on articles >~18 pages due to 16k token cap, causing entire-issue failure with no recovery.
+
+## Key Dates
+
+- 2026-06-21: Liz launch status meeting (Friday)

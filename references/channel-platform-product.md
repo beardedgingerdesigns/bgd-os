@@ -101,6 +101,20 @@ Dealers can generate marketing materials (banners, sell sheets, ad creative) usi
 6. **Software economics.** Onboarding a dealer costs the platform owner roughly the same as a self-serve SaaS signup. Not the $5-15K of agency time it would normally cost.
 7. **Mission-aligned brand positioning is load-bearing.** Veterans, American-made, family-owned, faith-based — these can be enforced consistently across the network from a single hub edit.
 
+## The moat (what's actually defensible)
+
+*Articulated 2026-06-19, out of the Nel "sprocket-maker vs sprocket" debate + the advisory board. Decode of the metaphor: the "cow" / "sprocket maker" is the repeatable engine that turns a business's domain knowledge into a working AI product; each app it produces (a dealer portal, a website builder) is a "sprocket" / "golden egg." Nel's instinct that the engine is the asset is right; his conclusion (guard the method as a secret, spin up many cheap apps) is wrong about where defensibility lives.*
+
+**The moat is NOT the build method.** "Ingest domain knowledge → synthesize with an LLM → generate a tool" is becoming table stakes. It is not a defensible secret, it can't be hidden, and the whole industry is converging on it. Pricing or pitching as if the engine is the crown jewel is a losing game, and over-explaining how it works in a demo trains your replacements.
+
+**The moat is method × domain access — three layers that are genuinely hard to copy:**
+
+1. **Domain depth.** The multi-tier distribution workflow encoded in the data model and the schema-driven onboarding. Manufacturer / distributor / dealer as first-class concepts, the propagation rules, the tier-aware permissions. A competitor can buy the same AI engine; they can't shortcut the encoded understanding of how these networks actually operate.
+2. **Switching costs.** Once a distributor runs their whole dealer network on BrandOS — sites, assets, compliance copy, lead flow — ripping it out is painful and disruptive. Stickiness compounds per dealer onboarded.
+3. **Trust and access.** The relationships and the plain-language translation that get Justin in the room. This is the BGD edge that the engine alone never reproduces.
+
+**Pricing + pitch implication.** Price on the value of the encoded domain, the switching cost, and the recurring outcome — not on hours and not on "we use AI." Package the outcome, not the recipe. The engine is *how* you got there, not *what* you sell. Widen from this proven niche later; don't dilute it by spraying the engine across easily-cloned apps now.
+
 ## Who pays and why
 
 Three customer types, three distinct value propositions.

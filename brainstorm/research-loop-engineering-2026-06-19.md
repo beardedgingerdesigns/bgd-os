@@ -5,6 +5,7 @@
 **Key voices:** Boris Cherny (head of Claude Code), Pete Steinberger, Addy Osmani, Oscar Gallego Ruiz, Anthropic Institute
 **Purpose:** Understand the concept deeply, then map it onto BrandOS development
 **Companion / counterpoint:** [research-matt-pocock-agentic-workflow-2026-06-19.md](research-matt-pocock-agentic-workflow-2026-06-19.md) — Matt Pocock's "queues, not loops" reframe and the human-in-control / harness-over-model corrective to this maximalist loop case. Read both together.
+**Deep synthesis (start here for the full picture):** [research-loop-engineering-synthesis-2026-06-20.md](research-loop-engineering-synthesis-2026-06-20.md) — the capstone over a 5-lens deep-research corpus (engineering, business/growth, design, governance, compounding) with the cross-lens use-case matrix and systematic changes for development + planning across all repos. Lens files in [loop-research-2026-06-20/](loop-research-2026-06-20/).
 
 ---
 

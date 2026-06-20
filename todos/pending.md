@@ -120,3 +120,17 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Source: skill:wiki (triage hardening brainstorm)
   - Priority: medium
   - Notes: Future feature flagged during triage hardening. For now Gemini notes emails are just suppressed via the triage mute-list (state/triage-mutes.md). The real want: auto-route recaps into dispatch/state instead of dropping them on the floor. See brainstorm/2026-06-19-triage-hardening-requirements.md (Deferred) + decisions/log.md 2026-06-19.
+
+- [ ] **Reply to Nel on BrandOS end-goal + founder strategy** `#deploy-answers`
+  - Added: 2026-06-19
+  - Source: manual
+  - Client: deploy-answers
+  - Priority: medium
+  - Notes: From the 6/19 Connect call. Engage genuinely on the two points Nel earned (protect the methodology / package the outcome; AI-dependency hedge) without relitigating the niche thesis. Hold the "Nel explores to learn, Justin keeps his trajectory" model.
+
+- [ ] **Test Z.AI model compatibility with BrandOS architecture** `#brandos`
+  - Added: 2026-06-19
+  - Source: manual
+  - Client: terraplex / brandos
+  - Priority: low
+  - Notes: Concrete hedge against frontier-LLM (Claude) single-point dependency raised on the 6/19 call. Core BrandOS already degrades gracefully; this de-risks the AI-dependent features.
