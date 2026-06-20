@@ -129,14 +129,12 @@ export function DashboardView() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            {/* ponytail: Total MRR tile temporarily hidden — restore this block + revert grid to lg:grid-cols-4 to bring it back
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatTile
               label="Total MRR"
               value={formatMRR(data.totalMRR)}
               tone="brand"
             />
-            */}
             <StatTile
               label="Open Todos"
               value={String(data.openTodos)}
