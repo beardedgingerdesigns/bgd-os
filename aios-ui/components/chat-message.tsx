@@ -31,7 +31,7 @@ export function ChatMessageView({
   return (
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       <div
-        className={`shrink-0 rounded-full p-2 ${
+        className={`shrink-0 self-start rounded-full p-2 ${
           isUser
             ? 'bg-primary text-primary-foreground'
             : 'bg-muted text-muted-foreground'

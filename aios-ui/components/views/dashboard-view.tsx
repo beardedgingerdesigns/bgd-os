@@ -30,7 +30,7 @@ function StateCard({ card }: { card: ProjectStateCard }) {
             </Badge>
           )}
         </CardTitle>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           {card.updated ? (
             <span>Updated {formatRelativeDate(card.updated)}</span>
           ) : (
@@ -41,6 +41,11 @@ function StateCard({ card }: { card: ProjectStateCard }) {
               Stale
             </Badge>
           )}
+          {card.health === 'blocked' && (
+            <Badge variant="destructive" className="shrink-0">
+              Blocked
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-4 px-5">
@@ -48,6 +53,21 @@ function StateCard({ card }: { card: ProjectStateCard }) {
           <p className="text-sm leading-relaxed text-card-foreground/90 line-clamp-4">
             {card.currentStatus}
           </p>
+        )}
+        {card.blockers.length > 0 && (
+          <div>
+            <div className="text-[10px] uppercase tracking-wider text-destructive font-medium mb-2">
+              Blockers
+            </div>
+            <ul className="space-y-1.5">
+              {card.blockers.slice(0, 2).map((b, i) => (
+                <li key={i} className="flex gap-2 text-xs text-destructive/90 leading-snug">
+                  <span className="mt-px shrink-0">!</span>
+                  <span className="line-clamp-2">{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
         {card.nextSteps.length > 0 && (
           <div>
@@ -109,12 +129,14 @@ export function DashboardView() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {/* ponytail: Total MRR tile temporarily hidden — restore this block + revert grid to lg:grid-cols-4 to bring it back
             <StatTile
               label="Total MRR"
               value={formatMRR(data.totalMRR)}
               tone="brand"
             />
+            */}
             <StatTile
               label="Open Todos"
               value={String(data.openTodos)}
