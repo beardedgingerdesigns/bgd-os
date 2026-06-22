@@ -1,32 +1,37 @@
 # Project State: Global Ag Network
 
-**Updated:** 2026-06-12 | **Status:** Reinitiating — meeting prep
-
-## Accomplishments (this session)
-
-- Kicked off the project from scratch: new repo + seeded wiki at `/Users/justinlobaito/repos/global-ag-network/docs/wiki/`, project-root CLAUDE.md, clients.yaml entry (`global-ag-network`, bucket prospects), and AIOS memory
-- Ran 4 research threads into the wiki: current-state site digest, opportunities/pitch, competitive landscape, and (via the orchestrator's out-of-band pull) the Gmail relationship history
-- Reframed the engagement as a warm reinitiation: Justin is GAN's de facto tech support since ~2023 and holds the Craft/SEOmatic/Ad Wizard licenses + the DigitalOcean account
-- Fixed the broken podcast playback (Delaney's live issue) and placed a personal calendar hold for the 6/19 meeting
+**Updated:** 2026-06-21 | **Status:** Prospect — proposal/contract stage (August start)
 
 ## Current Status
 
-Existing-but-unformalized client. Justin already supports the Craft site (globalagnetwork.com) but with no retainer. Delaney emailed 2026-06-12 asking to re-engage on transitioning the site. The wiki is seeded and meeting-prep is ready. Goal Friday: convert the ad-hoc support into a paid rebuild + hosting-stabilization engagement.
+6/19 "GAN - Touchbase" with Delaney held and aligned. The engagement is now scoped: retire the Global Ag Network network/site, build a new streamlined site for **Ag News Daily** (+ **Pig X**, produced for Iowa State), move podcast hosting to Buzzsprout, consolidate hosting. Justin's standard **18-month subscription** model, **August start**. Justin's meeting action item: send a project overview + proposal to trigger contract signing.
+
+Proposal + contract drafted 6/21 (in the project repo, `proposals/`): `2026-06-project-plan-proposal.md` and `2026-06-service-agreement.md`. Drafted at $400/mo; open recommendation to anchor at $450 (Delaney heard $300–500). Hosting consolidation is ~a wash vs current (~$150 DO + ~$80 Google Cloud).
+
+## Decisions aligned (6/19)
+
+- Retire GAN site; new site for Ag News Daily + Pig X; keep domain, archive old content
+- 18-month subscription, fixed monthly fee, no upfront, hosting folded in
+- Podcast hosting → Buzzsprout (off Google Cloud + DigitalOcean)
+- August kickoff + contract start
+- Cleanup: delete legacy Gmail accounts; reconfigure Google Analytics
 
 ## Next Steps
 
-- [x] Sent Delaney the "GAN - Touchbase" invite for Fri 2026-06-19 10:00am CT w/ Google Meet; personal hold removed (2026-06-13)
-- [ ] Answer her email-license question (`delaney@globalagnetwork.com` dependencies)
-- [ ] Commit claude-os changes (clients.yaml, memory, brainstorm pitch)
-- [ ] Log the onboarding decision to `decisions/log.md`
-- [ ] Friday: resolve Buzzsprout vs self-hosted feed; confirm co-host (Mike vs Tanner); confirm Successful Farming ad deal status
-- [x] Pushed to private GitHub repo: beardedgingerdesigns/global-ag-network (2026-06-13)
+- [ ] Justin: confirm price ($400 vs $450) → finalize drafts → send proposal to Delaney (her [Justin] action item)
+- [ ] Confirm Pig X name + that it's in scope (Gemini garbled to "Pigex")
+- [ ] Confirm exact August start date
+- [ ] Reconcile contract boilerplate (payment/termination/renewal) against Bonsai standard
+- [ ] Delaney's side: notify dormant podcasters, RSS migration, delete legacy Gmail accounts
+- [ ] Log onboarding/engagement decision to `decisions/log.md`
+- [ ] Move clients.yaml bucket prospects → active once contract signs (August)
 
 ## Blockers
 
-None. (Friday meeting time still needs confirming with Delaney.)
+None. Waiting on Justin to finalize price + send the proposal.
 
 ## Key Dates
 
-- 2026-06-12: Project kicked off; wiki seeded; Gmail history folded in; playback fixed; calendar hold placed
-- 2026-06-19 10:00am CT: Re-engagement / transition meeting with Delaney (personal hold placed)
+- 2026-06-12: Project kicked off; wiki seeded; Gmail history folded in; playback fixed
+- 2026-06-19: Touchbase held; engagement scoped + aligned (see wiki `raw/external/2026-06-19-gan-touchbase-gemini-notes.md`)
+- 2026-08 (date TBD): contract start + kickoff

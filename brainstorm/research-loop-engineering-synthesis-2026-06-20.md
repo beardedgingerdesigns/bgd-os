@@ -11,6 +11,13 @@
 5. [loop-research-2026-06-20/03-design-product-loops.md](loop-research-2026-06-20/03-design-product-loops.md) — design/product as loops
 6. [loop-research-2026-06-20/04-human-in-loop-governance.md](loop-research-2026-06-20/04-human-in-loop-governance.md) — control theory + where you stay vs step out
 7. [loop-research-2026-06-20/05-compounding-self-improving.md](loop-research-2026-06-20/05-compounding-self-improving.md) — loops whose output is a better loop
+8. [research-goal-verifier-gate-2026-06-20.md](research-goal-verifier-gate-2026-06-20.md) — the operational layer: how to run loops *without writing the prompts* (goal + verifier + gate) across business and design
+9. [research-marketing-engine-loop-2026-06-20.md](research-marketing-engine-loop-2026-06-20.md) — **worked example:** the BrandOS co-branded ad generator reframed as a real evaluator-optimizer loop (the first goal-verifier-gate application; staged to the BrandOS wiki for implementation)
+
+**External source captures (added 2026-06-21):** practitioner takes that ground the theory above.
+10. [loop-library-forward-future-2026-06-21.md](loop-library-forward-future-2026-06-21.md) — Forward Future's Loop Library: 50 copy-paste loops + installable skill; the reusable loop *anatomy* (trigger/action/check/stop/report)
+11. [video-nate-herk-agent-loops-explained-2026-06-19.md](video-nate-herk-agent-loops-explained-2026-06-19.md) — Nate Herk (board advisor): the knowledge-worker take — verification is the point, solo loop by default, "what does done mean + how will it check"
+12. [video-matthew-berman-7-loops-2026-06-19.md](video-matthew-berman-7-loops-2026-06-19.md) — Matthew Berman (Loop Library creator): the trigger taxonomy (manual/scheduled/action) × goal taxonomy (verifiable/LLM-as-judge); feature-building is the no-go zone
 
 This master doc is the index. The five lens files hold the depth and the sources.
 
