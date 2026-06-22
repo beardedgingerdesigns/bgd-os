@@ -7,7 +7,7 @@
 // publishes a global invalidation so the receipt dock + any project page
 // listening on SSE refetches.
 
-import { writeOverride, overridesPath } from '@/lib/cache/triage-overrides'
+import { writeOverride, deleteOverride, overridesPath } from '@/lib/cache/triage-overrides'
 import { appendReceipt } from '@/lib/cache/receipts'
 import { invalidationBus } from '@/lib/invalidation-bus'
 import type { TriageOverride, TriageOverrideStatus } from '@/lib/types'
@@ -124,6 +124,45 @@ export async function POST(
   invalidationBus.publish({
     scope: { kind: 'global' },
     reason: `triage override ${threadId} ${status}`,
+    at: nowIso,
+  })
+
+  return Response.json({ ok: true })
+}
+
+// DELETE clears any override for a thread — the "undo" behind a Replied / Snooze
+// / Dismiss row action. Idempotent: clearing an absent override still returns
+// ok, so a double-click or stale UI can't 404. Next triage run re-evaluates the
+// thread normally (the skill reads this file at Step 2.0).
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ threadId: string }> },
+) {
+  const { threadId } = await params
+
+  if (!VALID_THREAD_ID.test(threadId)) {
+    return Response.json(
+      { error: 'invalid threadId (expected 6-32 hex chars)' },
+      { status: 400 },
+    )
+  }
+
+  await deleteOverride(threadId)
+
+  const nowIso = new Date().toISOString()
+  await appendReceipt({
+    id: randomReceiptId(),
+    ts: nowIso,
+    kind: 'triage_override',
+    project_slug: '',
+    file_written: overridesPath(),
+    excerpt: `cleared override for thread ${threadId}`,
+    actor: 'triage-row-actions',
+  })
+
+  invalidationBus.publish({
+    scope: { kind: 'global' },
+    reason: `triage override ${threadId} cleared`,
     at: nowIso,
   })
 

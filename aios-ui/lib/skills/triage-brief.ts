@@ -27,14 +27,25 @@ export interface TriageThread {
   // Display name / sender, pulled from `- **Name** — rest`. Falls back to the
   // whole bullet text when no bold lead is present.
   sender: string
-  // Everything after the `—` (or the em/en dash). Carries subject + context +
-  // suggested next step as the skill wrote it. Display-only.
+  // Thread subject, from the indented `Subject:` sub-line of a reply card.
+  subject: string | null
+  // Summary of the latest inbound message, from `What they said:`. This is the
+  // primary card preview — what the message actually says.
+  summary: string | null
+  // Status implication, from `Project context:` — what this means for the
+  // project's current state (the memory snippet the skill attached).
+  statusNote: string | null
+  // Recommended action, from `Suggested next step:`.
+  nextStep: string | null
+  // Everything after the `—` (or the em/en dash) on the bullet line. Only used
+  // as a fallback preview for single-line bullets (FYI / billing) that carry no
+  // sub-fields; the `(domain) — *score*` heading tail is stripped out.
   context: string
-  // Gmail thread id if the bullet (or an adjacent `Thread:` line) carried one.
+  // Gmail thread id if the bullet or its `Thread:` sub-line carried one.
   threadId: string | null
   // Inline `Score: NN` if present.
   score: number | null
-  // Inline `Waiting: N days` / `N days waiting` if present.
+  // Inline `Waiting: N days` / `N days waiting`, or the card's `Last inbound:`.
   daysWaiting: number | null
 }
 
@@ -54,8 +65,47 @@ export interface TriageBrief {
 }
 
 const THREAD_ID_RE = /Thread:\s*`?([0-9a-f]{12,32})`?/i
+const BARE_THREAD_ID_RE = /([0-9a-f]{12,32})/i
 const SCORE_RE = /Score:\s*(\d{1,3})/i
 const DAYS_RE = /(\d{1,3})\s*days?\s*(?:waiting|old)|(?:waiting|aging)\s*(\d{1,3})\s*days?/i
+// Heading-tail noise on a reply card's bullet line — `(domain) — *score*`. Both
+// are surfaced elsewhere (or deliberately dropped), so strip them from any
+// fallback context rather than leaking literal `(foo.com) — *8*` onto the card.
+const DOMAIN_PAREN_RE = /\([a-z0-9.-]+\.[a-z]{2,}\)/i
+const STAR_SCORE_RE = /\*\d{1,3}\*/
+
+// Indented `Key: value` sub-lines under a numbered reply card (the multi-line
+// format the triage skill writes). These carry the real content — message
+// summary and status implication — that the heading bullet does not.
+const FIELD_RE =
+  /^\s*(Subject|Last inbound|What they said|Project context|Suggested next step|Thread):\s*(.+?)\s*$/i
+
+function attachField(thread: TriageThread, key: string, value: string): void {
+  switch (key.toLowerCase()) {
+    case 'subject':
+      thread.subject = value
+      break
+    case 'what they said':
+      thread.summary = value
+      break
+    case 'project context':
+      thread.statusNote = value
+      break
+    case 'suggested next step':
+      thread.nextStep = value
+      break
+    case 'last inbound': {
+      const d = value.match(/(\d{1,3})\s*days?/i)
+      if (d) thread.daysWaiting = Number(d[1])
+      break
+    }
+    case 'thread': {
+      const t = value.match(BARE_THREAD_ID_RE)
+      if (t) thread.threadId = t[1]
+      break
+    }
+  }
+}
 
 function classifyHeader(raw: string): TriageSectionKind {
   const h = raw.toLowerCase()
@@ -95,6 +145,8 @@ function cleanContext(context: string): string {
     .replace(THREAD_ID_RE, '')
     .replace(SCORE_RE, '')
     .replace(DAYS_RE, '')
+    .replace(DOMAIN_PAREN_RE, '')
+    .replace(STAR_SCORE_RE, '')
     .replace(/\s{2,}/g, ' ')
     .replace(/^[\s.,;—–-]+|[\s.,;]+$/g, '')
     .trim()
@@ -107,6 +159,10 @@ function parseThread(bullet: string): TriageThread {
   const days = bullet.match(DAYS_RE)
   return {
     sender,
+    subject: null,
+    summary: null,
+    statusNote: null,
+    nextStep: null,
     context: cleanContext(context),
     threadId: tid ? tid[1] : null,
     score: score ? Number(score[1]) : null,
@@ -124,12 +180,16 @@ export function parseTriageBrief(markdown: string): TriageBrief {
   let summaryLine: string | null = null
   const sections: TriageSection[] = []
   let current: TriageSection | null = null
+  // The card opened by the most recent bullet, so its indented sub-fields
+  // (Subject / What they said / Project context / ...) attach to it.
+  let currentThread: TriageThread | null = null
 
   for (const rawLine of lines) {
     const line = rawLine.replace(/\r$/, '')
     const h1 = line.match(/^#\s+(.*)$/)
     if (h1) {
       heading = h1[1].trim()
+      currentThread = null
       continue
     }
     const h2 = line.match(/^#{2,3}\s+(.*)$/)
@@ -137,6 +197,7 @@ export function parseTriageBrief(markdown: string): TriageBrief {
       const title = h2[1].trim()
       current = { kind: classifyHeader(title), title, threads: [] }
       sections.push(current)
+      currentThread = null
       continue
     }
     // Bold one-liner summary directly under the H1, before any section.
@@ -147,11 +208,34 @@ export function parseTriageBrief(markdown: string): TriageBrief {
         continue
       }
     }
-    // List items become threads inside the current section.
+    // List items open a new thread inside the current section.
     if (/^\s*(?:[-*]|\d+\.)\s+/.test(line) && current) {
-      current.threads.push(parseThread(stripBullet(line)))
+      currentThread = parseThread(stripBullet(line))
+      current.threads.push(currentThread)
+      continue
+    }
+    // Indented `Key: value` sub-lines fill the card opened above.
+    if (currentThread) {
+      const field = line.match(FIELD_RE)
+      if (field) attachField(currentThread, field[1], field[2])
     }
   }
 
   return { heading, summaryLine, sections }
+}
+
+// Seed prompt for the AIOS chat when the operator clicks "Draft reply" on a
+// triage card. The chat agent already carries the AIOS context (voice,
+// draft-only Gmail), so this just hands it the thread specifics it needs.
+export function buildDraftReplyPrompt(thread: TriageThread): string {
+  const subject = thread.subject ? ` re: "${thread.subject}"` : ''
+  const threadRef = thread.threadId ? ` (Gmail thread ${thread.threadId})` : ''
+  const lines = [`Draft a reply to ${thread.sender}${subject}${threadRef}.`]
+  if (thread.summary) lines.push(`They wrote: ${thread.summary}`)
+  if (thread.statusNote) lines.push(`Project context: ${thread.statusNote}`)
+  if (thread.nextStep) lines.push(`Suggested angle: ${thread.nextStep}`)
+  lines.push(
+    'Write it in my voice and save it as a Gmail draft (draft only — do not send), then show me the draft text.',
+  )
+  return lines.join('\n')
 }

@@ -167,7 +167,7 @@ describe('TriageOutput — structured envelope path (GAP-04-01)', () => {
     expect(html).toContain('No threads scoped to this project')
   })
 
-  it('renders TriageRowActions buttons per row (Replied / Snooze / Not me)', () => {
+  it('renders a TriageRowActions kebab trigger per row', () => {
     const html = renderToStaticMarkup(
       <TriageOutput
         markdown={REAL_SKILL_OUTPUT}
@@ -176,11 +176,10 @@ describe('TriageOutput — structured envelope path (GAP-04-01)', () => {
         renderRowActions
       />,
     )
-    // TriageRowActions is a client component but its initial idle-state
-    // labels render through SSR. The component renders buttons labelled
-    // "Replied", "Snooze 2d", "Not me" in idle state — at least one of
-    // those labels must appear.
-    expect(html).toMatch(/Replied|Snooze|Not me/)
+    // Actions moved into a kebab (⋮) menu. The menu items render in a portal
+    // on open, so SSR markup carries the trigger (with its aria-label) rather
+    // than the item labels.
+    expect(html).toContain('Actions for thread 19e4b9fc73712783')
   })
 })
 

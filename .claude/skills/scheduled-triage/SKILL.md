@@ -82,7 +82,7 @@ Store `lookback`, `mode`, and `processedThreads` for use in Steps 1 and 9.
 Use Gmail tool `mcp__claude_ai_Gmail__search_threads` with this query:
 
 ```
-in:inbox -in:draft newer_than:{lookback} -from:noreply -from:no-reply -from:notifications -from:hellobonsai.com -from:drive-shares-dm-noreply
+in:inbox -in:draft newer_than:{lookback} -label:AIOS/Dismissed -label:AIOS/Snoozed -from:noreply -from:no-reply -from:notifications -from:hellobonsai.com -from:drive-shares-dm-noreply
 ```
 
 Where `{lookback}` is the value computed in Step 0 (e.g., `newer_than:4h` or `newer_than:3d`).
@@ -109,6 +109,19 @@ For each candidate thread ID from Step 1, apply these rules **before** the inbou
 - If `overrides[threadId].status === 'snoozed'` AND `Date.parse(snooze_until) > Date.now()` → **SKIP**. (Expired snoozes fall through and are evaluated normally by the heuristic below.)
 
 The override file is the operator's final word -- it always wins over the heuristic.
+
+#### 2.0a -- Mirror dismissed / snoozed overrides into Gmail labels.
+
+The override file (2.0) is the click-time record. Mirror it into real Gmail labels so the decision survives a cache wipe, stays visible in Gmail, and drops out of Step 1's search next run (the `-label:AIOS/Dismissed -label:AIOS/Snoozed` exclusions). **Label-only by design -- never archive or mark read.** Requires the Gmail modify scope; if a label call is denied, log it and continue -- 2.0 already suppresses the thread, so labeling is a durability bonus, not a correctness requirement.
+
+Ensure both labels exist once per run: call `mcp__claude_ai_Gmail__list_labels`; if `AIOS/Dismissed` or `AIOS/Snoozed` is missing, create it with `mcp__claude_ai_Gmail__create_label`.
+
+Then walk the override file:
+
+- `status === 'dismissed'` → ensure the thread carries `AIOS/Dismissed` (`mcp__claude_ai_Gmail__label_thread`). Skip if already labeled.
+- `status === 'snoozed'` AND `Date.parse(snooze_until) > Date.now()` → ensure `AIOS/Snoozed`.
+- `status === 'snoozed'` AND `Date.parse(snooze_until) <= Date.now()` (EXPIRED) → remove `AIOS/Snoozed` (`mcp__claude_ai_Gmail__unlabel_thread`) **and** delete this entry from `triage-overrides.json`, so the thread resurfaces and is scored normally. (Critical: if the label stays, Step 1's `-label:AIOS/Snoozed` hides the thread forever.)
+- `status === 'replied' | 'not_me'` → no Gmail label. A real reply is self-evident in-thread; `not_me` is an internal classification. Leave override-only.
 
 #### 2.1 -- Gmail thread-participant check for borderline cases.
 

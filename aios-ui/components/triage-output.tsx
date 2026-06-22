@@ -124,32 +124,36 @@ function renderTodosStructured(
             key={todo.id}
             className="border border-border rounded-md p-3 bg-background/40"
           >
-            <div className="font-medium text-foreground/90 text-sm leading-snug">
-              {todo.summary}
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-medium text-foreground/90 text-sm leading-snug">
+                  {todo.summary}
+                </div>
+                {todo.context && (
+                  <p className="mt-1 text-sm text-muted-foreground leading-snug">
+                    {todo.context}
+                  </p>
+                )}
+                {threadId && (
+                  <div className="mt-2 flex items-center gap-2 text-sm">
+                    <a
+                      href={`${GMAIL_LINK_BASE}${threadId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-foreground underline-offset-2 hover:underline"
+                    >
+                      <code className="text-xs">{threadId}</code>
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                )}
+              </div>
+              {threadId && (
+                <div className="shrink-0">
+                  <TriageRowActions threadId={threadId} projectSlug={projectSlug} />
+                </div>
+              )}
             </div>
-            {todo.context && (
-              <p className="mt-1 text-sm text-muted-foreground leading-snug">
-                {todo.context}
-              </p>
-            )}
-            {threadId && (
-              <div className="mt-2 flex items-center gap-2 text-sm">
-                <a
-                  href={`${GMAIL_LINK_BASE}${threadId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-foreground underline-offset-2 hover:underline"
-                >
-                  <code className="text-xs">{threadId}</code>
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            )}
-            {threadId && (
-              <div className="mt-2">
-                <TriageRowActions threadId={threadId} projectSlug={projectSlug} />
-              </div>
-            )}
           </li>
         )
       })}

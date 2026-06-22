@@ -7,11 +7,17 @@ import {
   Clock,
   ExternalLink,
   Inbox,
-  Loader2,
   MessageSquarePlus,
   RefreshCw,
+  RotateCcw,
   X,
 } from 'lucide-react'
+import {
+  KebabMenu,
+  Menu,
+  kebabItemClass,
+  kebabItemDestructiveClass,
+} from '@/components/ui/kebab-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,12 +25,20 @@ import { RunTriageButton } from '@/components/run-triage-button'
 import { useTriageRun } from '@/components/triage-run-provider'
 import { extractTodosEnvelope } from '@/lib/skills/todos-envelope'
 import {
+  buildDraftReplyPrompt,
   parseTriageBrief,
   type TriageSection,
   type TriageSectionKind,
   type TriageThread,
 } from '@/lib/skills/triage-brief'
-import type { TodosCacheEntry, TriageCacheEntry, TriageOverrideStatus } from '@/lib/types'
+import { useChatCompose } from '@/components/chat-compose-provider'
+import type {
+  TodosCacheEntry,
+  TriageCacheEntry,
+  TriageOverride,
+  TriageOverrideStatus,
+  TriageOverridesFile,
+} from '@/lib/types'
 
 const GMAIL_LINK_BASE = 'https://mail.google.com/mail/u/0/#inbox/'
 const STALE_THRESHOLD_MS = 14 * 60 * 60 * 1000
@@ -95,6 +109,8 @@ function ThreadRow({
   highlight: boolean
 }) {
   const [state, setState] = useState<OverrideState>({ kind: 'idle' })
+  const [undoing, setUndoing] = useState(false)
+  const { compose } = useChatCompose()
 
   const submit = useCallback(
     async (status: TriageOverrideStatus) => {
@@ -128,16 +144,31 @@ function ThreadRow({
     [thread.threadId],
   )
 
+  const undo = useCallback(async () => {
+    if (!thread.threadId) return
+    setUndoing(true)
+    try {
+      const res = await fetch(
+        `/api/triage/override/${encodeURIComponent(thread.threadId)}`,
+        { method: 'DELETE' },
+      )
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: `status ${res.status}` }))
+        throw new Error(typeof err.error === 'string' ? err.error : 'Request failed')
+      }
+      setState({ kind: 'idle' })
+    } catch (e) {
+      setState({ kind: 'error', message: e instanceof Error ? e.message : String(e) })
+    } finally {
+      setUndoing(false)
+    }
+  }, [thread.threadId])
+
   const draftReply = useCallback(() => {
-    // U7 (chat panel) will consume this. For now, surface the full thread
-    // context so the wiring target is obvious during integration.
-    console.log('[triage] draft reply context', {
-      sender: thread.sender,
-      context: thread.context,
-      threadId: thread.threadId,
-      gmailUrl: thread.threadId ? `${GMAIL_LINK_BASE}${thread.threadId}` : null,
-    })
-  }, [thread])
+    // Hand the AIOS chat panel a seeded draft-reply prompt; it drafts the reply
+    // (Gmail draft-only) and streams the result back so the operator sees it.
+    compose(buildDraftReplyPrompt(thread))
+  }, [compose, thread])
 
   const isPending = state.kind === 'pending'
   const resolved = state.kind === 'done'
@@ -154,108 +185,116 @@ function ThreadRow({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className="truncate text-sm font-medium text-foreground">
               {thread.sender}
             </span>
+            {thread.subject && (
+              <span className="truncate text-xs text-muted-foreground">
+                {thread.subject}
+              </span>
+            )}
             {thread.daysWaiting !== null && (
               <span className="shrink-0 text-xs text-muted-foreground">
-                {thread.daysWaiting}d waiting
+                · {thread.daysWaiting}d waiting
               </span>
             )}
           </div>
-          {thread.context && (
-            <p className="mt-1 text-sm leading-snug text-muted-foreground">
-              {thread.context}
-            </p>
+          {thread.summary ? (
+            <>
+              <p className="mt-1 text-sm leading-snug text-foreground">
+                {thread.summary}
+              </p>
+              {thread.statusNote && (
+                <p className="mt-1 text-xs leading-snug text-muted-foreground">
+                  <span className="font-medium text-foreground/80">Status:</span>{' '}
+                  {thread.statusNote}
+                </p>
+              )}
+              {thread.nextStep && (
+                <p className="mt-1 text-xs leading-snug text-muted-foreground">
+                  <span className="font-medium text-foreground/80">Next:</span>{' '}
+                  {thread.nextStep}
+                </p>
+              )}
+            </>
+          ) : (
+            thread.context && (
+              <p className="mt-1 text-sm leading-snug text-muted-foreground">
+                {thread.context}
+              </p>
+            )
           )}
         </div>
-        {thread.score !== null && (
-          <Badge variant={scoreVariant(thread.score)} className="shrink-0">
-            {thread.score}
-          </Badge>
-        )}
+        <div className="flex shrink-0 items-center gap-1.5">
+          {resolved && state.action && (
+            <span className="text-xs italic text-muted-foreground">
+              {DONE_LABEL[state.action]}
+            </span>
+          )}
+          {thread.score !== null && (
+            <Badge variant={scoreVariant(thread.score)}>{thread.score}</Badge>
+          )}
+          <KebabMenu
+            busy={isPending || undoing}
+            label={`Actions for ${thread.sender}`}
+          >
+            {resolved ? (
+              <Menu.Item onClick={undo} disabled={undoing} className={kebabItemClass}>
+                <RotateCcw className="h-4 w-4" />
+                Undo
+              </Menu.Item>
+            ) : (
+              <>
+                <Menu.Item onClick={draftReply} className={kebabItemClass}>
+                  <MessageSquarePlus className="h-4 w-4" />
+                  Draft reply
+                </Menu.Item>
+                {thread.threadId && (
+                  <>
+                    <Menu.Item onClick={() => submit('replied')} className={kebabItemClass}>
+                      <Check className="h-4 w-4" />
+                      Mark replied
+                    </Menu.Item>
+                    <Menu.Item onClick={() => submit('snoozed')} className={kebabItemClass}>
+                      <Clock className="h-4 w-4" />
+                      Snooze 2 days
+                    </Menu.Item>
+                    <Menu.Item
+                      onClick={() => submit('dismissed')}
+                      className={kebabItemDestructiveClass}
+                    >
+                      <X className="h-4 w-4" />
+                      Dismiss
+                    </Menu.Item>
+                  </>
+                )}
+              </>
+            )}
+            {thread.threadId && (
+              <>
+                <Menu.Separator className="my-1 h-px bg-border" />
+                <Menu.Item
+                  className={kebabItemClass}
+                  render={
+                    <a
+                      href={`${GMAIL_LINK_BASE}${thread.threadId}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    />
+                  }
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open in Gmail
+                </Menu.Item>
+              </>
+            )}
+          </KebabMenu>
+        </div>
       </div>
 
-      {thread.threadId && (
-        <div className="mt-2 flex items-center gap-2">
-          <a
-            href={`${GMAIL_LINK_BASE}${thread.threadId}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-          >
-            <code className="text-xs">{thread.threadId}</code>
-            <ExternalLink className="h-3 w-3" />
-          </a>
-        </div>
-      )}
-
-      {resolved && state.action ? (
-        <div className="mt-2 text-xs italic text-muted-foreground">
-          {DONE_LABEL[state.action]}
-        </div>
-      ) : (
-        <div className="mt-2.5 flex flex-wrap items-center gap-2">
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={draftReply}
-            aria-label={`Draft reply to ${thread.sender}`}
-          >
-            <MessageSquarePlus className="h-3 w-3" />
-            <span className="ml-1">Draft reply</span>
-          </Button>
-          {thread.threadId && (
-            <>
-              <Button
-                size="xs"
-                variant="outline"
-                onClick={() => submit('replied')}
-                disabled={isPending}
-                aria-label={`Mark ${thread.sender} replied`}
-              >
-                {isPending && state.action === 'replied' ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Check className="h-3 w-3" />
-                )}
-                <span className="ml-1">Replied</span>
-              </Button>
-              <Button
-                size="xs"
-                variant="outline"
-                onClick={() => submit('snoozed')}
-                disabled={isPending}
-                aria-label={`Snooze ${thread.sender} for 2 days`}
-              >
-                {isPending && state.action === 'snoozed' ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Clock className="h-3 w-3" />
-                )}
-                <span className="ml-1">Snooze 2d</span>
-              </Button>
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => submit('dismissed')}
-                disabled={isPending}
-                aria-label={`Dismiss ${thread.sender}`}
-              >
-                {isPending && state.action === 'dismissed' ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <X className="h-3 w-3" />
-                )}
-                <span className="ml-1">Dismiss</span>
-              </Button>
-            </>
-          )}
-          {state.kind === 'error' && (
-            <span className="text-xs text-destructive">{state.message}</span>
-          )}
-        </div>
+      {state.kind === 'error' && (
+        <p className="mt-2 text-xs text-destructive">{state.message}</p>
       )}
     </li>
   )
@@ -286,7 +325,18 @@ interface LoadState {
   kind: 'loading' | 'ready' | 'error'
   entry?: TriageCacheEntry | null
   envelope?: TodosCacheEntry | null
+  overrides?: TriageOverridesFile
   message?: string
+}
+
+// A thread is suppressed from the view while its override is "active":
+// replied / not_me / dismissed are terminal; a snooze is active only until it
+// expires, after which the thread falls back into the queue.
+function isActiveOverride(o: TriageOverride): boolean {
+  if (o.status === 'snoozed') {
+    return !!o.snooze_until && Date.parse(o.snooze_until) > Date.now()
+  }
+  return true
 }
 
 export function TriageView() {
@@ -296,11 +346,18 @@ export function TriageView() {
   const fetchLatest = useCallback(async () => {
     setLoad({ kind: 'loading' })
     try {
-      const res = await fetch('/api/triage/latest', { cache: 'no-store' })
-      if (!res.ok) throw new Error(`status ${res.status}`)
-      const entry = (await res.json()) as TriageCacheEntry | null
+      const [latestRes, overridesRes] = await Promise.all([
+        fetch('/api/triage/latest', { cache: 'no-store' }),
+        fetch('/api/triage/overrides', { cache: 'no-store' }),
+      ])
+      if (!latestRes.ok) throw new Error(`status ${latestRes.status}`)
+      const entry = (await latestRes.json()) as TriageCacheEntry | null
+      // Overrides are best-effort: a failed read just means nothing is filtered.
+      const overrides = overridesRes.ok
+        ? ((await overridesRes.json()) as TriageOverridesFile)
+        : {}
       const envelope = entry?.output ? extractTodosEnvelope(entry.output) : null
-      setLoad({ kind: 'ready', entry, envelope })
+      setLoad({ kind: 'ready', entry, envelope, overrides })
     } catch (e) {
       setLoad({
         kind: 'error',
@@ -319,12 +376,30 @@ export function TriageView() {
     return parseTriageBrief(load.entry.output)
   }, [load])
 
+  const activeOverrideIds = useMemo(() => {
+    const ids = new Set<string>()
+    const overrides = load.kind === 'ready' ? load.overrides : undefined
+    if (!overrides) return ids
+    for (const [threadId, o] of Object.entries(overrides)) {
+      if (isActiveOverride(o)) ids.add(threadId)
+    }
+    return ids
+  }, [load])
+
   const orderedSections = useMemo(() => {
     if (!brief) return []
     return [...brief.sections]
+      // Drop threads the operator already resolved (dismiss / snooze / replied);
+      // the brief still lists them, the override file is the live truth.
+      .map(s => ({
+        ...s,
+        threads: s.threads.filter(
+          t => !t.threadId || !activeOverrideIds.has(t.threadId),
+        ),
+      }))
       .filter(s => s.threads.length > 0)
       .sort((a, b) => SECTION_ORDER.indexOf(a.kind) - SECTION_ORDER.indexOf(b.kind))
-  }, [brief])
+  }, [brief, activeOverrideIds])
 
   const totalThreads = orderedSections.reduce((n, s) => n + s.threads.length, 0)
   const replyCount = orderedSections
