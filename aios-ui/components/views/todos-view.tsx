@@ -7,6 +7,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { KebabMenu, Menu, kebabItemClass, kebabItemDestructiveClass } from '@/components/ui/kebab-menu'
 import { cn } from '@/lib/utils'
 import type { PendingTodo, TodoPriority } from '@/lib/types'
 
@@ -440,8 +441,8 @@ function TodoRow({
           {state.showBlock && <BlockInput todoId={todo.id} onBlock={onBlock} />}
         </div>
 
-        <div className="flex shrink-0 flex-col gap-1">
-          {/* Do It */}
+        <div className="flex shrink-0 items-start gap-1">
+          {/* Primary action: Do It (when applicable) or Done */}
           {canDoIt && !state.pendingAccept && (
             <Button
               size="sm"
@@ -465,88 +466,86 @@ function TodoRow({
               <span className="ml-1.5 text-xs">Stop</span>
             </Button>
           )}
-
-          {/* Done */}
-          <Button
-            size="sm"
-            variant="default"
-            onClick={() => onResolve(todo.id, 'done')}
-            disabled={isPending || state.pendingAccept}
-            aria-label="Mark done"
-          >
-            {state.pending === 'done'
-              ? <Loader2 className="size-3.5 animate-spin" />
-              : <Check className="size-3.5" />}
-            <span className="ml-1.5 text-xs">Done</span>
-          </Button>
-
-          {/* Snooze / Unsnooze */}
-          {isSnoozedNow ? (
+          {!canDoIt && !state.pendingAccept && (
             <Button
               size="sm"
-              variant="ghost"
-              onClick={() => onUnsnooze(todo.id)}
+              variant="default"
+              onClick={() => onResolve(todo.id, 'done')}
               disabled={isPending}
-              aria-label="Un-snooze"
+              aria-label="Mark done"
             >
-              {state.pending === 'unsnooze'
+              {state.pending === 'done'
                 ? <Loader2 className="size-3.5 animate-spin" />
-                : <Clock className="size-3.5" />}
-              <span className="ml-1.5 text-xs">Wake</span>
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onToggle(todo.id, 'showSnooze')}
-              disabled={isPending || state.pendingAccept}
-              aria-label="Snooze"
-            >
-              <Clock className="size-3.5" />
-              <span className="ml-1.5 text-xs">Snooze</span>
+                : <Check className="size-3.5" />}
+              <span className="ml-1.5 text-xs">Done</span>
             </Button>
           )}
 
-          {/* Block / Unblock */}
-          {isBlocked ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onUnblock(todo.id)}
-              disabled={isPending}
-              aria-label="Clear block"
-            >
-              {state.pending === 'unblock'
-                ? <Loader2 className="size-3.5 animate-spin" />
-                : <PauseCircle className="size-3.5" />}
-              <span className="ml-1.5 text-xs">Unblock</span>
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onToggle(todo.id, 'showBlock')}
-              disabled={isPending || state.pendingAccept}
-              aria-label="Mark blocked"
-            >
-              <PauseCircle className="size-3.5" />
-              <span className="ml-1.5 text-xs">Blocked</span>
-            </Button>
-          )}
-
-          {/* Dismiss */}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onResolve(todo.id, 'dismiss')}
-            disabled={isPending || state.pendingAccept}
-            aria-label="Dismiss"
+          {/* Kebab menu for secondary actions */}
+          <KebabMenu
+            busy={isPending}
+            label={`Actions for ${todo.summary}`}
           >
-            {state.pending === 'dismiss'
-              ? <Loader2 className="size-3.5 animate-spin" />
-              : <X className="size-3.5" />}
-            <span className="ml-1.5 text-xs">Dismiss</span>
-          </Button>
+            {/* Done (when Do It is the primary) */}
+            {canDoIt && (
+              <Menu.Item
+                onClick={() => onResolve(todo.id, 'done')}
+                className={kebabItemClass}
+              >
+                <Check className="h-4 w-4" />
+                Done
+              </Menu.Item>
+            )}
+
+            {/* Snooze / Unsnooze */}
+            {isSnoozedNow ? (
+              <Menu.Item
+                onClick={() => onUnsnooze(todo.id)}
+                className={kebabItemClass}
+              >
+                <Clock className="h-4 w-4" />
+                Un-snooze
+              </Menu.Item>
+            ) : (
+              <Menu.Item
+                onClick={() => onToggle(todo.id, 'showSnooze')}
+                className={kebabItemClass}
+              >
+                <Clock className="h-4 w-4" />
+                Snooze
+              </Menu.Item>
+            )}
+
+            {/* Block / Unblock */}
+            {isBlocked ? (
+              <Menu.Item
+                onClick={() => onUnblock(todo.id)}
+                className={kebabItemClass}
+              >
+                <PauseCircle className="h-4 w-4" />
+                Clear block
+              </Menu.Item>
+            ) : (
+              <Menu.Item
+                onClick={() => onToggle(todo.id, 'showBlock')}
+                className={kebabItemClass}
+              >
+                <PauseCircle className="h-4 w-4" />
+                Blocked
+              </Menu.Item>
+            )}
+
+            <Menu.Separator className="my-1 h-px bg-border" />
+
+            {/* Dismiss */}
+            <Menu.Item
+              onClick={() => onResolve(todo.id, 'dismiss')}
+              className={kebabItemDestructiveClass}
+            >
+              <X className="h-4 w-4" />
+              Dismiss
+            </Menu.Item>
+          </KebabMenu>
         </div>
       </div>
     </Card>
