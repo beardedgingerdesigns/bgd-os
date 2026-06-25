@@ -22,11 +22,11 @@
 - [x] **WIKI-04**: Flagged contradictions surface to operator for resolution rather than auto-overwriting
 
 ### Prospect Pipeline (PROSPECT)
-- [ ] **PROSPECT-01**: Prospect doc structure at `prospects/<slug>.md` for knowledge accumulation
-- [ ] **PROSPECT-02**: Triage tags relevant email threads to prospects via explicit contacts in `clients.yaml`
-- [ ] **PROSPECT-03**: `/onboard-client` reads prospect doc and asks targeted questions based on accumulated knowledge
-- [ ] **PROSPECT-04**: Conversion trigger flips bucket, runs `/kickoff-project` seeded with prospect knowledge + interview answers
-- [ ] **PROSPECT-05**: Initial STATE.md created in new wiki and synced to claude-os at conversion
+- [x] **PROSPECT-01**: Prospect doc structure at `prospects/<slug>.md` for knowledge accumulation
+- [x] **PROSPECT-02**: Triage tags relevant email threads to prospects via explicit contacts in `clients.yaml`
+- [x] **PROSPECT-03**: `/onboard-client` reads prospect doc and asks targeted questions based on accumulated knowledge
+- [x] **PROSPECT-04**: Conversion trigger flips bucket, runs `/kickoff-project` seeded with prospect knowledge + interview answers
+- [x] **PROSPECT-05**: Initial STATE.md created in new wiki and synced to claude-os at conversion
 
 ### To-Do List (TODO)
 - [x] **TODO-01**: Persistent to-do list stored as first-class AIOS artifact in claude-os
