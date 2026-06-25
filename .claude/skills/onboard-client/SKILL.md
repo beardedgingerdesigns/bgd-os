@@ -60,6 +60,12 @@ Then apply to the interview phases:
 
 Key rule: NEVER silently assume a pre-filled answer is correct. Always show the pre-filled value and ask for confirmation. Questions not answerable from the prospect doc are asked normally (these are the gaps).
 
+**Conversion mode:** If the prospect doc has `status: converting` (set by `/convert-prospect`), this is a conversion. In conversion mode:
+- Q1a (slug): SKIP (already known)
+- Q1c (bucket): SKIP (will be set to `active` by /convert-prospect Phase B after this completes)
+- Do NOT append a new clients.yaml entry. UPDATE the existing entry (add project, update contacts). Detect existing entry by matching slug regardless of bucket value.
+- Search for prospect doc in order: `prospects/<slug>.md` first, then `prospects/converted/<slug>.md` (handles re-run after partial conversion)
+
 **If no prospect doc found:** proceed with normal interview unchanged.
 
 ---
