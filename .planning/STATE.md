@@ -21,14 +21,14 @@ stopped_at: Phase 09 complete (5/5) — ready to discuss Phase 10
 See: .planning/PROJECT.md (updated 2026-06-04)
 
 **Core value:** AIOS is the intelligence layer — dispatcher + strategic partner. Dispatches to project wikis, doesn't compete with them. Project work happens in project repos.
-**Current focus:** Phase 10 — aios ui dispatcher cleanup ✅ done (organic)
+**Current focus:** ADR 0008 — todo card actions (snooze, do-it, blocked) shipped to PR
 
 ## Current Position
 
 Phase: 10
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-06-25
+Last activity: 2026-06-25 — ADR 0008 implemented, PR #2 open
 
 ## Performance Metrics
 
