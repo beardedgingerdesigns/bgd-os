@@ -166,6 +166,8 @@ export interface TodosCacheEntry {
 
 export type TodoPriority = 'high' | 'medium' | 'low'
 
+export type PendingTodoActionType = 'email' | 'calendar' | 'generic'
+
 export interface PendingTodo {
   id: string                    // stable hash of summary + added date
   summary: string               // bold first-line text
@@ -175,6 +177,9 @@ export interface PendingTodo {
   client?: string               // client-slug or client-slug / project-slug
   priority: TodoPriority        // defaults to 'medium' when unspecified
   notes?: string                // one-line context
+  snoozedUntil?: string         // ISO date; hidden from active list until then
+  blockedOn?: string            // free text; visually muted, sorts below actionable
+  actionType: PendingTodoActionType // detected from summary keywords
 }
 
 export interface PendingTodosResult {
