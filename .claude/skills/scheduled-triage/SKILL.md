@@ -168,7 +168,9 @@ Tier the result:
 
 ### Step 4 -- Attach project memory context (via `project-researcher` agent)
 
-For each "Reply today" and "Reply this week" thread, identify the related project by matching the sender's email address against `clients.yaml` `contacts:` lists (full address first, then `@domain.com` patterns). The match produces a `project_slug`.
+For each "Reply today" and "Reply this week" thread, identify the related project by matching the sender's email address against `clients.yaml` `contacts:` lists (full address first, then `@domain.com` patterns). Check both project-level `projects[].contacts` AND root-level `client.contacts` arrays. Root-level contacts exist on prospect entries (`bucket: prospects`) that have no projects yet.
+
+The match produces a matched entity: `{client_slug, bucket, project_slug}`. When matched via root-level contacts, `project_slug` is null. The `bucket` field determines dispatch routing in Step 8.
 
 **Identity rule -- match on email address, never on first name alone.** Two senders sharing a first name on different domains are presumed **different people** unless `clients.yaml` explicitly links the addresses. Do not write context lines like "same person, different project" based on name similarity -- that requires evidence (an explicit cross-reference in `clients.yaml` or memory, or a thread where Justin treats them as one person). When the sender's address does not resolve to a project, set `client_slug` and `project_slug` to `null` and write the project context as `Unknown -- domain not in clients.yaml; verify before treating as known contact.` Don't guess to fill the slot.
 
@@ -217,6 +219,11 @@ Print a Markdown brief in chat:
 
 ## FYI / context only
 - {Sender} -- {subject} ({days waiting}d)
+
+## Potential prospects
+{Only if unrecognized business senders were found}
+🔍 {Sender Name} ({sender_email}) -- {thread subject}
+   → /register-prospect to track
 
 ## Archive candidates
 - {Sender} -- {subject}
@@ -322,7 +329,35 @@ For each "Reply today" and "Reply this week" thread that contains an **explicit 
 
 ---
 
-### Step 8 -- Dispatch project-relevant threads to wiki raw/aios/ (per D-08, D-09, D-10, TRIAGE-04, TRIAGE-05)
+### Step 8 -- Dispatch project-relevant threads (per D-08, D-09, D-10, TRIAGE-04, TRIAGE-05)
+
+**Prospect dispatch (bucket: prospects).** For matched entities where `bucket` is `prospects`:
+
+1. Read prospect doc at `prospects/<client_slug>.md`
+2. Check frontmatter `status`:
+   - `converted` or `dead`: skip (terminal states)
+   - `converting`: defer (record in `deferredDispatches` with reason `status-converting`)
+   - `active`, `warm`, or `cold`: proceed
+3. Parse existing Timeline section. Prepend a new entry at the top (reverse-chrono):
+   ```markdown
+   ### <today YYYY-MM-DD>
+   **Thread:** <subject>
+   **From:** <sender_name> (<sender_email>)
+   **Summary:** <2-3 sentences of key intel from the thread>
+   **Signals:** <budget, timeline, pain points, or decisions mentioned>
+   ```
+4. Update frontmatter `last_activity` to today
+5. Update matched contact's `last_interaction` in frontmatter contacts map
+6. If a new contact email appears in the thread that isn't in the contacts map, add it with `role: unknown` and `last_interaction: today`
+7. Write the updated prospect doc back to disk
+
+If dispatch fails (doc missing, parse error, write failure): record in `deferredDispatches` array in triage-latest.json: `{threadId, slug, reason, timestamp, retryCount: 0}`. Clear after 5 retries.
+
+Prospect dispatch is direct write (not staged via raw/aios/). The prospect doc IS the accumulation surface.
+
+**Unrecognized business sender detection (D-07).** After contact matching, collect thread senders whose domain is NOT in the skip list (gmail.com, yahoo.com, outlook.com, hotmail.com, noreply domains, newsletter domains) AND whose email doesn't match any contact in clients.yaml. Add one nudge line per unique sender to the "Potential prospects" section in the output brief. Do NOT auto-create entries.
+
+**Wiki dispatch (bucket: paying, active, internal).** For matched entities where `bucket` is not `prospects`:
 
 For each thread where `clients.yaml` contact matching (Step 4) resolved a `project_slug` AND the thread contains project-relevant intelligence beyond a routine status ping:
 
@@ -373,7 +408,23 @@ score: {numeric triage score from Step 3}
 
 ---
 
-### Step 8.5 -- Reconcile project state (draft state-update proposals)
+### Step 8.5a -- Prospect lifecycle auto-flip
+
+Run on every triage pass to keep the prospect pipeline clean. Scan all files in `prospects/` (excluding `converted/` subdirectory):
+
+1. For each prospect doc, read YAML frontmatter
+2. Skip if `status` is `converted`, `converting`, or `dead`
+3. Calculate days since `last_activity`
+4. If > 90 days and status is not `dead`: set `previous_status` to current, status to `dead`, `status_changed_at` to today
+5. Else if > 30 days and status is `active` or `warm`: set `previous_status` to current, status to `cold`, `status_changed_at` to today
+6. Write updated frontmatter back (preserve body content)
+7. If any status changed, include in triage notification: `Prospect status changed: <slug> → <new_status> (inactive <N> days)`
+
+Auto-flip only moves status DOWN (active → cold → dead). Never promotes.
+
+---
+
+### Step 8.5b -- Reconcile project state (draft state-update proposals)
 
 The write-back loop that keeps the dashboard's source of truth current. You
 DRAFT proposals here; Justin reviews and applies them from the UI's **Sync**
@@ -429,6 +480,16 @@ This step writes **only** the proposal store. It never edits `state/<slug>.md`
 wiki (Step 8 owns wiki staging; ADR 0004 / 0007). It is independent of the
 `triage-latest.json` lookback cache -- the "write cache LAST" rule below still
 governs that file only.
+
+---
+
+### Step 8.7 -- Gemini meeting notes sweep (per /level-up 2026-06-24)
+
+Invoke the standalone `/gemini-sweep` skill. It auto-detects new Gemini meeting notes and transcripts in Drive, infers the project, and stages both to the project wiki's `raw/gemini/` directory.
+
+The skill manages its own processed-files cache at `/Users/justinlobaito/repos/claude-os/aios-ui/.aios-cache/gemini-sweep-cache.json`. It is idempotent and safe to call on every triage run.
+
+If the skill is unavailable or errors, log the failure and continue to Step 9. Gemini sweep is additive -- triage must not fail because of it.
 
 ---
 
