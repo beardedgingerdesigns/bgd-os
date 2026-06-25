@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
 
-import { POST } from '@/app/api/triage/override/[threadId]/route'
+import { POST, DELETE } from '@/app/api/triage/override/[threadId]/route'
 import { readOverrides } from '@/lib/cache/triage-overrides'
 import { readRecentReceipts } from '@/lib/cache/receipts'
 
@@ -167,5 +167,61 @@ describe('POST /api/triage/override/[threadId]', () => {
     const res = await POST(req, asParams('abc123'))
     expect(res.status).toBe(400)
     expect((await res.json()).error).toContain('invalid project_slug')
+  })
+})
+
+describe('DELETE /api/triage/override/[threadId]', () => {
+  let tmpDir: string
+
+  beforeEach(async () => {
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aios-triage-override-del-'))
+    process.env.AIOS_CACHE_DIR = tmpDir
+  })
+
+  afterEach(async () => {
+    await fs.rm(tmpDir, { recursive: true, force: true })
+    delete process.env.AIOS_CACHE_DIR
+  })
+
+  it('clears an existing override and emits a cleared receipt', async () => {
+    await POST(
+      new Request('http://test/api/triage/override/abc123', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'dismissed' }),
+      }),
+      asParams('abc123'),
+    )
+    expect((await readOverrides()).abc123).toBeDefined()
+
+    const res = await DELETE(
+      new Request('http://test/api/triage/override/abc123', { method: 'DELETE' }),
+      asParams('abc123'),
+    )
+    expect(res.status).toBe(200)
+    expect((await res.json()).ok).toBe(true)
+
+    expect((await readOverrides()).abc123).toBeUndefined()
+
+    const receipts = await readRecentReceipts()
+    expect(receipts.some(r => r.excerpt === 'cleared override for thread abc123')).toBe(true)
+  })
+
+  it('is idempotent when no override exists', async () => {
+    const res = await DELETE(
+      new Request('http://test/api/triage/override/abc123', { method: 'DELETE' }),
+      asParams('abc123'),
+    )
+    expect(res.status).toBe(200)
+    expect((await res.json()).ok).toBe(true)
+  })
+
+  it('rejects invalid threadId', async () => {
+    const res = await DELETE(
+      new Request('http://test/api/triage/override/zzz', { method: 'DELETE' }),
+      asParams('zzz'),
+    )
+    expect(res.status).toBe(400)
+    expect((await res.json()).error).toContain('invalid threadId')
   })
 })

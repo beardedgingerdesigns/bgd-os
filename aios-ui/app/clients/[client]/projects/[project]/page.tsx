@@ -12,7 +12,6 @@ import { RecentActivityFeed } from '@/components/recent-activity-feed'
 import { WikiDisplay } from '@/components/wiki-display'
 import { formatMRR, formatRelativeDate } from '@/lib/format'
 import { FileText } from 'lucide-react'
-import { ChatDrawer } from '@/components/chat-drawer'
 import { CaptureBox } from '@/components/capture-box'
 import { CommunicationsSection } from '@/components/communications-section'
 import { PendingIngestionSection } from '@/components/pending-ingestion-section'
@@ -251,17 +250,8 @@ export default async function ProjectPage({
             />
           </section>
 
-          {/* PER-PROJECT RECEIPTS — last 10 receipts for this project (04-09 / HUB-06).
-              Inserted AFTER RecentActivityFeed, BEFORE ChatDrawer. */}
+          {/* PER-PROJECT RECEIPTS — last 10 receipts for this project (04-09 / HUB-06). */}
           <ProjectReceiptsSlice projectSlug={project.slug} />
-
-          <section>
-            <ChatDrawer
-              clientSlug={client.slug}
-              projectSlug={project.slug}
-              projectName={project.name}
-            />
-          </section>
         </main>
       </div>
     </div>

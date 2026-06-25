@@ -1112,3 +1112,81 @@ The triage state-writeback detector now emits proposals as a `STATE_UPDATES_JSON
 **Owner:** Justin (BGD).
 
 ---
+
+## 2026-06-19 — Triage hardening: show-what-they-said, recency anchor, pattern mute-list
+
+**Decision:** Harden the live inbox triage (`/daily-inbox-triage`; `scheduled-triage` is legacy and not touched) with four changes: (1) every reply candidate shows a 1-line summary of the latest **inbound** message via `get_thread`, alongside the existing project-memory snippet; (2) classify by the **latest** message, not Justin's last outbound — a same-day human reply surfaces in "Reply today" with its summary and a ~2h grace, replacing the blanket 18h hide; (3) split the FYI pile — keep a short "Needs action (not a reply)" ops tier (billing/renewals/access), drop pure FYI entirely; (4) new `state/triage-mutes.md` pattern-level mute-list (senders / subjects / categories), read every run, applied before the heuristic, additive to the existing thread-level `triage-overrides.json`.
+
+**Why:** The 6/19 afternoon run filed Melinda (Inside Out) under "consider nudge — 21 days since your last message" when she'd replied that morning — it anchored on Justin's last outbound and showed no message content, so a long-awaited reply was invisible. Noise (Camp Mitigwa personal, calendar accepts, Gemini notes) reached "Reply today" and even got drafts, because filtering is Gmail-query-only. Justin won't drive the UI-only thread-override, so a plain-text mute-list he controls is the durable fix and teaches future runs. What would change my mind: if a `get_thread` per candidate proves too slow at inbox scale.
+
+**Alternatives considered:** Tell-me-in-chat-only mute (rejected — the file is the durable source of truth; chat just appends to it). Collapse FYI to a one-line count, or kill all non-reply items (rejected — keep the ops-action tier so failed billing still surfaces). Keep the 18h rule and only fix framing (rejected — wouldn't surface a same-day reply, the Melinda case).
+
+**Deferred:** Automate Gemini meeting-notes / recaps handling — its own future feature; the mute-list just suppresses them for now.
+
+**Artifacts:** requirements `brainstorm/2026-06-19-triage-hardening-requirements.md`.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-19 — Deploy Answers / BrandOS: hold the niche thesis, keep partner as thought-partner
+
+**Decision (data point on the 2026-06-01 tripwire fork).** In the 6/19 "Connect" call, Nel pushed Justin to redirect effort off BrandOS's niche-vertical play toward broad-reach, easily-duplicated, fan-base-driven apps aimed at a bigger acquisition. Justin held the line: BrandOS stays a productized solution for a specific underserved niche (mid-tier distributors/manufacturers), won through iterative real-world feedback, with the methodology (the "sprocket maker") as the durable asset. The broad-reach/fan-base pivot is **not adopted**.
+
+**Aligned (from the call):** collaboration model = Nel explores and builds to learn on the project; Justin keeps his own development trajectory. This de-risks the core: Nel can contribute and grow without Justin's path depending on him.
+
+**Why:** BrandOS is already revenue-generating and de-risked (paying dealers + distributor, live Terraplex pilot, roadmap). Justin's validated edge is B2B translation/design for mid-market, not B2C attention/fan-base reach (which is Nel + Alex's claimed strength, so the pivot points onto their turf). "Easily duplicated viral app" also contradicts Nel's own copycat-risk warning. Same principle as "don't gate the business on Jon": a single, spread-thin, high-variance partner should not steer or bottleneck the core. Nel is in acute medical/financial crisis (FND, job + house), which makes his "go big/fast" framing understandable but not a fit for Justin's compounding strategy.
+
+**Banked from Nel (genuinely right):** (1) protect the methodology, package the outcome not the recipe, stop over-explaining the secret sauce in demos; (2) frontier-LLM dependency is a real single point of failure, hedge it (Justin to test Z.AI compatibility); core BrandOS already degrades gracefully (manual fallbacks; only Marketing Assist fails if the AI layer drops).
+
+**Tripwire read:** on this evidence, Nel in the BrandOS-strategy seat produced friction, not the named lift signals (sharpen the pitch / close a deal / carry delivery load). He has earned thought-partner status in BrandOS, not owner status. Keep the two houses (Deploy Answers vs BGD-owned BrandOS) separate. The real gradable partnership work is Backup Bison (silent-failure + version-incompat ship-blocker).
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-20 — /level-up: ship `/catchup` + standardize the `/handoff` path (kill the session re-orientation tax)
+
+**Decision:** Add a user-level `/catchup` skill and update the user-level `/handoff` skill so handoffs land in a predictable per-repo temp folder that `/catchup` reads on session start. Surfaced as the #1 candidate in `retros/retro-2026-06-20.md` — the only friction pattern present in all 5 corpora.
+
+**Convention:** `/handoff` writes to `/tmp/<repo-name>/handoff-<timestamp>.md` (repo-name = basename of `git rev-parse --show-toplevel`; `mkdir -p`). `/catchup` reads the newest `handoff-*.md` in `/tmp/<repo-name>/`, then STATE/CLAUDE.md + git, and presents a one-screen orientation. Both skills are user-level (`~/.claude/skills/`) so it works in any repo.
+
+**Method spec (3Ms):**
+- **Constraint:** start-of-session re-orientation tax, paid in every repo every session.
+- **EAD:** Automate. **Agent-vs-workflow:** deterministic — find the newest file in a known folder + read + present. Workflow, not agent.
+- **Autonomy: L2 (manual `/catchup`).** Pushed back on an auto-on-start hook (L3/L4) — Bike Method Phase 1, prove manual first.
+- **KPI:** Bucket = Less cost. Metric = manual "where did we leave off" / handoff-path-paste events per week → ~0 (baseline ~20/wk per retro).
+- **Done:** `/catchup` self-orients in 3 consecutive sessions across 2+ repos with no path-paste, then → maintenance.
+
+**Key design call (Justin):** handoffs **stay in `/tmp`**, in a per-repo folder named after the repo — not in the repo itself. The OS's ~3-day `/tmp` cleanup is a feature: handoffs self-clean, never bloat/conflate the repo, and a >3-day-old handoff is correctly gone (it would be stale). The retro's "in-repo stable path" idea was rejected. (Memory: `handoffs-stay-in-tmp`.)
+
+**Machine:** two SKILL.md edits (boring-is-beautiful — no scripts beyond `ls`/`mkdir`, no AI sub-agent). `/catchup` ships `bike-method-phase: 1`.
+
+**Artifacts:** `~/.claude/skills/catchup/SKILL.md` (new), `~/.claude/skills/handoff/SKILL.md` (updated write path).
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-20 — `/ship` pipeline orchestrator (idea → brainstorm → plan → work → compound → wrap)
+
+**Decision:** Add a user-level `/ship` skill that chains `ce-brainstorm → ce-plan → ce-work → ce-compound` (then opens a PR and holds) in one command, so the pipeline Justin recites ~25+ times/week becomes a single invocation. Surfaced as the #2 candidate in `retros/retro-2026-06-20.md` (HIGH cost; the brandos and claude-os analysis agents independently proposed a `/ship` orchestrator).
+
+**Design:**
+- **Checkpointed by default:** stops at two gates — confirm scope after brainstorm, approve plan before work — then runs hands-off. `--auto` (or "ship it autonomously") skips both gates; each stage runs in its own pipeline/headless mode.
+- **Subagent-delegated:** the skill sequences stages in the main thread (the proven `/lfg` pattern); each stage fans its heavy work out to its own subagents.
+- **Feature branch + atomic commits → push → open PR → HOLD.** Builds on a feature branch (never the default), lands one logical commit per unit of work (ce-work's default; the branch history is the trace), pushes, and opens a PR via `ce-commit-push-pr` — then stops. Does NOT watch CI, autofix, or merge; Justin reviews and squash-merges.
+  - *Evolved 2026-06-20:* originally scoped to stop at local commits (no PR), reversed the same day — Justin wants a reviewable PR he can squash-merge. The distinction from `/lfg` shifted from "local vs PR" to "holds at PR for human review" vs "/lfg drives autonomously to green CI."
+- Skips the code stages (ce-work, ce-compound) for non-code/docs-only work (via ce-plan's non-software gate).
+
+**Why not just use `/lfg`:** LFG starts at `ce-plan` and drives autonomously to green CI (watch + autofix) — no brainstorm front-end, no compound/wrap tail. `/ship` starts from a raw idea, captures knowledge (compound), and **holds at PR-open for human review** instead of babysitting CI. Different shape → distinct skill, modeled on LFG's orchestration pattern. (The skill file itself does not mention `/lfg` — that's a behavior-not-justification call; this rationale lives here.)
+
+**Machine:** a SKILL.md orchestrator (no new code; reuses the entire CE pipeline). `bike-method-phase: 1` — checkpointed is the training-wheels default, `--auto` is the advancement.
+
+**Boundary (2026-06-20, settled after iteration):** `/ship` DOES open a PR and hold (feature branch + atomic commits + push + PR). It does NOT add LFG's CI-watch / autofix / merge — those stay `/lfg`'s. Quality (simplify/review/test) already runs *inside* `ce-work`, so it isn't bolted on separately. The line vs `/lfg` is the human-review hold, not "local vs PR." **`/wrap` is NOT in `/ship` (dropped 2026-06-20):** it's a once-per-session ritual that writes the hot `STATE.md` on `main` — bundling it would over-wrap (several ships per session) and conflict on a feature branch. `/ship` ends with a run summary as the trail, and the work persists durably (commits, requirements, plan, compound, PR), so a later `/wrap` loses nothing despite the subagent delegation. Run `/wrap` separately at session end.
+
+**Artifact:** `~/.claude/skills/ship/SKILL.md`.
+
+**Owner:** Justin (BGD).
+
+---

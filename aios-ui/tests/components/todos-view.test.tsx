@@ -5,7 +5,7 @@ import type { PendingTodo } from '@/lib/types'
 import { TodosView } from '@/components/views/todos-view'
 
 function todo(partial: Partial<PendingTodo> & { id: string; summary: string; priority: PendingTodo['priority'] }): PendingTodo {
-  return { ...partial }
+  return { actionType: 'generic', ...partial }
 }
 
 const SAMPLE: PendingTodo[] = [

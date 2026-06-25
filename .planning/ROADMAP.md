@@ -137,20 +137,23 @@ Plans:
 
 ---
 
-### Phase 10: AIOS UI Rewrite
+### Phase 10: AIOS UI Dispatcher Cleanup ✅ DONE (organic)
 
-**Requirements:** UI-01, UI-02, UI-03, UI-04, UI-05, UI-06, UI-07
+**Summary:** The AIOS UI evolved organically toward the dispatcher model during v2.0. Dashboard shipped with stat tiles (MRR, Open Todos, Active Projects, Needs Reply), project state cards from `state/<slug>.md`, dedicated Triage and Todos views, and an AIOS-scoped chat panel. Per-project chat retired 2026-06-25 (code + routes + tests removed).
 
-**Summary:** Rebuild the AIOS UI around the dispatcher model. Dashboard replaces the current hub layout with triage queue, to-do list, project status cards (read-only, powered by Phase 5 STATE.md), MRR number, and prospect cards. Per-project chat, project briefs, and per-project Communications are retired. Strategic chat becomes an embedded terminal for cross-cutting business partner conversations. Depends on all prior phases — this phase is last because the UI surfaces intelligence, it doesn't create it.
+**Completed (organic):**
 
-**Success Criteria:**
+1. ✅ Dashboard renders triage queue, to-do list, project cards, MRR widget from live filesystem data.
+2. ✅ Triage surface supports inline draft reply composition via ChatPanel (Gmail is draft-only by design — ADR security posture).
+3. ✅ Project cards display last-known-state from `state/<slug>.md` with status badges, staleness detection, and blockers.
+4. ✅ AIOS chat panel scoped to claude-os repo — serves as the strategic partner surface.
+5. ✅ Per-project chat, chat-drawer, chat-bootstrap, chat-writeback, gmail-context, calendar-context — all removed 2026-06-25.
 
-1. Dashboard renders triage queue, to-do list, project cards, MRR widget, and prospect cards from live filesystem data.
-2. Triage surface supports inline email reply revision with a send action — no external email client required for standard replies.
-3. Clicking a project card opens the project in VS Code or a new Claude terminal session — no in-app project navigation.
-4. Project cards display last-known-state (status, last activity, next step, blockers) sourced from `state/<slug>.md`.
-5. Strategic chat is an embedded terminal scoped to the claude-os repo — no per-project chat surfaces remain.
-6. Per-project chat, project brief caching, and per-project Communications section are removed from the UI and their backend endpoints cleaned up.
+**Descoped:**
+
+- Prospect cards on dashboard — deferred until Phase 9 (prospect pipeline) ships.
+- Click-to-open project card in VS Code/terminal — low value; operator already opens projects directly.
+- Project brief caching removal + per-project Communications retirement — still present but low-priority cleanup.
 
 ---
 
@@ -163,4 +166,4 @@ Plans:
 ## Progress
 
 Milestone v1.0: 4/4 phases complete, 100%.
-Milestone v2.0: 3/6 phases complete, 50% — Phase 8 planning complete.
+Milestone v2.0: 5/6 phases complete, 83%. Phase 9 (Prospect Pipeline) remaining.

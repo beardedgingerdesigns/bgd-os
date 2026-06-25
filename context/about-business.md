@@ -10,6 +10,19 @@ BGD pivoted from "I build Craft websites" to **"I solve business problems for mi
 2. **BrandOS** (proof point #1) — productized channel-marketing platform for multi-tier distribution networks. One distributor hub (Terraplex) plus dealer sites. Includes a website-builder module (the Base 44 replacement target across the portfolio). ICP: B2B manufacturers with dealer networks. Current MRR: see `context/priorities.md`.
 3. **AI-powered business solutions** (proof point #2, in validation) — operational automations, workflow tools, and AI-assisted systems for mid-market companies. Jon Liebl is sales channel + first client.
 
+## Standard engagement model
+
+The default for every new web engagement (and the shape legacy Craft clients already run on). This is the pivot away from one-off project fees: predictable MRR plus ongoing engagement instead of going dark for months after a build.
+
+- **18-month subscription, one flat monthly fee.** No large upfront project fee. Build cost is amortized across the term.
+- **Pricing band:** ~$300–500/mo for small projects (podcast / marketing-site scale); scales up with project size. Examples: ToneQuest $450/mo, GAN ~$400–450/mo (Aug 2026 start), Kuberski $400/mo.
+- **Hosting folded in.** One predictable fee; the client never touches the host.
+- **Monthly first-Friday check-in** → each month is a sprint of iterative updates, not maintenance-only.
+- **Renews for another 18 months;** a full design refresh is included at the 36-month mark. Early-out clause if it is not working.
+- **Billed monthly via Bonsai** (auto-charge, card on file).
+
+When scoping any new client, default to this structure. Don't propose big-upfront + separate maintenance. BrandOS productized tiers use the same 18-month / 36-month-refresh spine (see `references/manufacturer-tiers.md`).
+
 ## Sales channels and partnerships
 
 Justin doesn't sell. **Jon Liebl** (LMG, Liebl Marketing Group) does — biggest source of new BGD clients for years. The pivot gives Jon a bigger thing to sell: "Justin solves business problems with AI" instead of "Justin builds websites."

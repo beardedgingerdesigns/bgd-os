@@ -10,6 +10,7 @@ import { TodosView } from './views/todos-view'
 import { SyncView } from './views/sync-view'
 import { ChatPanel } from './chat-panel'
 import { TriageRunProvider } from './triage-run-provider'
+import { ChatComposeProvider } from './chat-compose-provider'
 import type { StateUpdateStore } from '@/lib/types'
 
 export type ViewId = 'dashboard' | 'triage' | 'projects' | 'todos' | 'sync'
@@ -58,20 +59,22 @@ export function AppShell() {
 
   return (
     <TriageRunProvider>
-      <div className="app-shell">
-        <Toolbar
-          views={VIEWS}
-          activeView={activeView}
-          onViewChange={setActiveView}
-          badges={{ sync: syncCount }}
-        />
-        <div className="app-shell__context">
-          <ActiveComponent />
+      <ChatComposeProvider>
+        <div className="app-shell">
+          <Toolbar
+            views={VIEWS}
+            activeView={activeView}
+            onViewChange={setActiveView}
+            badges={{ sync: syncCount }}
+          />
+          <div className="app-shell__context">
+            <ActiveComponent />
+          </div>
+          <div className="app-shell__chat">
+            <ChatPanel />
+          </div>
         </div>
-        <div className="app-shell__chat">
-          <ChatPanel />
-        </div>
-      </div>
+      </ChatComposeProvider>
     </TriageRunProvider>
   )
 }

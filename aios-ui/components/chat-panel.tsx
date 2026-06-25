@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, Send, RotateCcw } from 'lucide-react'
 import { ChatMessageView } from '@/components/chat-message'
+import { useChatCompose } from '@/components/chat-compose-provider'
 import type { ChatMessage, SlashCommand } from '@/lib/types'
 
 const MAX_INPUT_HEIGHT = 160 // px — textarea grows to here, then scrolls
@@ -155,19 +156,15 @@ export function ChatPanel() {
     startSession()
   }, [startSession])
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim()
+  const submit = useCallback(async (raw: string) => {
+    const text = raw.trim()
     if (!text || loading || !sessionId) return
-    resetInput()
     setLoading(true)
 
     const userMsg: ChatMessage = { role: 'user', content: text }
     const assistantMsg: ChatMessage = { role: 'assistant', content: '' }
 
-    setMessages(prev => {
-      const next = [...prev, userMsg, assistantMsg]
-      return next
-    })
+    setMessages(prev => [...prev, userMsg, assistantMsg])
 
     try {
       const res = await fetch(`/api/chat/aios/message`, {
@@ -187,7 +184,23 @@ export function ChatPanel() {
       setLoading(false)
       inputRef.current?.focus()
     }
-  }, [input, loading, sessionId, messages.length, streamInto, resetInput])
+  }, [loading, sessionId, messages.length, streamInto])
+
+  const sendMessage = useCallback(() => {
+    if (!input.trim() || loading || !sessionId) return
+    resetInput()
+    void submit(input)
+  }, [input, loading, sessionId, resetInput, submit])
+
+  // A sibling view (triage "Draft reply") can seed a prompt; send it once the
+  // session is connected and idle. submit() and the guards keep this from
+  // double-firing — clear() flips `pending` to null after the first send.
+  const { pending, clear } = useChatCompose()
+  useEffect(() => {
+    if (!pending || !connected || !sessionId || loading) return
+    void submit(pending.text)
+    clear()
+  }, [pending, connected, sessionId, loading, submit, clear])
 
   const acceptCommand = useCallback((cmd: SlashCommand) => {
     setInput(`/${cmd.name} `)
