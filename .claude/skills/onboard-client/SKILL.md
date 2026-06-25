@@ -28,7 +28,47 @@ Closes the rough edge surfaced today during the IowaEverywhere addition — the 
 - **Memory dir:** `~/.claude/projects/-Users-justinlobaito-repos-claude-os/memory/`
 - **Reference docs:** [references/](../../../references/)
 
-## Execution — three phases
+## Execution
+
+### Step 0 — Prospect doc detection
+
+Before the interview starts, check if a prospect doc exists for the client being onboarded.
+
+1. If the user provided a slug (e.g., `/onboard-client revolution`), check if `prospects/<slug>.md` exists
+2. If the user said "new client" and provided a slug in Phase 1 Q1a, check after Q1a
+
+**If a prospect doc is found:**
+
+Read the full prospect doc. Parse YAML frontmatter (contacts map, first_seen, source) and body sections (Timeline, Problem Map, Notes, Pricing Strategy). Build a prospect context:
+
+```
+Found prospect doc: prospects/<slug>.md
+  First seen: <first_seen>
+  Source: <source>
+  Contacts: <count> tracked
+  Timeline entries: <count>
+
+Pre-filling from prospect intelligence. You'll confirm each answer.
+```
+
+Then apply to the interview phases:
+- **Phase 1 Q1b (Display name):** pre-fill from the doc's H1 heading. Show and confirm.
+- **Phase 1 Q1c (Bucket):** pre-fill as `active` with note "Converting from prospect. Set to 'paying' after first invoice."
+- **Phase 2 (Project scope):** pre-fill from Problem Map section. Show: "Based on prospect intel, here's what they need: [summary]. Correct, or want to adjust?"
+- **Phase 3 Q8 (Contacts):** pre-fill from frontmatter contacts map (all tracked contacts with roles). Show and confirm.
+- **Phase 3 (Source tracking):** note "Originally sourced as prospect via: <source>"
+
+Key rule: NEVER silently assume a pre-filled answer is correct. Always show the pre-filled value and ask for confirmation. Questions not answerable from the prospect doc are asked normally (these are the gaps).
+
+**Conversion mode:** If the prospect doc has `status: converting` (set by `/convert-prospect`), this is a conversion. In conversion mode:
+- Q1a (slug): SKIP (already known)
+- Q1c (bucket): SKIP (will be set to `active` by /convert-prospect Phase B after this completes)
+- Do NOT append a new clients.yaml entry. UPDATE the existing entry (add project, update contacts). Detect existing entry by matching slug regardless of bucket value.
+- Search for prospect doc in order: `prospects/<slug>.md` first, then `prospects/converted/<slug>.md` (handles re-run after partial conversion)
+
+**If no prospect doc found:** proceed with normal interview unchanged.
+
+---
 
 ### Phase 1 — Client identity (only if new client)
 

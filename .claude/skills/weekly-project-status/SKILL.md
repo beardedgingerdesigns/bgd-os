@@ -99,6 +99,16 @@ If a project has multiple memory files spanning multiple distinct slugs in `clie
 
 **Status heuristics** are encoded in the agent — Blocked / Decision needed / At risk / On track. Trust the agent's verdict.
 
+### Step 3.5 — Prospect Pipeline Scan
+
+Scan all files in `prospects/` directory (excluding `converted/` subdirectory). For each prospect doc:
+1. Read YAML frontmatter
+2. If `status` is `active` or `warm`: include in pipeline table
+3. Extract: slug (from filename), display name (from H1 heading), status, last_activity, contact count (from frontmatter contacts map), next steps (first 2 bullets from Next Steps section)
+4. Check `status_changed_at`: if within past 7 days and `previous_status` was a higher-activity status, flag as recently cooled
+
+If zero active/warm prospects: skip the Prospect Pipeline section entirely in the output (D-17). No empty tables.
+
 ### Step 4 — Surface cross-project signal
 
 After per-project synthesis, derive 3–5 cross-cutting observations:
@@ -132,6 +142,17 @@ Print a Markdown brief in chat:
 - **Next action:** {time-bounded}
 - **Deadline pressure:** {date or none}
 - **Wiki:** {agent's Wiki line}
+
+## Prospect Pipeline
+{Only include this section when active/warm prospects exist in prospects/ directory. Omit entirely if none (D-17).}
+
+| Prospect | Status | Last Activity | Contacts | Next Steps |
+|----------|--------|---------------|----------|------------|
+| {display_name} | {status} | {last_activity} | {count} | {first next step from Next Steps section} |
+
+Cold/Dead: {count} (not shown above)
+{If any prospect status changed in the past 7 days:}
+⚠ Recently cooled: {slug} went {status} on {status_changed_at} (was {previous_status})
 
 ## Cross-project signal
 - {observation 1}

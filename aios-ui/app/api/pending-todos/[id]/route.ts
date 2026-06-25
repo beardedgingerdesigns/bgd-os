@@ -1,13 +1,24 @@
-import { resolvePendingTodo, type ResolveAction } from '@/lib/data/pending-todos'
+import {
+  resolvePendingTodo,
+  snoozePendingTodo,
+  unsnoozePendingTodo,
+  blockPendingTodo,
+  unblockPendingTodo,
+  type ResolveAction,
+} from '@/lib/data/pending-todos'
 import { invalidationBus } from '@/lib/invalidation-bus'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-const ALLOWED_ACTIONS = new Set<string>(['done', 'dismiss'])
+const ALLOWED_ACTIONS = new Set<string>([
+  'done', 'dismiss', 'snooze', 'unsnooze', 'block', 'unblock',
+])
 
 interface MutationBody {
   action?: string
+  until?: string   // ISO date for snooze
+  text?: string    // free text for block
 }
 
 export async function POST(
@@ -31,7 +42,31 @@ export async function POST(
     )
   }
 
-  const result = await resolvePendingTodo(id, action as ResolveAction)
+  if (action === 'snooze' && !body.until) {
+    return Response.json({ error: 'snooze requires an "until" date' }, { status: 400 })
+  }
+  if (action === 'block' && !body.text) {
+    return Response.json({ error: 'block requires a "text" value' }, { status: 400 })
+  }
+
+  let result
+  switch (action) {
+    case 'snooze':
+      result = await snoozePendingTodo(id, body.until!)
+      break
+    case 'unsnooze':
+      result = await unsnoozePendingTodo(id)
+      break
+    case 'block':
+      result = await blockPendingTodo(id, body.text!)
+      break
+    case 'unblock':
+      result = await unblockPendingTodo(id)
+      break
+    default:
+      result = await resolvePendingTodo(id, action as ResolveAction)
+  }
+
   if (!result.ok) {
     return Response.json({ error: result.reason }, { status: 404 })
   }
