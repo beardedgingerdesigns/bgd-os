@@ -30,3 +30,24 @@ Ingested 3 files staged by `/dispatch` from `/gemini-sweep` + inbox processing:
 
 - **Created**: `insights/day-night-shift-workflow.md` — feature development workflow modeled on Matt Pocock's video. Day shift (grill → PRD → issues), night shift (AFK agent loop pulls issues), next day (QA + bug filing). Retires `/ship`, `ce-brainstorm`, `ce-plan`, `ce-work`. Keeps CE back half (code-review, compound, simplify, debug). AFK runner is the missing build piece.
 - **Updated**: `index.md` — added insights entry.
+
+## [2026-06-28] log | full session wrap — v2.0 shipped, day/night shift workflow designed
+
+Major session covering infrastructure fixes, milestone close, and operational research.
+
+**Infrastructure:**
+- AIOS UI chat: fixed date awareness (system clock with day name), added midnight session expiry with queued message carry-through.
+- Wiki: fixed WIKI-CLAUDE.md "inbox" → "source archive", fixed 2 broken skill references in wiki-ingest pipeline (`/ingest-aios-drops` → `/wiki ingest`, `/llm-wiki` → `/wiki ingest`).
+- CLAUDE.md: split staged ingestion rule (remote wikis stage to `raw/aios/`, claude-os writes directly).
+- Curated 3 client pages: Wild Rose (launch → July 13), Thermal Kitchen (launch → Mon 7/6), ToneQuest (meetings → Wed, website replaces Mailchimp).
+
+**Milestone v2.0:**
+- Audited via `/gsd-audit-milestone` (24/31 requirements, 2 blockers found and fixed).
+- Completed via `/gsd-complete-milestone` — archived to `.planning/milestones/`, tagged `v2.0`, pushed.
+
+**Day/night shift workflow (operational research):**
+- Researched Matt Pocock's feature-building process from video + skills repo.
+- Designed 3 new skills: `/nightshift` (AFK agent loop), `/dev-feedback` (in-app bug button), updated `/wrap` (review before compound, claude-os writes directly).
+- 5-round Codex adversarial review converged the design: timestamped branches, checkpoint resets, close-after-push, `execFileSync`, server-only API gate.
+- Installed Matt's skills globally (35 skills to `~/.claude/skills/`). Key additions: `grilling`, `domain-modeling`, `codebase-design`, `to-prd`, `to-issues`, `prototype`, `qa`, `implement`.
+- Updated `grill-me` to Matt's latest (delegates to `/grilling`).
