@@ -395,3 +395,10 @@ clients:
           - michelle@agnewsdaily.com
           - "@agnewsdaily.com"
           - "@globalagnetwork.com"
+
+  - slug: refuge-sales
+    name: Refuge Sales & Solutions
+    bucket: prospects
+    contacts:
+      - thomasrindfuss@trussservicesllc.com
+    projects: []
