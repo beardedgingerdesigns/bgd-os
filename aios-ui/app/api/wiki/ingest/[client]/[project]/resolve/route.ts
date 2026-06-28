@@ -110,7 +110,7 @@ export async function POST(
         [
           '--print',
           '--permission-mode', 'bypassPermissions',
-          `/llm-wiki ${filePath}`,
+          `/wiki ingest ${filePath}`,
         ],
         {
           shell: false,

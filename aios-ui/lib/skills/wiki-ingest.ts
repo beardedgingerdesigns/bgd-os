@@ -96,7 +96,7 @@ export async function runWikiIngest(opts: RunWikiIngestOptions): Promise<WikiIng
     '--output-format', 'stream-json',
     '--include-partial-messages',
     '--verbose',
-    `/ingest-aios-drops ${opts.wikiPath}`,
+    `/wiki ingest ${opts.wikiPath}`,
   ]
 
   const start = Date.now()
