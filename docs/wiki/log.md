@@ -25,3 +25,8 @@ Ingested 3 files staged by `/dispatch` from `/gemini-sweep` + inbox processing:
 - **Updated**: `clients/thermal-kitchen-project-plan.md` — launch date → Mon 7/6, social promos Wed 7/8, 98% complete, 7/1 review meeting. Source: `raw/aios/2026-06-26-thermal-kitchen-launch-confirmed.md`.
 - **Updated**: `clients/tonequest-project.md` — meetings moved to Wed, website replaces Mailchimp as delivery channel, archive engine testing in year-clusters, Pelcro international subscriber issues. Source: `raw/aios/2026-06-26-tonequest-checkin.md`.
 - **Fixed**: `WIKI-CLAUDE.md` — changed "inbox" language to "read-only source archive" for `raw/`. Was the only wiki using "inbox" framing; all project wikis and the template say "immutable/read-only." The mismatch caused a raw/ file deletion incident this session.
+
+## [2026-06-28] log | day/night shift workflow research
+
+- **Created**: `insights/day-night-shift-workflow.md` — feature development workflow modeled on Matt Pocock's video. Day shift (grill → PRD → issues), night shift (AFK agent loop pulls issues), next day (QA + bug filing). Retires `/ship`, `ce-brainstorm`, `ce-plan`, `ce-work`. Keeps CE back half (code-review, compound, simplify, debug). AFK runner is the missing build piece.
+- **Updated**: `index.md` — added insights entry.

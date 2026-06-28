@@ -66,6 +66,7 @@ Cross-project client briefs and relationship context.
 Compounding patterns from retros and cross-session learning.
 
 - [Agent Workflow Patterns](insights/agent-workflow-patterns.md) — loops, queues, goal-verifier-gate, token economics
+- [Day/Night Shift Workflow](insights/day-night-shift-workflow.md) — grill → PRD → issues (day), AFK agent loop (night), QA + bug loop (next day)
 
 ## Advisors
 
