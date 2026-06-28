@@ -2,16 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "— AIOS v2: Dispatcher + Strategic Partner"
-status: ready_to_plan
-last_updated: 2026-06-25T13:42:07.854Z
-last_activity: 2026-06-25 -- Phase 09 execution started
+status: Awaiting next milestone
+last_updated: "2026-06-28T15:59:18.596Z"
+last_activity: 2026-06-28 — Milestone v2.0 completed and archived
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 15
+  completed_plans: 15
   percent: 83
-stopped_at: Phase 09 complete (5/5) — ADR 0008 shipped via PR #2
 ---
 
 # Project State
@@ -25,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-06-04)
 
 ## Current Position
 
-Phase: 10
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-06-25 — ADR 0008 implemented, PR #2 open
+Phase: Milestone v2.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-28 — Milestone v2.0 completed and archived
 
 ## Performance Metrics
 
@@ -133,3 +132,7 @@ Items acknowledged and carried forward:
 Last session: 2026-06-09T04:56:38.587Z
 Stopped at: Phase 9 context gathered
 Resume file: .planning/phases/09-prospect-pipeline/09-CONTEXT.md
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
