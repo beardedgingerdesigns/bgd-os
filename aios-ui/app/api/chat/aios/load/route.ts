@@ -18,8 +18,10 @@ export async function POST() {
       send('start', { at: new Date().toISOString() })
 
       try {
+        const now = new Date()
+        const today = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
         const result = await runChatLoad({
-          brief: 'You are the AIOS operator console. Justin is sitting at the dashboard. Read CLAUDE.md for context. Be ready to run skills (/brief, /daily-inbox-triage, /dispatch, /wrap, etc.), answer questions about projects, and help with decisions. Keep your initial response to 1-2 sentences.',
+          brief: `Today is ${today}.\n\nYou are the AIOS operator console. Justin is sitting at the dashboard. Read CLAUDE.md for context. Be ready to run skills (/brief, /daily-inbox-triage, /dispatch, /wrap, etc.), answer questions about projects, and help with decisions. Keep your initial response to 1-2 sentences.`,
           projectLabel: 'AIOS Operator Console',
           onStdout: (chunk) => send('chunk', { text: chunk }),
         })

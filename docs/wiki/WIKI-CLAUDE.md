@@ -15,14 +15,15 @@ This is the curated knowledge base for Justin's AIOS — the strategic layer abo
 | `advisors/` | Advisory board content (Nate Herk, Matt Pocock, Chris Do). |
 | `concepts/` | AIOS design principles and architecture concepts. |
 
-## Staging
+## Source Archive
 
-`raw/` is the inbox. Content lands here before curation:
+`raw/` is read-only. Source material is preserved as-is. Never edit or delete files under `raw/`.
+
 - `raw/aios/` — drops from AIOS sessions, /dispatch routing
-- `raw/research/` — brainstorm output, research artifacts to curate
-- `raw/retros/` — retro insights to extract and curate into insights/
+- `raw/research/` — brainstorm output, research artifacts
+- `raw/retros/` — retro insights
 
-`/wiki ingest` promotes raw content into curated pages. `/dispatch` stages to `raw/`. Never write directly to curated directories from automated pipelines.
+`/dispatch` writes to `raw/`. `/wiki ingest` reads from `raw/` and curates into wiki pages. Curated pages reference their raw sources as provenance.
 
 ## What does NOT live here
 

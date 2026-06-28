@@ -72,7 +72,7 @@ The 3Ms operator framework lives at `references/3ms-framework.md` (*The Three Ms
 
 - **Router test (maintenance rule).** If you hunt 5+ minutes for something Justin could find by hand, or a fact in this file has gone stale, the architecture is broken. Fix the routing, not just the instance. This file stores pointers, not content.
 - **Keys, not prompts.** Gmail is send-disabled by design — it can draft and archive/label (modify scope, since 2026-06-21) but has no send capability. Keep least-privilege posture on every new connection.
-- **Staged ingestion (ADR 0004).** Never write into a project wiki's curated structure. Stage to `{wiki}/raw/aios/`; the wiki's own ingest pass promotes.
+- **Staged ingestion (ADR 0004).** When writing into *another project's* wiki remotely, stage to `{wiki}/raw/aios/`; the wiki's own ingest pass promotes. When working inside claude-os itself, write directly to `docs/wiki/` curated pages — you are the curator here.
 - **Log decisions.** When Justin makes one, suggest logging it to `decisions/log.md`.
 - **Voice.** Match `references/voice.md`: casual but professional, short sentences, no em dashes, bullets over paragraphs. Never fake his voice on external content (LinkedIn, client email) without showing a draft.
 - **Default Shift.** When a new task arrives, first ask "to what extent could AI be leveraged here?"

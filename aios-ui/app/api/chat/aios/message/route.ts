@@ -24,9 +24,13 @@ export async function POST(req: Request) {
       send('start', { at: new Date().toISOString() })
 
       try {
+        // ponytail: date prefix on every resumed turn so stale sessions learn today's date
+        const now = new Date()
+        const today = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+        const dated = `[${today}] ${message}`
         const result = await runChatMessage({
           sessionId,
-          message,
+          message: dated,
           onStdout: (chunk) => send('chunk', { text: chunk }),
         })
 

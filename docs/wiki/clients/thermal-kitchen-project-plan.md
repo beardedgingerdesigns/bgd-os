@@ -10,7 +10,7 @@ type: project-plan
 **Client lead:** Deann Gibson, Director of Sales
 **Brokered by:** Aaron Harn (Wild Rose Corporate)
 **Investor sign-off:** Brian Diver (Kirke LLC)
-**Launch window:** Week of 2026-06-01
+**Launch window:** Monday 2026-07-06 (social/external promos Wed 7/8)
 **Standing call:** Bi-weekly, Wed 9am CT (next: 2026-05-20)
 
 ## Objective
@@ -69,8 +69,8 @@ Relaunch the Thermal Kitchen website to reflect their repositioning from "emergi
 - Analytics + tracking verified on staging
 - Final go / no-go call
 
-### Week of 2026-06-01 — Launch
-**Recommended go-live: Tue 2026-06-02 (avoid Monday risk).**
+### Week of 2026-07-06 — Launch
+**Go-live: Mon 2026-07-06. Social/external promos: Wed 2026-07-08.** Site 98% complete as of 6/26. Review meeting 7/1. Sachet machine photo flagged for removal. Behind the Label photos still pending from Deann.
 
 - Production deploy
 - DNS cutover

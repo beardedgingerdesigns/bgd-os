@@ -36,6 +36,7 @@ function matchCommands(query: string, commands: SlashCommand[]): SlashCommand[] 
 
 export function ChatPanel() {
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sessionDate, setSessionDate] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,6 +46,7 @@ export function ChatPanel() {
   const [menuDismissed, setMenuDismissed] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const queuedMessage = useRef<string | null>(null)
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -141,6 +143,7 @@ export function ChatPanel() {
       if (!res.ok) throw new Error(`Load failed: ${res.status}`)
       const sid = await streamInto(res, assistantIdx)
       if (sid) setSessionId(sid)
+      setSessionDate(new Date().toLocaleDateString('en-CA'))
       setConnected(true)
     } catch (e) {
       setMessages(prev => [...prev, {
@@ -159,6 +162,15 @@ export function ChatPanel() {
   const submit = useCallback(async (raw: string) => {
     const text = raw.trim()
     if (!text || loading || !sessionId) return
+
+    // ponytail: session expires at midnight — auto-reset, queue the message
+    const today = new Date().toLocaleDateString('en-CA')
+    if (sessionDate && today !== sessionDate) {
+      queuedMessage.current = text
+      void startSession()
+      return
+    }
+
     setLoading(true)
 
     const userMsg: ChatMessage = { role: 'user', content: text }
@@ -184,13 +196,22 @@ export function ChatPanel() {
       setLoading(false)
       inputRef.current?.focus()
     }
-  }, [loading, sessionId, messages.length, streamInto])
+  }, [loading, sessionId, sessionDate, startSession, messages.length, streamInto])
 
   const sendMessage = useCallback(() => {
     if (!input.trim() || loading || !sessionId) return
     resetInput()
     void submit(input)
   }, [input, loading, sessionId, resetInput, submit])
+
+  // Drain queued message after session auto-reset (day rollover)
+  useEffect(() => {
+    if (connected && sessionId && !loading && queuedMessage.current) {
+      const msg = queuedMessage.current
+      queuedMessage.current = null
+      void submit(msg)
+    }
+  }, [connected, sessionId, loading, submit])
 
   // A sibling view (triage "Draft reply") can seed a prompt; send it once the
   // session is connected and idle. submit() and the guards keep this from

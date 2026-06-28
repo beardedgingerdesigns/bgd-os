@@ -124,22 +124,26 @@ Repo: `beardedgingerdesigns/tonequest`.
 - Design: Playfair Display (serif headings) + Inter (sans body). Dark editorial aesthetic. Teal accent + amber secondary. Layered radial gradients + SVG noise texture.
 - **Not yet on Craft CMS.** Still prototype/design phase.
 
+## Current status (updated 2026-06-26)
+
+- **Meetings moved from Monday to Wednesday.**
+- **Major architectural shift:** website replaces Mailchimp as delivery channel. Pelcro entitlements drive access to content.
+- **Archive engine:** testing in year-clusters before full 25-year ingestion.
+- **Pelcro issues:** international subscriber data problems (wrong plans assigned). Liz cleaning manually.
+- **Liz uploading archive PDFs by end of week (6/28).**
+- **Justin contacting Pelcro next week for launch alignment.**
+
 ## Open items
 
-**Immediate (before or during Friday's call):**
-- **Wordfence incident triage.** Highest priority. Surface unauthorized `admin` account; rotate credentials; review the 14 recurring issues.
-- **Friday May 8, 2pm EST check-in with Liz.** Confirmed.
-- **AI-scope confirmation/correction.** Liz believes the build is now AI-augmented. Justin should walk in with a clear position.
-
-**Active asks from Liz:**
-- Cover PDFs format + folder delivery (Liz building the folder).
-- Entitlements + pricing — clarify offering, then recalc rates.
-- Implementation answers to her six "Always On Invoice" implementation questions.
+**Active:**
+- **Pelcro international subscriber cleanup.** Wrong plans assigned to international subs. Liz fixing manually; may need Pelcro support.
+- **Archive PDF ingestion.** Liz delivering files; Justin testing year-cluster approach before full 25-year load.
+- **Pelcro launch alignment call.** Justin to initiate next week.
+- **Entitlements + pricing.** Clarify offering, then recalc rates.
 
 **Carry-overs from prior sweep:**
-- **Flycart subscription cancellation.** Liz asked Apr 13. Three weeks no resolution. Confirm whether cancelled or still auto-renewing.
 - **Pelcro 300+ back-issue entitlements bulk load.** Galal offered migrations team support. Submit the bulk request.
-- **Craft CMS build not started.** Phase 3 (architecture + environment setup) hasn't kicked off. Friday's call should set a date.
+- **Craft CMS build.** Architecture + environment setup.
 
 ## Tags
 
