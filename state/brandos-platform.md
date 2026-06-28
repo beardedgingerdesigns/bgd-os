@@ -1,24 +1,27 @@
-# Project State: BrandOS
+# Project State: BrandOS platform
 
-**Updated:** 2026-06-20 | **Status:** On track
+**Updated:** 2026-06-23 | **Status:** On track
 
 ## Accomplishments (this session)
 
-- Redesigned "already live" showcase section from avatar+name list to horizontal-scroll gallery with clean screenshot cards
-- Captured 5 dealer homepage screenshots using Playwright; corrected Superior Drone's domain from parked `superiordrone.com` to `superiordronellc.com`
-- Removed misleading "cancel anytime" copy from marketing page; updated closing kicker to "$250/mo · flat rate" (18-month term + early-out stay off marketing)
-- Made gallery bleed right to viewport edge (`margin-right: calc(50% - 50vw)`) while keeping left edge aligned to heading
-- Added `overflow-x: clip` to `.portal-content` to clip overshoot and prevent horizontal page scrolling
-- Verified layout at desktop (1140px) and wide (1600px) widths; committed to dev
+- Wrapped prior session's self-learning rubric loop work (digested to `docs/wiki/raw/aios/2026-06-22-session-wrap-1158.md`, STATE updated, compound doc written to `docs/solutions/architecture-patterns/self-learning-rubric-loop.md`, CONCEPTS.md seeded with "Prompt-from-rubric" and "Self-learning rubric loop" terms).
+- Generalization test on New Heights Ag (real live dealer) — all three formats (300×250, 1080×1080, 1200×630) passed all gates (fidelity, believability, layout-integrity, logoHeadlineClearance) on first attempt with real dealer branding (white surface, orange `#F36B21` accent, Sora font).
+- Discovered and corrected a critical mistake: fabricated branding for a real dealer instead of using their actual identity. Re-ran on real config and confirmed the ghost-duplicate headline artifact was a phantom from the fabricated config, not an engine defect.
+- Cleaned up the fabricated `sites/new-heights-ag/` directory and repointed test runner at the real slug (`new-heights`, commit 3a1f237).
 
 ## Current Status
 
-Website Builder portal marketing page is complete. The "already live" section now showcases 5 dealer sites with live screenshot cards in a smooth horizontal-scroll gallery that peaks off the right edge without triggering page-level horizontal scroll.
+The marketing-materials engine + self-learning rubric loop is proven to generalize beyond black-knight to a real, never-tuned dealer and render on-brand, gate-passing output. Wrap artifacts are staged and ready for a docs commit.
+
+## Next Steps
+
+- [ ] Make the wrap docs commit (`docs(wrap): session digest + STATE + compound (self-learning rubric loop)`) — currently uncommitted, no push.
+- [ ] Decide next priority: promote the rubric + loop out of staging into engine/wiki, or move to other work.
 
 ## Blockers
 
-None
+None.
 
 ## Key Dates
 
-None
+- 2026-06-23: Generalization test validated on real New Heights Ag dealer.

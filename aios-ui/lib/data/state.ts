@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { CLAUDE_OS_ROOT } from '@/lib/paths'
+import { loadKnownSlugs } from '@/lib/data/clients'
 
 export const STATE_DIR = path.join(CLAUDE_OS_ROOT, 'state')
 
@@ -115,13 +116,20 @@ export async function loadStateCards(now: Date = new Date()): Promise<ProjectSta
   }
 
   const files = entries.filter(f => f.endsWith('.md'))
-  const cards = await Promise.all(
-    files.map(async file => {
-      const slug = file.replace(/\.md$/, '')
-      const text = await fs.readFile(path.join(STATE_DIR, file), 'utf-8')
-      return parseStateFile(slug, text, now)
-    }),
+  const known = await loadKnownSlugs()
+  const cards = (
+    await Promise.all(
+      files.map(async file => {
+        const slug = file.replace(/\.md$/, '')
+        const text = await fs.readFile(path.join(STATE_DIR, file), 'utf-8')
+        return parseStateFile(slug, text, now)
+      }),
+    )
   )
+    // Cross-reference clients.yaml: a state file only surfaces as a project card
+    // when its slug matches a known client or project slug. Drops stray state
+    // files (triage-mutes, inbox-triage) that aren't projects.
+    .filter(card => known.has(card.slug))
 
   // Most recently updated first; nulls sink to the bottom.
   return cards.sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''))

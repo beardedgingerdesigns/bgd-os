@@ -36,6 +36,21 @@ export async function getProject(
   return client?.projects.find(p => p.slug === projectSlug)
 }
 
+// Every slug a project state card is allowed to surface under: client slugs
+// plus project slugs. A state/<slug>.md only renders as a card when its slug is
+// in here, so stray state files (triage-mutes, inbox-triage) never show as
+// projects. State filenames track either the client slug (e.g. global-ag-network)
+// or the project slug (e.g. wild-rose-redesign), so both are included.
+export async function loadKnownSlugs(): Promise<Set<string>> {
+  const clients = await loadClients()
+  const slugs = new Set<string>()
+  for (const c of clients) {
+    slugs.add(c.slug)
+    for (const p of c.projects ?? []) slugs.add(p.slug)
+  }
+  return slugs
+}
+
 // Used by clients-mutations.ts after a write to force the next loadClients()
 // call to re-read from disk. The mtime check would catch it on the next call,
 // but writing through atomic temp+rename can produce identical mtime values

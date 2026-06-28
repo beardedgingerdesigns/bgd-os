@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { loadClients, getClient, getProject } from '@/lib/data/clients'
+import { loadClients, getClient, getProject, loadKnownSlugs } from '@/lib/data/clients'
 
 describe('clients data loader', () => {
   it('loads all clients from the fixture YAML', async () => {
@@ -41,5 +41,15 @@ describe('clients data loader', () => {
 
     const missing = await getProject('inside-out', 'does-not-exist')
     expect(missing).toBeUndefined()
+  })
+
+  it('loadKnownSlugs includes both client and project slugs, excludes non-projects', async () => {
+    const slugs = await loadKnownSlugs()
+    expect(slugs.has('inside-out')).toBe(true) // client slug
+    expect(slugs.has('inside-out-website')).toBe(true) // project slug
+    expect(slugs.has('wild-rose')).toBe(true) // project slug under kirk-financial
+    // A stray state file (not a client or project) must not be considered known —
+    // this is what keeps triage-mutes / inbox-triage off the projects view.
+    expect(slugs.has('triage-mutes')).toBe(false)
   })
 })

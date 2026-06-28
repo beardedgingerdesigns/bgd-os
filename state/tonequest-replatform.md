@@ -1,30 +1,26 @@
-# Project State: ToneQuest PDF Ingest Pipeline
+# Project State: ToneQuest
 
-**Updated:** 2026-06-19 | **Status:** At risk
+**Updated:** 2026-06-26 | **Status:** On track
 
 ## Accomplishments (this session)
 
-- Fixed article segmentation (fix #1): moved from 78%/43% match to 100%/86% by analyzing content signals (`TQ—` sign-offs, `-continued-` markers) instead of TOC lines only.
-- Fixed image injection (fix #2): replaced unstable freehand image HTML with deterministic `<figure>` rendering from structured placement data; jumped from ~35% unstable to ~100% stable across Dec/Apr.
-- Built eval harness with frozen gold answer keys (Dec: 9 articles, Apr: 7 articles).
-- Ran generalization test on September 2025 (held-out issue); identified token limit bug as blocker.
-- Captured session findings to wiki (`decisions/0002-pdf-engine-fidelity-target`, `log.md`, `product/roadmap.md`, `architecture/ingest-pipeline.md`).
+- 6/26 check-in with Liz: meetings moved to Wednesdays, website confirmed as delivery channel (replaces Mailchimp PDF emails), archive import will be tested in year-clusters
+- Pelcro international subscriber data issues surfaced (wrong plans); Liz cleaning manually + support ticket open
 
 ## Current Status
 
-The engine correctly segments articles and renders images on normal-sized issues (verified on Dec/Apr). However, it crashes on very large articles (18+ pages) because the 16k output-token limit truncates `body_html`, causing the entire issue to fail with no retry. This blocks scaling to the 270-issue backlog.
+Server-side paywall shipped (PR #1, 2026-06-21). PDF ingest pipeline operational with admin review queue. Website established as the delivery channel — subscribers access PDFs and articles through the platform, entitlements determine access. Archive engine being tested in clusters (initial, middle, final years) before full 25-year ingestion. Pelcro has data quality issues with international subscribers that Liz is cleaning up.
 
 ## Next Steps
 
-- [ ] Bump `INGEST_MAX_TOKENS` from 16k to ~32k in `pipeline.ts`
-- [ ] Add per-article failure isolation: flag truncated/malformed articles and continue instead of crashing
-- [ ] Re-run September 2025 to verify fixes on large-article case
-- [ ] Prepare deliverables for Friday's Liz launch status meeting (see `docs/wiki/sources/2026-06-17-launch-status-meeting.md`)
-
-## Blockers
-
-- Engine truncates output on articles >~18 pages due to 16k token cap, causing entire-issue failure with no recovery.
+- [ ] Contact Pelcro next week re: launch alignment
+- [ ] Review imported archive file status on Monday (6/30)
+- [ ] Test archive engine Wednesday (7/2) against year clusters (initial, middle, final 5)
+- [ ] Follow-up meeting with Liz on Friday (7/4 — confirm, may shift due to holiday)
+- [ ] Evaluate articles in admin review queue from recent PDF ingests
 
 ## Key Dates
 
-- 2026-06-21: Liz launch status meeting (Friday)
+- 2026-06-26: Check-in — meetings moved to Wed, website = delivery channel, archive cluster testing plan
+- 2026-06-21: Server-side paywall merged (PR #1)
+- 2026-06-19: Client check-in — Claude Code pivot acknowledged; timeline extension accepted with fee waiver

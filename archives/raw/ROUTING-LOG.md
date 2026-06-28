@@ -13,3 +13,13 @@ One line per routed item: date | filename | destination(s) | gist. Originals nev
 - 2026-06-18 | Thermal Kitchen Website Redesign Standing Call .docx | thermal-kitchen wiki raw/aios/ | Deann's original redesign scope document.
 - 2026-06-18 | Screenshot 2026-05-07 at 9.25.30 AM.png | (stays in archives) | Text conversation with Jon re: Odebolt 5/12 visit. Meeting never happened per memory. Ephemera.
 - 2026-06-18 | revolution-terraplex-dealer-network-platform.docx | brandos wiki raw/aios/ | Early dealer network platform concept doc. Pre-dates BrandOS naming.
+- 2026-06-25 | gemini-2026-06-25-wild-rose-website-meeting-notes.md | wild-rose wiki raw/gemini/ + AIOS wiki raw/aios/ + state/wild-rose-redesign.md | Pre-launch sync: July 13 confirmed, QA session planned wk 7/7, HR printable app, entertainment bugs, SEO mapping.
+- 2026-06-25 | 2026-06-24-refuge-product-details-email.md | AIOS wiki raw/aios/ | Thomas Rindfuss product details for Refuge Sales & Solutions (Agrilogix water tech). Proposal due Fri 6/27.
+- 2026-06-25 | 2026-06-24-refuge-talk-shop-gemini.md | AIOS wiki raw/aios/ + decisions/log.md | Talk shop meeting: 18-month contract agreed, e-commerce scope, refugesolutions.com domain.
+- 2026-06-25 | Day_1_v3.pdf | AIOS wiki raw/research/ | "The New SDLC With Vibe Coding" — Addy Osmani et al. Agentic engineering reference.
+- 2026-06-25 | 2026-06-19-session-wrap-0530.md | (stays in archives) | AIOS marathon session wrap. Decisions already logged. Ephemera.
+- 2026-06-25 | 2026-06-19-session-wrap-1247.md | (stays in archives) | Triage hardening session wrap. Decisions already logged. Ephemera.
+- 2026-06-25 | 2026-06-21-session-wrap-2304.md | decisions/log.md | GAN engagement + BGD standard model — 2 unlogged decisions extracted and appended.
+- 2026-06-25 | 2026-06-25-session-wrap-0115.md | (stays in archives) | Wiki scaffolding + gemini-sweep session wrap. Decisions already logged same day. Ephemera.
+- 2026-06-26 | gemini-2026-06-26-tk-weekly-notes.md | thermal-kitchen wiki raw/gemini/ + AIOS wiki raw/aios/ + state/thermal-kitchen.md | TK weekly: launch confirmed Mon 7/6, promos Wed 7/8. Site 98% done. Feedback doc for copy corrections. Review meeting Wed 7/1.
+- 2026-06-26 | gemini-2026-06-26-meeting-tonequest-notes.md | tonequest wiki raw/gemini/ + AIOS wiki raw/aios/ + state/tonequest-replatform.md + todos/pending.md | ToneQuest check-in: meetings to Wed, website = delivery channel (no more Mailchimp PDFs), archive cluster testing plan, Pelcro data cleanup issues. 2 todos added.

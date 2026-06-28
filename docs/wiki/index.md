@@ -59,6 +59,7 @@ Cross-project client briefs and relationship context.
 - [Jon — Russell Brief](clients/jon-russell-brief.md)
 - [Revolution Drones](clients/revolution-drones-project.md)
 - [Revolution Leave-Behind](clients/revolution-leave-behind.md)
+- [Refuge Sales & Solutions](clients/refuge-sales-project.md) — Agrilogix water tech distributor, Thomas Rindfuss
 
 ## Insights
 

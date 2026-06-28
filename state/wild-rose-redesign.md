@@ -1,6 +1,6 @@
 # Project State: Wild Rose Casinos
 
-**Updated:** 2026-06-19 | **Status:** On track
+**Updated:** 2026-06-26 | **Status:** On track
 
 ## Accomplishments (this session)
 - Extracted semantic knowledge graph from entire codebase using 24 parallel agents (861 nodes, 913 edges, 37 hyperedges)
@@ -10,16 +10,24 @@
 - Generated interactive graph visualization and structured audit report with community detection analysis
 
 ## Current Status
+- 2026-06-25: Pre-launch sync meeting — backend content alignment confirmed for July 13. QA session planned week of 7/7. HR printable application requested (PDF template approach). Entertainment category bugs + thumbnail workflow to fix. Krystal out 6/27–7/6.
 - 2026-06-19: Go-live moved July 1 → July 13 (Aaron prefers not to launch during the holiday week) (via triage)
+- 2026-06-21: Servd hosting billing RESOLVED — card updated; renewal no longer failing, site not at risk (prior "offline June 23" warning cleared)
+- 2026-06-22: Meghan Wymore staging backend access RESOLVED — she can reach the staging `/admin` and begin content entry (prior error-page block cleared)
 
 The graphify knowledge graph is complete and indexed. The graph reveals the full dependency chain for property scoping, the content builder dispatch pattern, and the competing hero systems coexisting in the codebase. All 24 extraction agents completed successfully with no data loss.
 
 ## Next Steps
-- [ ] Open `/Users/justinlobaito/repos/wild-rose/graphify-out/graph.html` in browser to explore the interactive graph
-- [ ] Use graph queries to map the property-scoping refactor impact (slug-suffix model → potential multi-site migration)
-- [ ] Verify which body blocks extend `body-block-open` and plan refactoring order (highest impact first)
-- [ ] Reconcile the pink-as-primary brand decision with SASS token upgrades (currently navy in code)
-- [ ] Document the `wr_default_location` cookie pattern shared across three Sprig filter components
+- [x] Email Aaron — project housekeeping summary (draft sent 6/26)
+- [ ] Schedule content review meeting (next week, before Krystal returns)
+- [ ] Schedule QA walkthrough (week of 7/7, after Krystal returns 7/6)
+- [ ] Fix entertainment category preview bug
+- [ ] Fix thumbnail save-before-upload workflow (entertainment section)
+- [ ] Update location display to comma-separated list
+- [ ] Map SEO image auto-population from content blocks
+- [ ] Build printable PDF template for HR applications (samples received 6/25; confirmed current by Katrina)
+- [ ] Add recruiter Becca to HR application auto-notifications
+- [ ] Flesh out remaining content for team review before QA
 
 ## Blockers
 None

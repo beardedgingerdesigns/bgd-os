@@ -6,7 +6,7 @@ Registry of every system your AIOS can reach. Filled by `/onboard` from Q4-Q7 an
 |---|---|---|---|---|---|
 | 1 | Revenue / Financials | Bonsai | not yet connected | — | — |
 | 1b | Revenue (parallel) | "Monthly Financials" Google Sheet | via Drive MCP (read) | claude.ai | 2026-05-01 |
-| 2 | Customer interactions | Gmail (`justin@beardedgingerdesigns.com`) | mcp (claude.ai) — drafts only, no send | claude.ai | 2026-05-01 |
+| 2 | Customer interactions | Gmail (`justin@beardedgingerdesigns.com`) | mcp (claude.ai) — drafts + archive/label (modify), no send | claude.ai | 2026-06-21 |
 | 3 | Calendar | Google Calendar (BGD primary + 2RM + family calendars) | mcp (claude.ai) | claude.ai | 2026-05-01 |
 | 4 | Communication | Gmail (wired), Google Chat (not wired), Discord (incoming), phone, in-person | partial — Gmail only | claude.ai (Gmail) | 2026-05-01 |
 | 5 | Project / task tracking | _none yet — open question, top pain area_ | not yet connected | — | — |
@@ -40,7 +40,7 @@ This pipeline is the productized tier in everything but published packaging (pri
 ## Notes from Day 1 wiring (2026-05-01)
 
 - **Gmail / Drive / Calendar wired via claude.ai MCP.** No `.env` keys in this session. Dependency: this connection only works inside a claude.ai-connected Claude Code session. If the AIOS is ever used standalone (cron, server, separate Claude Code install), these will need to be rewired.
-- **Gmail is draft-only.** No `send` capability exposed. Outbound mail always requires human send.
+- **Gmail is send-disabled, not read-only (updated 2026-06-21).** The connector now has the `modify` scope: it can archive, apply/remove labels, and mark read (the "Write/delete tools" group — `Removes labels from a thread` etc. — is enabled). It still has **no `send` tool at all**, so outbound mail always requires human send, and it can't permanently delete (modify scope tops out at Trash, 30-day recoverable). Label create/delete/modify left restricted — only archive/label-apply enabled.
 - **2RM calendar (`justinl@2rm.com`) is visible via the Calendar MCP** even though 2RM is W-2 and outside BGD's book. Useful for conflict checks against BGD work, but treat 2RM data as work-account data — don't move 2RM events into BGD-side artifacts.
 - **A "Monthly Financials" Google Sheet exists alongside Bonsai.** Two revenue sources of truth. Worth reconciling them in a `/level-up` pass before picking a single canonical view.
 - **Reference docs:** see `references/gmail-api.md`, `references/google-drive-api.md`, `references/google-calendar-api.md` for available tools, query syntax, and workflow patterns.

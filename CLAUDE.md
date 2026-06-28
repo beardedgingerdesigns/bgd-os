@@ -29,19 +29,19 @@ Everything else — stack, revenue streams, quarterly priorities, numbers — li
 | `clients.yaml` | **Master index** — every client/project, status, MRR, docs_paths, contacts | Resolving any project, client, contact, or wiki location |
 | `connections.md` | Registry of every system the AIOS can reach + status | Before reaching for live data |
 | `decisions/log.md` | Append-only decision record with why | "Did we already decide this?" Before re-litigating anything. |
-| `references/` | OS-level docs (frameworks, voice, API guides) + ONE lightweight brief per project | API how-tos, voice, frameworks, project briefs |
-| `docs/wiki/` | **Advisory board** (`advisors/`: Nate Herk, Matt Pocock, Chris Do) + `concepts/` | `/ask-the-board`, strategy questions, AIOS design principles |
+| `docs/wiki/` | **AIOS wiki** — curated strategic knowledge. `identity/` (who Justin is), `strategy/` (pivot, pricing, partnerships), `research/` (curated market/competitive), `frameworks/` (3Ms, voice), `clients/` (project briefs), `insights/` (retro patterns), `advisors/`, `concepts/`. Staging via `raw/`. See `docs/wiki/WIKI-CLAUDE.md`. | Any strategic question, `/ask-the-board`, `/brief` deep context, research lookup |
+| `references/` | **Legacy** — API guides + MCP docs. Project briefs and frameworks now live in `docs/wiki/`. | API how-tos only. For project briefs and frameworks, check wiki first. |
 | `docs/adr/` | Architecture decisions for the AIOS itself | Changing how the AIOS works |
-| `brainstorm/` | Research and thinking artifacts | Strategy deep-dives, pre-pitch prep |
+| `brainstorm/` | **Legacy** — research artifacts. New research stages to `docs/wiki/raw/research/`. | Historical research only. New work goes to wiki. |
 | `todos/` | `pending.md` / `completed.md` action items | Daily planning, `/brief` |
 | `audits/` | Four-Cs audit trail | Tracking system health over time |
 | `retros/` | Weekly session-mining reports: repetition + friction patterns with evidence | Friday `/retro`; `/level-up` reads the latest |
 | `archives/` | Cold storage. `archives/raw/` is **THE inbox** for new drops. | Routing drops in; retrieving history |
 | `aios-ui/` | The AIOS UI app (its ADRs live in `docs/adr/`) | UI work only |
 
-**Two-tier project knowledge.** `references/` holds one lightweight brief per project. When a project gets thick, its deep knowledge graduates to the project's own repo wiki at `repos/<slug>/docs/wiki/` (use `/kickoff-project`); `clients.yaml` `docs_paths` points at both tiers. A third `references/<slug>-*.md` file is the graduation signal.
+**Two-tier project knowledge.** `docs/wiki/clients/` holds project briefs at the AIOS level. When a project gets thick, its deep knowledge lives in the project's own repo wiki at `repos/<slug>/docs/wiki/` (use `/kickoff-project`); `clients.yaml` `docs_paths` points at both tiers.
 
-**AIOS has no wiki — by design.** Unlike project repos, AIOS routes /wrap output directly to its purpose-built surfaces: state changes → `state/<slug>.md`, decisions → `decisions/log.md`, action items → `todos/pending.md`, session digests → `archives/raw/`. Don't create `docs/wiki/raw/aios/` here; that pattern is for project repos only.
+**AIOS wiki.** The AIOS has a full wiki at `docs/wiki/` (decision 2026-06-25). Operational surfaces stay at repo root: `state/`, `todos/`, `decisions/log.md`, `context/priorities.md`, `clients.yaml`. The wiki holds curated strategic knowledge — research, advisor output, cross-project insights, frameworks, client briefs. `/dispatch` stages new content to `docs/wiki/raw/`; `/wiki ingest` curates. `references/` and `brainstorm/` are legacy; new content goes to wiki.
 
 See `EXPANSIONS.md` for what to add as the system grows.
 
@@ -71,7 +71,7 @@ The 3Ms operator framework lives at `references/3ms-framework.md` (*The Three Ms
 ## Rules
 
 - **Router test (maintenance rule).** If you hunt 5+ minutes for something Justin could find by hand, or a fact in this file has gone stale, the architecture is broken. Fix the routing, not just the instance. This file stores pointers, not content.
-- **Keys, not prompts.** Gmail is draft-only by design. Keep least-privilege posture on every new connection.
+- **Keys, not prompts.** Gmail is send-disabled by design — it can draft and archive/label (modify scope, since 2026-06-21) but has no send capability. Keep least-privilege posture on every new connection.
 - **Staged ingestion (ADR 0004).** Never write into a project wiki's curated structure. Stage to `{wiki}/raw/aios/`; the wiki's own ingest pass promotes.
 - **Log decisions.** When Justin makes one, suggest logging it to `decisions/log.md`.
 - **Voice.** Match `references/voice.md`: casual but professional, short sentences, no em dashes, bullets over paragraphs. Never fake his voice on external content (LinkedIn, client email) without showing a draft.
@@ -85,4 +85,4 @@ The 3Ms operator framework lives at `references/3ms-framework.md` (*The Three Ms
 
 ## Connections (hot cache)
 
-Live: Gmail (MCP, draft-only), Google Calendar (MCP), Google Drive (MCP, incl. Gemini meeting transcripts). Not wired: Bonsai (financials readable via the "Monthly Financials" Sheet on Drive), Google Chat, Discord. Project tracking: `state/` + `todos/` is the in-house answer. *(Snapshot 2026-06-12 — `connections.md` is canonical; trust it over this line.)*
+Live: Gmail (MCP, drafts + archive/label, no send), Google Calendar (MCP), Google Drive (MCP, incl. Gemini meeting transcripts). Not wired: Bonsai (financials readable via the "Monthly Financials" Sheet on Drive), Google Chat, Discord. Project tracking: `state/` + `todos/` is the in-house answer. *(Snapshot 2026-06-21 — `connections.md` is canonical; trust it over this line.)*

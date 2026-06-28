@@ -1185,7 +1185,142 @@ The triage state-writeback detector now emits proposals as a `STATE_UPDATES_JSON
 
 **Boundary (2026-06-20, settled after iteration):** `/ship` DOES open a PR and hold (feature branch + atomic commits + push + PR). It does NOT add LFG's CI-watch / autofix / merge — those stay `/lfg`'s. Quality (simplify/review/test) already runs *inside* `ce-work`, so it isn't bolted on separately. The line vs `/lfg` is the human-review hold, not "local vs PR." **`/wrap` is NOT in `/ship` (dropped 2026-06-20):** it's a once-per-session ritual that writes the hot `STATE.md` on `main` — bundling it would over-wrap (several ships per session) and conflict on a feature branch. `/ship` ends with a run summary as the trail, and the work persists durably (commits, requirements, plan, compound, PR), so a later `/wrap` loses nothing despite the subagent delegation. Run `/wrap` separately at session end.
 
-**Artifact:** `~/.claude/skills/ship/SKILL.md`.
+**Delegation (`--auto`), validated 2026-06-20:** `--auto` launches a background Workflow (`ship-pipeline.js`) so the run is off the main thread — clean context, notify-on-done, Justin keeps working. A capability probe confirmed workflow agents **can invoke skills but cannot spawn their own subagents**, so the CE skills run **single-threaded inline** inside each workflow stage (lose internal parallelism; gain context isolation). Checkpointed mode stays in-session (the gates need the user). Open risk: the full CE pipeline running inline inside workflow agents is unproven end-to-end — needs a first real `--auto` run to confirm (ce-work especially, which normally leans on subagent dispatch).
+
+**Artifacts:** `~/.claude/skills/ship/SKILL.md` + `~/.claude/skills/ship/ship-pipeline.js`.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-21 — Gmail connector scope expanded: draft-only → modify (archive/label), send still disabled
+
+**Decision:** Granted the claude.ai Gmail connector the `modify` scope so the AIOS can archive threads and apply/remove labels directly (previously read + draft-only). Triggered by wanting AIOS to archive a resolved Servd "Plan Renewal Failed" notice instead of leaving it as manual cleanup.
+
+**What's enabled:** `Removes labels from a thread` (= archive, remove INBOX) and label-apply on threads. **What's NOT:** there is no `send` tool in the connector at all (verified in the Connectors tool list), so outbound mail still always requires human send. `modify` also can't permanently delete — worst case is Trash (30-day recoverable). Label create/delete/modify left restricted.
+
+**Why this is still least-privilege:** the line that matters (no autonomous send) holds at the *tool* level, not just scope. Archiving/labeling is reversible inbox hygiene. Expansion is bounded to inbox management.
+
+**Caveat:** the connector only works inside a claude.ai-connected session; a sandboxed Cowork/cron triage run may not be able to archive. Interactive sessions are reliable.
+
+**Records updated:** `connections.md` (table row + Day-1 note), `CLAUDE.md` (Keys-not-prompts rule + hot-cache line), memory `reference_gmail_modify_scope`.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-22 — ToneQuest: 2-month fee waiver to absorb the timeline slip (from 6/19 check-in)
+
+**Decision:** At the 2026-06-19 ToneQuest check-in, Justin offered Liz Wilson a **2-month waiver of fees** to account for the project running long — ~17 weeks vs the originally scoped ~6. Liz accepted and reaffirmed confidence in the outcome.
+
+**Why:** The replatform timeline stretched after the strategic pivot to Claude Code for the PDF-ingestion engine (fine-tuning the scraper to 100% accuracy before ingesting the 25-year back catalog). Justin had gone quiet during that "black hole"; the waiver plus a new bi-weekly Mon/Fri check-in cadence (first session Mon 6/22 11am) reset expectations and buy back the relationship.
+
+**Also aligned at the meeting:** Claude agent framework adopted as the primary ingestion tool; development priority is automated article ingestion over website-interface changes; Liz's pricing is pre-drafted pending final scope. Source: `repos/toneuqest/docs/wiki/raw/aios/2026-06-19-tonequest-checkin-gemini-notes.md`.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-24 — Refuge Sales & Solutions: 18-month flat-rate contract agreed
+
+**Decision:** Thomas Rindfuss (Truss Services owner, existing BrandOS dealer) is launching **Refuge Sales & Solutions LLC** to distribute Agrilogix water restructuring technology. Justin agreed to an **18-month flat-rate BGD subscription contract** covering website build, e-commerce integration, and ongoing development. Verbal NDA in place (no formal paperwork — agreed to keep details confidential until published).
+
+**Why:** Thomas is an existing satisfied client (Truss Services website). The project fits the BGD standard model cleanly: multi-phase (marketing site → e-commerce → ongoing), recurring revenue, ag-adjacent vertical. Units priced $7K-$35K with only 2 US distributors — real business with real revenue. The 18-month structure gives continuous support through his business rollout without re-scoping.
+
+**Alternatives considered:**
+
+- *Per-project pricing instead of subscription.* Rejected — the e-commerce phase alone would require a second engagement. Subscription covers the full rollout.
+- *Formal NDA before proceeding.* Deferred — Thomas suggested verbal agreement was sufficient for now.
+
+**Owner:** Justin (BGD).
+
+**How to apply:**
+
+- Proposal + rough outline due by **Friday 6/27**.
+- Separate engagement from Truss Services / BrandOS. Don't conflate in billing or state tracking.
+- Also: schedule a 30-min BrandOS dealer portal interview with Thomas next week (Truss-related, separate from Refuge).
+
+---
+
+## 2026-06-24 — /level-up: Gemini meeting notes auto-ingest via scheduled-triage
+
+**Decision:** Add a Gemini sweep step to `/scheduled-triage` that auto-detects new Gemini meeting notes and transcripts in Drive folder `1vx0unSfZbDnJMOU9S9d4N4N_p7xIF-vu`, infers the project from participants/content against `clients.yaml`, and stages both artifacts to `{project-wiki}/raw/gemini/`. Unmatched files go to `archives/raw/`. No new skill -- one step added to the existing triage cron.
+
+**Why:** Retro 2026-06-24 found 5 manual "go find the Gemini transcript and ingest it" relays per week. Justin said: "Gemini should be something that is getting picked up on and use AI to infer what that meeting is applied to." Every meeting creates a manual relay step between Drive and project wikis. This directly attacks the stated top pain (juggling concurrent projects + email reply lag from missed meeting follow-ups).
+
+**Method spec (3Ms):**
+- **Constraint:** Justin is the relay between Google Meet and project wikis.
+- **EAD:** Automate (AI-assisted -- deterministic file detection + AI project inference).
+- **Process map:** Trigger = scheduled triage cron. Source = Drive folder. Transform = extract participants, match to clients.yaml. Decision = which project. Destination = `{wiki}/raw/gemini/`.
+- **Autonomy:** L3 (Supervised) -- runs on cron, stages to raw/, wiki ingest curates. Justin sees results on next /brief.
+- **KPI:** Bucket = less cost. Metric = meeting-to-project-state latency. Target = same-day, zero manual steps.
+- **Done-state:** Done when 3 consecutive meetings auto-stage to the correct project wiki with zero manual "go find the transcript" prompts.
+
+**Alternatives considered:**
+- *Standalone skill.* Rejected -- adds another cron + lock mechanism when triage already runs every 2 hours with Drive access.
+- *Cloud Routine.* Rejected -- needs local filesystem for wiki writes.
+
+**Owner:** Justin (BGD). Bike Method Phase 1 -- run manually first to validate project inference accuracy.
+
+> *Adapted from The Three Ms of AI™. © 2026 Nate Herk. All rights reserved.*
+
+---
+
+## 2026-06-25 — State drift: discipline the Sync queue before auto-applying
+
+**Decision:** Don't patch Step 8.5 to auto-apply state updates yet. The triage → proposal → Sync UI pipeline already works end-to-end. The 4 proposals generated so far were all dismissed — unclear whether because the proposals were bad or because reviewing them was friction. Spend 2 weeks actually reviewing Sync proposals with intention (apply or dismiss) to build evidence on proposal quality before deciding whether to auto-apply high-confidence changes.
+
+**Why:** Auto-applying bad proposals makes state worse, not better. The 31 corrections this week (retro 2026-06-24) look like a pipeline failure but may actually be a usage gap — the pipeline produces proposals, they just rot in the queue. Need data on approval rate before removing the review gate.
+
+**Success criteria for revisiting:** After 2 weeks (by 2026-07-09), if 90%+ of proposals were approved → patch Step 8.5 to auto-apply `confidence: "high"` proposals. If proposals are consistently wrong → fix proposal quality instead. Either way, revisit at next /level-up.
+
+**Owner:** Justin.
+
+---
+
+## 2026-06-25 — AIOS gets a wiki (reverses "no wiki by design")
+
+**Decision:** Scaffold a full wiki at `docs/wiki/` for the AIOS. The AIOS outgrew a flat dispatcher — it accumulates strategic, cross-project knowledge (research, advisor output, retro insights, business strategy) that has no curation pipeline today. Content scatters into brainstorm/, references/, and flat context/ files with no queryability or connection.
+
+**Structure:** identity/, strategy/, research/, frameworks/, clients/, insights/, advisors/ (existed), concepts/ (existed). Staging via raw/ subdirectories. Operational surfaces stay at repo root: state/, todos/, decisions/log.md, context/priorities.md, clients.yaml, archives/.
+
+**Seeded with:** identity docs (about-me, about-business), strategy docs (hub-and-spoke, channel-platform, manufacturer-tiers, brandos-roadmap), frameworks (3Ms, voice), client briefs (all references/*-project*.md), brainstorm content staged to raw/research/.
+
+**Why:** Every project repo uses the wiki pattern. The AIOS is the one place that doesn't, and it's where cross-project strategic knowledge needs to live. The original "no wiki" decision (implicit, pre-ADR) assumed AIOS would stay a thin dispatcher. It didn't.
+
+**What changes:** /dispatch routes research to raw/research/ instead of brainstorm/. /brief can draw from curated wiki pages. /wiki ingest curates raw/ drops. /ask-the-board draws from strategy/ + advisors/. References/ and brainstorm/ become legacy — new content goes to wiki.
+
+**Owner:** Justin.
+
+---
+
+## 2026-06-25 — Interactive choice rendering in AIOS UI chat
+
+**Decision:** Parse assistant messages for choice patterns (numbered options, yes/no prompts) and render them as clickable buttons in the chat UI. Click auto-submits the selection as the next user message. Pure frontend enhancement — no backend or subprocess changes. Enables richer planning sessions (grill-me, brainstorm) inside the AIOS UI.
+
+**Why:** The IDE extension renders choices as clickable buttons; the AIOS UI renders them as plain text requiring manual typing. The UI is becoming the primary planning surface (discuss → decide → /write-adr), and one-click interactions reduce friction in that loop.
+
+**ADR:** `docs/adr/0009-interactive-choice-rendering.md`
+
+**Owner:** Justin.
+
+---
+
+## 2026-06-19 — GAN engagement scoped: retire site, rebuild for Ag News Daily + Pig X
+
+**Decision:** At the 6/19 GAN Touchbase, Justin and Delaney aligned on scope: retire the current GAN site, build a new site for Ag News Daily + Pig X (Iowa State podcast), move to Buzzsprout hosting, 18-month subscription model, target August start.
+
+**Why:** GAN site is legacy infrastructure Justin already maintains for free. Converting to a paid rebuild with the BGD standard 18-month model formalizes the relationship and solves the hosting fragility.
+
+**Owner:** Justin (BGD).
+
+---
+
+## 2026-06-19 — BGD standard engagement model: 18-month flat-rate subscription is the default
+
+**Decision:** The BGD standard engagement model is an 18-month flat-rate subscription (~$300-500/mo for small projects, higher for e-commerce/complex). No upfront project fee, hosting folded in, monthly check-ins, renew-for-18 + full refresh at 36mo. Documented as canonical in about-business.md and set as the default for scoping any new client.
+
+**Why:** Every recent engagement (Truss, GAN, Refuge, Mr Gym) naturally fell into this shape. Making it the explicit default eliminates re-deriving it each time and anchors pricing conversations.
 
 **Owner:** Justin (BGD).
 

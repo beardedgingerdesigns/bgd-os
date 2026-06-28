@@ -1,33 +1,42 @@
 # Project State: Thermal Kitchen
 
-**Updated:** 2026-06-12 | **Status:** On track
+**Updated:** 2026-06-26 | **Status:** Launching Monday 7/6
 
 ## Accomplishments (this session)
 
-- Built all 6 pages from the Phase 1 scope: Home, Capabilities, Industries We Serve, Who We Are, Behind the Label, Contact — deployed to localhost:5173
-- Implemented Behind the Label blog hub with all 5 articles from Deann's folder, with real navigation from navbar, footer, and homepage cards
-- Built capability sections with process explainers and FAQs migrated from the live site (Retort, Pouch Filling, Shelf-Stable/Tunnel Pasteurization) 
-- Added full contact form with qualification fields (formula validation, forecast, packaging format) matching the Phase 2 HubSpot spec
-- Fixed 5 design-decision violations (homepage hero stats bar, PositioningBand copy, BTL intro, address, cert logo) identified in the audit
-- Updated wiki with full prototype feedback source doc, revised overview, and 31 log entries; pushed to GitHub (`github.com:beardedgingerdesigns/thermal-kitchen`, commit `dce5ac2`)
+- 6/26 weekly call completed. Site demoed at 98% ready. Deann delivered feedback document with section-by-section copy corrections.
+- Team agreed feedback doc is self-explanatory; direct implementation, no formal review session needed.
+- Launch date set: **Monday 7/6**. Social media and external promotions scheduled for **Wednesday 7/8** (grace period for live testing).
+- Justin implementing feedback doc changes across 9 app files (WhoWeAre, Capabilities, Industries, Contact, BehindTheLabel, CertStrip, PositioningBand, QualitySection, capabilities data). 138 insertions across 12 files (uncommitted).
+- New facility photos live on dev server. Sachet machine photo flagged for removal.
+- Wiki updated: 3 new ADRs (0014-0016), feedback source doc added, overview and log updated.
 
 ## Current Status
 
-The Phase 1 prototype is feature-complete — every page from the redesign plan's v1 scope exists and is fully navigable. Navigation is wired throughout (anchors work from any page). All 12 ADRs and client materials are indexed in the wiki. The launch-prep call with Deann is scheduled for 9am CDT today.
+- 2026-06-26: Weekly call held. Deann shared feedback document organized by page section with side-by-side current vs. proposed text.
+- 2026-06-26: Justin demoed updated dev site. All photo updates now live on dev server.
+- Launch target locked: **Monday 7/6**. Promos on **Wednesday 7/8**.
+
+Site is 98% complete. Remaining work is copy corrections from the feedback doc (straightforward text changes) and one missing photo set for Behind the Label. Deann sharing dev link with an external reviewer before the Wednesday 7/1 review meeting.
 
 ## Next Steps
 
-- [ ] Attend 9am CDT launch-prep call with Deann; capture feedback in `sources/2026-06-XX-*.md` and log decisions
+- [ ] Implement remaining feedback doc copy corrections
+- [ ] Send Wednesday 7/1 launch review meeting invite to all participants
+- [ ] Deann: send Behind the Label photos (no hard date; needed before launch)
+- [ ] Deann: share dev link with external reviewer before Wednesday 7/1
+- [ ] Push updated dev site to bgd3 hosting
 - [ ] Decide on Craft 5 backend approach (headless vs. Twig-native) and document in decision 0013
-- [ ] Source Unsplash industry photos (human nutrition, pet nutrition, manufacturing) or brief designer
-- [ ] Obtain leadership bios from Deann or determine if team-expertise-only fallback stands
-- [ ] Resolve personnel credentials visibility question flagged in the audit (PhD, lab accreditation claims)
 
 ## Blockers
 
-None blocking today's call. Outstanding: leadership bios and industry photos are design placeholders; Craft backend architecture is undecided.
+Behind the Label photos from Deann (needed before 7/6 launch, no hard deadline set). Otherwise unblocked.
 
 ## Key Dates
 
-- 2026-06-12: Launch-prep call with Deann, 9am CDT (today)
-- 2026-06-16: Phase 1 site launch (Tuesday)
+- 2026-06-12: Launch-prep call with Deann (completed)
+- ~~2026-06-16: Phase 1 site launch~~ — missed
+- 2026-06-26: Weekly call with Deann (completed)
+- 2026-07-01: Final review / launch meeting (Wednesday)
+- **2026-07-06: Phase 1 site launch (Monday)**
+- **2026-07-08: Social media / external promos go live (Wednesday)**

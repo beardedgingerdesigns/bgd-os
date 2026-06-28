@@ -25,18 +25,6 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Priority: medium
   - Notes: Phase 5 UAT passed (concept proven). Review the actual generated STATE.md output for section structure, verbosity, and usefulness. May need to tune the prompt template at scripts/state-hook/state-prompt.md or add post-processing.
 
-- [ ] **Jon AI-services partnership — parked (Jon keeps punting)** `#ops`
-  - Added: 2026-06-12
-  - Source: skill:audit
-  - Priority: low
-  - Notes: The 5/30 pitch never happened — Jon keeps deferring. AI-services pivot (proof point #2) is parked as mapped exploration until Jon re-engages (decision 2026-06-13). No action; re-activate only if Jon initiates.
-
-- [ ] **Consolidate or graduate Deploy Answers references** `#ops`
-  - Added: 2026-06-12
-  - Source: skill:audit
-  - Priority: low
-  - Notes: references/deploy-answers.md + deploy-answers-brand-brief.md + docs/deploy-answers/ + state/deploy-answers.md. Over the one-brief rule. Either consolidate to one brief or /kickoff-project it into its own repo wiki.
-
 - [ ] **Scrub stale /load-project mentions from onboard-client skill and EXPANSIONS.md** `#ops`
   - Added: 2026-06-12
   - Source: skill:audit
@@ -75,12 +63,6 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Priority: medium
   - Notes: "Build in public to be discoverable" (Nate skill #6) is the argument for shipping content, not just the product. Domain purchased 2026-06-14; DNS not yet wired (DigitalOcean). First step: point nameservers, then stand up a coming-soon/value-prop page.
 
-- [ ] **Keep investing in AIOS context capture** `#ops`
-  - Added: 2026-06-15
-  - Source: skill:wiki (Nate Herk 6 AI Skills digest)
-  - Priority: low
-  - Notes: Nate's skill #3 confirms private context is the moat — generic prompting produces generic output. Keep refining dispatch/wrap/wiki-staging pipeline. Not a discrete task; this is a standing principle. Review quarterly.
-
 - [ ] **Terraplex: update homepage graphic to I19 photo** `#client`
   - Added: 2026-06-18
   - Source: skill:dispatch (Terraplex Monthly Status 2026-06-09)
@@ -101,13 +83,6 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Client: terraplex-hub
   - Priority: medium
 
-- [ ] **GAN: confirm 6/19 10am with Delaney and send calendar invite** `#client`
-  - Added: 2026-06-18
-  - Source: skill:dispatch (session wrap 2026-06-12)
-  - Client: global-ag-network
-  - Priority: high
-  - Notes: Current hold is personal only. Also need to answer her email-license question.
-
 - [ ] **GAN: push repo to remote** `#ops`
   - Added: 2026-06-18
   - Source: skill:dispatch (session wrap 2026-06-12)
@@ -121,16 +96,44 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Priority: medium
   - Notes: Future feature flagged during triage hardening. For now Gemini notes emails are just suppressed via the triage mute-list (state/triage-mutes.md). The real want: auto-route recaps into dispatch/state instead of dropping them on the floor. See brainstorm/2026-06-19-triage-hardening-requirements.md (Deferred) + decisions/log.md 2026-06-19.
 
-- [ ] **Reply to Nel on BrandOS end-goal + founder strategy** `#deploy-answers`
-  - Added: 2026-06-19
-  - Source: manual
-  - Client: deploy-answers
-  - Priority: medium
-  - Notes: From the 6/19 Connect call. Engage genuinely on the two points Nel earned (protect the methodology / package the outcome; AI-dependency hedge) without relitigating the niche thesis. Hold the "Nel explores to learn, Justin keeps his trajectory" model.
-
 - [ ] **Test Z.AI model compatibility with BrandOS architecture** `#brandos`
   - Added: 2026-06-19
   - Source: manual
   - Client: terraplex / brandos
   - Priority: low
   - Notes: Concrete hedge against frontier-LLM (Claude) single-point dependency raised on the 6/19 call. Core BrandOS already degrades gracefully; this de-risks the AI-dependent features.
+
+- [ ] **Refuge Sales & Solutions: send project proposal by Friday** `#client`
+  - Added: 2026-06-24
+  - Source: triage (Talk shop Gemini notes)
+  - Client: refuge-sales
+  - Priority: high
+  - Notes: Thomas Rindfuss new venture (Agrilogix water tech distributor). 18-month flat-rate contract agreed on call. Proposal + rough outline due by Fri 6/27. Product details email received same day.
+
+- [ ] **Schedule BrandOS dealer portal interview with Thomas (Truss)** `#brandos`
+  - Added: 2026-06-24
+  - Source: triage (Talk shop Gemini notes)
+  - Client: terraplex / truss-services
+  - Priority: medium
+  - Notes: Reach out by 6/25 to propose times for a 30-min interview next week. Separate from the Refuge project — this is about the BrandOS dealer portal.
+
+- [ ] **ToneQuest: contact Pelcro re launch alignment** `#client`
+  - Added: 2026-06-26
+  - Source: skill:dispatch (ToneQuest check-in 2026-06-26)
+  - Client: tonequest / tonequest-replatform
+  - Priority: high
+  - Notes: Reinitiate Pelcro conversation next week. Ensure entitlements + launch timeline are aligned.
+
+- [ ] **ToneQuest: review archive import status Monday** `#client`
+  - Added: 2026-06-26
+  - Source: skill:dispatch (ToneQuest check-in 2026-06-26)
+  - Client: tonequest / tonequest-replatform
+  - Priority: medium
+  - Notes: Evaluate imported archive files on Monday 6/30. Liz uploading initial + middle-initial sets by weekend.
+
+- [ ] **Inside Out: configure form submission triggers** `#client`
+  - Added: 2026-06-24
+  - Source: triage (Inside Out touchbase Gemini notes)
+  - Client: inside-out
+  - Priority: medium
+  - Notes: Waiting on Melinda to confirm fax-line email address. Once confirmed, hook up form routing.
