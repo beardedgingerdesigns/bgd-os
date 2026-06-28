@@ -16,3 +16,4 @@ aios-ui/.next/
 aios-ui/out/
 aios-ui/.env*.local
 aios-ui/coverage/
+skills-lock.json
