@@ -85,24 +85,33 @@ This is complementary to CE's `CONCEPTS.md` (which compounds learnings) and the 
 
 ---
 
-## The AFK runner (to build)
+## The AFK runner — `/nightshift` (grilled 2026-06-28)
 
-The missing piece. Conceptual design:
+Resolved design from `/grill-me` session:
 
-```
-loop:
-  issues = gh issue list --label "ready-for-agent" --state open --json number,title,body
-  for issue in issues (respecting blocked-by):
-    worktree = create isolated git worktree
-    result = claude --print "Implement this: {issue.body}" in worktree
-    if tests pass:
-      commit, push branch, open PR or close issue
-    else:
-      gh issue edit --add-label "needs-human"
-    cleanup worktree
-```
+**Runner:** Manual kick (`/nightshift`), walk away. Scheduling is a separate concern for later.
 
-Isolation via git worktrees (already available via superpowers skill), not Docker. Can run as a scheduled Claude Desktop task, a cron job, or a manual `/nightshift` kick.
+**Scope:** Current repo, AIOS-aware. Reports results back to claude-os `state/<slug>.md` + `todos/pending.md`.
+
+**Loop:**
+1. `gh issue list --label "ready-for-agent" --state open` → parse blocked-by fields → sort by dependency order
+2. One feature branch in a worktree, issues commit sequentially (later issues see earlier work)
+3. Full `claude` session per issue (bypassPermissions, issue body + `CONTEXT.md` prepended)
+4. 3 attempts to make tests pass → on failure, label `needs-human` with comment, move on
+5. On success → commit to branch, close issue
+6. Loop until queue empty
+
+**Delivery:** Commits to feature branch, no PR. You QA the branch next day shift. Bugs filed as new issues.
+
+**Labels:** Matt's triage vocabulary — `ready-for-agent` (input), `needs-human` (failure), `in-progress` (active).
+
+**AIOS reporting:** Updates `state/<slug>.md` AND appends QA todo.
+
+**Agent context per issue:** Issue body + `CONTEXT.md` glossary + `CLAUDE.md` (auto-loaded).
+
+**Why worktrees, not Docker:** Matt uses Docker for file isolation (agent can't touch his working tree) + environment isolation (clean deps per run). Git worktrees solve file isolation natively — the agent works in a separate checkout, your tree stays untouched. Claude Code runs in the repo's own environment so deps are correct without containerization. Same safety, less infra.
+
+**Skill:** `~/.claude/skills/nightshift/SKILL.md`
 
 ---
 
