@@ -19,12 +19,13 @@ Pulls only Justin's real typed/dictated messages (no subagent sidechains, no too
 
 ### 2. Fan out fresh analysis agents
 
-One agent per major corpus (group small corpora into one agent). Fresh agents, parallel, never resumed. Each hunts four signal types and returns structured findings only:
+One agent per major corpus (group small corpora into one agent). Fresh agents, parallel, never resumed. Each hunts five signal types and returns structured findings only:
 
 - **REPETITION** — same kind of ask 3+ times. A repeated prompt is a missing skill.
 - **FRICTION/CHURN** — corrections, re-explanations, the same instruction re-stated across sessions (should be a permanent rule).
 - **MANUAL PROCESS** — work Justin does by hand outside the agent (relays, deploys, verification, copying between tools).
 - **NAVIGATION/ROUTER FAILURES** — re-orienting the agent about where things live or where work left off.
+- **HARNESS FAILURE** — the agent needed human help because the codebase didn't provide enough context or guardrails. Sources: nightshift `needs-human` issues, repeated `/ce-code-review` findings in the same category, corrections where Justin told the agent something the repo should already encode. The fix is never "do it manually next time" — it's "what do we add to the repo (CLAUDE.md rule, structural test, lint rule, CONTEXT.md term) so the agent never fails this way again?" (Origin: Ryan Lopopolo's "Garbage Collection Day" — every harness failure is a context bug, not an agent bug.)
 
 Per pattern: name, type, count, 2-3 verbatim quotes with timestamps, proposed fix (one line), weekly cost (high/medium/low). Max 8 per agent, no padding. Plus TOTAL_MSGS_REVIEWED and a one-line GENERAL_SHAPE of the week. Warn agents that messages are often voice-dictated (transcription artifacts).
 
@@ -34,7 +35,7 @@ Merge agent findings. **Cross-project patterns rank highest** — the same pain 
 
 ### 4. Write the report
 
-`retros/retro-YYYY-MM-DD.md`: ranked patterns with evidence counts, proposed fixes, the **#1 candidate for next /level-up** called out explicitly, week-shape summary per repo, and anything security-relevant found in transcripts (pasted secrets → flag for rotation immediately).
+`retros/retro-YYYY-MM-DD.md`: ranked patterns with evidence counts, proposed fixes, the **#1 candidate for next /level-up** called out explicitly, week-shape summary per repo, anything security-relevant found in transcripts (pasted secrets → flag for rotation immediately), and a **Garbage Collection** section listing harness failures with their proposed repo-level fixes (CLAUDE.md rule, structural test, lint rule, or CONTEXT.md term). GC items are quick fixes — don't funnel them through `/level-up`; apply them inline during the retro review.
 
 ### 5. Hand off
 

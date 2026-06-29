@@ -93,21 +93,32 @@ Resolved design from `/grill-me` session:
 
 **Scope:** Current repo, AIOS-aware. Reports results back to claude-os `state/<slug>.md` + `todos/pending.md`.
 
-**Loop:**
-1. `gh issue list --label "ready-for-agent" --state open` → parse blocked-by fields → sort by dependency order
-2. One feature branch in a worktree, issues commit sequentially (later issues see earlier work)
-3. Full `claude` session per issue (bypassPermissions, issue body + `CONTEXT.md` prepended)
-4. 3 attempts to make tests pass → on failure, label `needs-human` with comment, move on
-5. On success → commit to branch, close issue
-6. Loop until queue empty
+**Loop (hardened 2026-06-29):**
+1. `gh issue list --label "ready-for-agent" --state open` → parse blocked-by fields → resolve dynamically (re-evaluate after each issue completes — newly unblocked issues enter the queue)
+2. Signal AIOS: write "nightshift active" to `state/<slug>.md` at loop start
+3. One feature branch in a worktree, issues commit sequentially (later issues see earlier work)
+4. Health check before each issue (except first): run test suite cold. If broken, attempt one fix. If still broken, abort.
+5. Full `claude` session per issue (bypassPermissions, issue body + `CONTEXT.md` + `progress.md` + `fix_plan.md` prepended)
+6. 3 attempts to make tests pass → on failure, label `needs-human` with comment, move on
+7. On success → commit to branch, append to progress.md ("what the next issue needs to know"), append discovered-but-out-of-scope work to fix_plan.md
+8. Loop until queue empty
+9. Auto-file fix_plan.md entries as new GitHub issues (labeled `ready-for-agent`)
+10. Synthesize progress.md learnings → stage to project wiki `raw/aios/` if worth keeping
+11. `/wrap` for code review, compound, state update
+
+**Sprint memory files (ephemeral per run):**
+- `progress.md` — cross-issue context. "What would help the next issue?" Not status.
+- `fix_plan.md` — discovered work outside current scope. Auto-filed as issues after the loop. (Origin: Ghuntley's Ralph + Anthropic's harness article.)
 
 **Delivery:** Commits to feature branch, no PR. You QA the branch next day shift. Bugs filed as new issues.
 
 **Labels:** Matt's triage vocabulary — `ready-for-agent` (input), `needs-human` (failure), `in-progress` (active).
 
-**AIOS reporting:** Updates `state/<slug>.md` AND appends QA todo.
+**AIOS reporting:** Updates `state/<slug>.md` at start (active signal) AND end (via `/wrap`). Appends QA todo.
 
-**Agent context per issue:** Issue body + `CONTEXT.md` glossary + `CLAUDE.md` (auto-loaded).
+**Agent context per issue:** Issue body + `CONTEXT.md` glossary + `progress.md` (sprint memory) + `CLAUDE.md` (auto-loaded).
+
+**Garbage collection loop (via `/retro`):** Every `needs-human` label is a harness failure. Friday retro mines them as a 5th signal type (HARNESS FAILURE). The fix is always "what do we encode into the repo so the agent never fails this way again?" — CLAUDE.md rules, structural tests, lint rules, CONTEXT.md terms. Quick-apply during retro review, not funneled through `/level-up`. (Origin: Ryan Lopopolo's "Garbage Collection Day" at OpenAI.)
 
 **Why worktrees, not Docker:** Matt uses Docker for file isolation (agent can't touch his working tree) + environment isolation (clean deps per run). Git worktrees solve file isolation natively — the agent works in a separate checkout, your tree stays untouched. Claude Code runs in the repo's own environment so deps are correct without containerization. Same safety, less infra.
 
