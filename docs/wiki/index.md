@@ -8,6 +8,7 @@ Who Justin is, his positioning, and business identity.
 
 - [About Me](identity/about-me.md) — background, skills, niche
 - [About Business](identity/about-business.md) — BGD structure, revenue, positioning
+- [Financials](identity/financials.md) — BGD MRR, pipeline, gap analysis
 
 ## Strategy
 
@@ -18,6 +19,7 @@ Business strategy, platform thesis, and partnership structures.
 - [BrandOS Roadmap](strategy/brandos-roadmap.md) — platform development roadmap
 - [Manufacturer Tiers](strategy/manufacturer-tiers.md) — future tier above distributors
 - [Nel + BrandOS Partnership](strategy/nel-brandos-partnership.md) — Deploy Answers, horizontal vs. vertical debate
+- [Site Manager](strategy/site-manager.md) — BrandOS site management module
 
 ## Research
 

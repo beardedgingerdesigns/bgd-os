@@ -106,3 +106,39 @@ Major session covering infrastructure fixes, milestone close, and operational re
 
 **Other:**
 - Fixed `.planning/STATE.md` — v2 progress stuck at 83% (5/6 phases). Updated to 100% (6/6) so statusline progress bar disappears.
+
+## [2026-06-30] log | financials + Refuge Sales proposal + wiki architecture refactor
+
+**Financials pull from Bonsai (live data, 2026-06-29):**
+- BGD MRR: $5,850 gross, $5,350 normalized, $5,517/mo averaged. 18 recurring clients. $4,075 overdue ($3,675 is Jon).
+- $10K MRR by EOY 2026 goal set. Pipeline mapped: Refuge Sales ($425), Russell/Revolution ($1,000+), ISF renegotiation ($600-800), Co-Line re-engagement ($300-400), BrandOS dealer layer ($20/dealer).
+- **Updated**: `identity/financials.md` — BGD MRR section rewritten with live Bonsai numbers, pipeline with specific deal values, gap analysis.
+- **Created**: `context/financials.md` — operational snapshot for session-level financial queries without pulling Bonsai.
+- **Updated**: `context/priorities.md` — restructured around $10K MRR target. Pipeline table added. BrandOS reframed as marketing tool.
+
+**Refuge Sales & Solutions proposal ($425/mo, 18-month term):**
+- Wrote proposal (3 iterations: markdown in Docs, markdown v2, HTML), sent via Bonsai.
+- Created Bonsai company, contact (Thomas Rindfuss), project (REF-0093, $425/mo retainer).
+- **Updated**: `clients/refuge-sales-project.md` — billing ($425/mo), timeline (Phase 1: 3-4 weeks), Bonsai project, status.
+- **Updated**: `state/refuge-sales.md` — proposal sent, next steps flipped to Thomas's court.
+- Logged pricing decision to `decisions/log.md`. Marked todo complete.
+
+**Wiki write architecture refactor (grill-me session, 13 questions):**
+- Core rule: write directly to your own repo's wiki via `/wiki log`, stage to other repos' wikis via `raw/aios/`.
+- PRD published (bgd-os#3), 5 vertical slice issues (#4-#8), all implemented via parallel agents, all closed.
+- **Changed**: `/wrap` — removed `raw/aios/` staging, invokes `/wiki log` directly. No claude-os special case.
+- **Changed**: `/dispatch` — writes AIOS wiki directly via `/wiki log`, removed inline `/wiki ingest`, classification-first rule added.
+- **Changed**: `/gemini-sweep` — removed `aios-wiki` from `dispatch_to` hints. Courier only.
+- **Changed**: `/brief` — added pending ingestion check across project wikis via `clients.yaml` `docs_paths`.
+- **Added**: ADR 0004 addendum documenting the own-repo direct / cross-repo staged refinement.
+
+**BrandOS strategy concept (not yet a decision):**
+- Terraplex pricing frozen (Jon 2026-06-29). New concept: release BrandOS to Terraplex for free as portfolio piece, monetize at dealer level ($20/mo for advanced features). Removes Cherity budget dependency. Not logged as a decision yet — concept stage.
+
+## [2026-06-30] lint | raw/ purge + index orphan fixes
+
+Wiki lint pass triggered by OKF research session. Findings and fixes:
+
+- **Purged**: 67 bootstrap raw files (committed 2026-06-28 during wiki init conversion). All had been processed by ingest agent — API reference dumps, superseded AIOS UI plans v0-v3, overnight research sweeps already synthesized into curated research/ pages. 10 real dispatch drops (meeting transcripts, client-specific drops) retained as provenance.
+- **Fixed**: 2 orphan pages added to `index.md` — `identity/financials.md`, `strategy/site-manager.md`.
+- **Noted (not fixed)**: 16 client pages have no cross-refs to strategy/research; 10 pages contain stale "deferred"/"TODO" markers; `strategy/brandos-roadmap.md` at 490 lines could benefit from splitting. These are structural improvements, not urgent.
