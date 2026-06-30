@@ -137,3 +137,25 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Client: inside-out
   - Priority: medium
   - Notes: Waiting on Melinda to confirm fax-line email address. Once confirmed, hook up form routing.
+- [ ] **Terraplex: add drone product info pages to site** `#client`
+  - Added: 2026-06-29
+  - Source: manual (Jon email)
+  - Client: terraplex-hub
+  - Priority: high
+  - Notes: Jon's direct ask — dealers and customers can't find product info about drones on Terraplex site. Mirror what's on dealer sites. Goodwill play within existing relationship, no new investment discussion needed.
+
+- [ ] **Russell / Revolution: get on a call this week** `#client`
+  - Added: 2026-06-29
+  - Source: manual
+  - Client: revolution / brandos-phase1
+  - Priority: high
+  - Notes: Re-engagement email sent 6/29. Jon nudging Russell same day. Manufacturer website project — Phase 1 is the standalone site (full product portfolio, ag content, form fixes). Also the BrandOS manufacturer-tier entry point.
+
+- [ ] **Jon meetup Thursday 7/3 after 1pm** `#client`
+  - Added: 2026-06-29
+  - Source: manual (text exchange)
+  - Client: terraplex-hub
+  - Priority: high
+  - Notes: Jon wants to see what Justin's been building. Show BrandOS progress but frame as "outside of Terraplex with applications" per the agreed positioning. Don't pitch new Terraplex spend.
+
+- [ ] QA nightshift run for tonequest-replatform — 7 implemented (#2,3,5,6,7,8,9), 1 needs-human (#4 spike), 4 follow-ups (#11-14) — branch: nightshift/2026-06-29-0219. Run #4 spike on Python 3.10+ venv, then a real PDF ingest through /admin; close the 7 issues after QA.

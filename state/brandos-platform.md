@@ -1,6 +1,6 @@
 # Project State: BrandOS
 
-**Updated:** 2026-06-28 | **Status:** On track
+**Updated:** 2026-06-29 | **Status:** On track (sequencing shift)
 
 ## Accomplishments (this session)
 
@@ -13,16 +13,22 @@
 
 Dealer brand profile capture feature is designed, validated, and ready to build. Five issues published in strict dependency order — Slice 1 (schema + CRUD API) is unblocked and ready to start.
 
+**Terraplex investment freeze (2026-06-29).** Jon told Justin to hold off on further Terraplex site investments. Cherity gets high anxiety about cost increases and freezes about asking for changes. Jon is managing this by routing requests himself. This is a sequencing change, not a strategy change — Terraplex stays the proof-of-concept, but the BrandOS platform pricing conversation with Cherity is on ice. Jon's product-info ask (add drone specs to Terraplex site) is a goodwill play within the existing relationship.
+
+**Russell / Revolution re-engaged (2026-06-29).** Justin emailed Russell to restart the manufacturer website project. Jon is independently nudging Russell the same day — asked about Russell unprompted in texts, said he's urging Russell to reconnect. Revolution is now the near-term BrandOS entry point for the manufacturer tier. The bottom-up strategy (dealer → distributor → manufacturer) is supplemented by a top-down pull from Russell.
+
 ## Next Steps
 
 - [ ] Start issue #9: Schema + CRUD API (`dealer_brand_profiles` table, RLS, endpoints, logo upload to private GCS)
 - [ ] Once #9 lands, run issues #10 and #11 in parallel (DB-first resolution and setup gate + manual form)
 - [ ] Issues #12 and #13 blocked on #11's form component (scrape + pre-fill, edit flow)
+- [ ] Add product/drone info pages to Terraplex site (Jon's ask — no new investment, goodwill play)
+- [ ] Get Russell on a call this week (email sent 6/29, Jon nudging same day)
 
 ## Blockers
 
-None
+- BrandOS platform pricing conversation with Cherity is frozen — don't push until Jon signals the thaw
 
 ## Key Dates
 
-None
+- 2026-07-03 (Thu): Jon + Justin meetup (confirmed in texts, after 1pm)

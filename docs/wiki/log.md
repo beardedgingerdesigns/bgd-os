@@ -83,5 +83,26 @@ Major session covering infrastructure fixes, milestone close, and operational re
 - 8 vertical-slice issues filed (#3-#10) via `/to-issues`. #3 (marker_extract.py) starts immediately. #4 (spike) is the quality gate.
 - Setup Matt Pocock skills on ToneQuest repo (labels, docs/agents/, CLAUDE.md updated).
 
+## [2026-06-29] ingest | BrandOS sequencing shift, Revolution re-engaged, Wild Rose QA
+
+**Processed 8 raw/aios/ drops (2026-06-24 through 2026-06-29). 3 promoted, 5 skipped (already curated).**
+
+**Revolution Drones** (`clients/revolution-drones-project.md`):
+- Status updated from dormant (2026-05-02) to re-engaged (2026-06-29). Justin emailed Russell to restart manufacturer website. Jon nudging Russell same day. Now the near-term BrandOS manufacturer-tier entry point.
+
+**Terraplex** (`clients/terraplex-platform.md`):
+- Added "Relationship dynamics" section: investment freeze from Jon (2026-06-29), Cherity cost anxiety, engagement model update. Pricing conversation on ice.
+- Productized checklist: pricing tiers and participation fee marked as frozen.
+
+**Wild Rose** (`clients/wild-rose-project.md`):
+- Added pre-launch QA section (2026-06-25 drop): July 13 launch confirmed, QA week of 7/7, HR printable app, SEO mapping, URL stability, Indeed integration.
+
+**Skipped:**
+- `2026-06-28-session-wrap-0900` — already curated in [2026-06-28] log entry.
+- `2026-06-26-tonequest-checkin` — already curated into ToneQuest wiki page (status updated 2026-06-26).
+- `2026-06-26-thermal-kitchen-launch` — already curated into TK timeline in [2026-06-28] log entry.
+- `2026-06-25-session-wrap-0840` and `0910` — AIOS UI internals, already in [2026-06-28] log entry.
+- `2026-06-24-refuge-sales-kickoff` — already curated into `clients/refuge-sales-project.md` in [2026-06-25] ingest.
+
 **Other:**
 - Fixed `.planning/STATE.md` — v2 progress stuck at 83% (5/6 phases). Updated to 100% (6/6) so statusline progress bar disappears.

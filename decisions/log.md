@@ -20,6 +20,26 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 
 ---
 
+## 2026-06-29 — BrandOS sequencing shift: Revolution is the near-term platform entry point, Terraplex pricing on ice
+
+**Decision:** The BrandOS platform pricing conversation with Cherity is frozen. Jon Liebl told Justin (text + email, 2026-06-29) to hold off on further Terraplex site investments — Cherity gets high anxiety about cost and freezes about asking for changes. This is a sequencing change, not a strategy change: Terraplex stays the proof-of-concept, but the upsell path is paused. Revolution / Russell Hedrick is now the near-term manufacturer-tier entry point. Justin re-engaged Russell the same day; Jon is independently nudging Russell to reconnect.
+
+**Why:** Jon's signals were clear on both channels. In texts: "she gets super high anxiety and then freezes about even being able to ask you to make changes." In email: "we need to hold off on any further investments to the Terraplex main site for the time being" and "you're likely a bit further ahead on that journey than we are ready for." Jon is managing the relationship by routing requests himself (email came from him, not Cherity). Meanwhile Jon asked about Russell unprompted and said he's urging Russell to reconnect — he wants the manufacturer track moving.
+
+**Alternatives considered:**
+- *Strategy shift — reclassify Terraplex as maintenance-only, move proof-of-concept to Revolution entirely.* Rejected. Jon isn't leaving, he's managing Cherity. The dealer sites are stable revenue. Terraplex stays the proof-of-concept but on a longer timeline.
+- *Push back on Jon's freeze, make the case for investment.* Rejected. Justin's text response was right — "what I'm building is outside of Terraplex but had applications." Let the product-info work demonstrate value without triggering the cost anxiety.
+
+**Owner:** Justin
+
+**Follow-ups:**
+- Do Jon's product-info ask (add drone specs to Terraplex site) as goodwill within the existing relationship
+- Get Russell on a call this week
+- Thursday 7/3 meetup with Jon (after 1pm, confirmed)
+- Don't pitch BrandOS platform pricing to Cherity until Jon signals the thaw
+
+---
+
 ## 2026-05-28 — BGD strategic pivot: from "I build websites" to "I solve business problems with AI"
 
 **Decision:** BGD is shifting identity. The business is no longer defined by Craft CMS builds. The new positioning: **Justin solves business problems for mid-market companies and ships the solutions as products.** AI is the accelerant that lets one talented operator build what used to take a team. If the solution is a website, fine. If it's an automation, a platform, or a tool, fine. The offering is the problem-solving, not the medium.

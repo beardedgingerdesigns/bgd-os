@@ -102,11 +102,19 @@ From kickoff (Feb 2) and design review (Mar 2) Gemini transcripts:
 - **HR printable application.** Katrina Williams requested a printable job application PDF/page. Add Becca (recruiter) to auto-notifications for new applications.
 - **Bugs to fix before QA:** entertainment category preview not rendering, thumbnail save workflow broken, location display issue on property pages.
 
+**Pre-launch QA (updated 2026-06-25):**
+- **July 13 launch confirmed.** QA session week of 7/7 (post-holiday). Krystal out 6/27–7/6. Justin proposing times, Meghan coordinating.
+- Backend content sync in progress — all edits to current site must also go into new backend.
+- HR printable application: Justin building pre-filled PDF template from samples Krystal will send. Becca (recruiter) added to auto-notifications.
+- SEO: auto-map SEO image from content image, description override for search/social.
+- URL structures unchanged — existing QR codes on property remain functional.
+- Indeed integration: Katrina to verify post-launch that Shaker job posting format pulls correctly.
+
 **Next steps (Justin):**
-1. Deploy current progress to dev site for team review.
-2. Finish outstanding content updates.
-3. Schedule deeper content + entertainment meeting — Krystal sent the contact: **Meghan Wymore** (meghan.wymore@wildrosecorporate.com) handles all current website updates. Target early next week.
-4. Prep entertainment-strategy recommendations for that meeting.
+1. Fix bugs before QA: entertainment category preview, thumbnail save-before-upload, location display (comma-separated instead of "All locations").
+2. Build HR printable application template.
+3. QA session week of 7/7 — coordinate with Meghan Wymore (meghan.wymore@wildrosecorporate.com).
+4. Prep entertainment-strategy recommendations for content meeting.
 
 **Side note from Krystal's separate email (same day):** Meghan Wymore is the day-to-day website updater. Add her to the content-meeting invite.
 

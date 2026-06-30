@@ -8,7 +8,7 @@ Drive BrandOS to a launch state and keep current projects shipping. "I solve bus
 
 ## 1. Ship BrandOS to a launch state
 
-Terraplex is the proof of concept. Pricing needs to land with Cherity. No major build work until the pricing conversation happens. The platform will host other distributors beyond Terraplex.
+Terraplex is the proof of concept but pricing with Cherity is on ice — Jon signaled (2026-06-29) to hold off on further Terraplex investment; Cherity freezes about cost increases. Sequencing shift: Revolution (Russell Hedrick) is now the near-term manufacturer-tier entry point — re-engaged 2026-06-29, Jon nudging Russell same day. Do Jon's product-info ask (drone specs on Terraplex site) as goodwill within the existing relationship. Keep building dealer-tier features. The platform will host other distributors beyond Terraplex.
 
 ## 2. AI services pivot — mapped, parked
 

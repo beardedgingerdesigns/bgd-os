@@ -1,77 +1,79 @@
 ---
-last_run: 2026-06-28T16:05:00Z
+last_run: 2026-06-29T18:30:00Z
 source: afternoon
 threads_needing_reply: 3
 ---
 
-# Inbox Triage — 2026-06-28
-**3 threads need a reply. 1 today, 2 this week.**
+# Inbox Triage — 2026-06-29
+**3 threads need a reply. 3 today, 0 this week.**
 
 ## Reply today
-1. **Krystal Light / Katrina Williams** (wildrosecorporate.com / wildroseresorts.com) — *8*
-   Subject: HR Applications for Web
-   Last inbound: 3 days ago
-   What they said: Krystal sent three HR employment application PDFs (WRC, WRE, WRJ) to Justin and Katrina for the website. Katrina confirmed "Yup these look correct."
-   Project context: Wild Rose redesign on track for July 13 go-live; open work includes building the HR printable PDF template. QA walkthrough planned week of 7/7.
-   Suggested next step: Download the attached PDFs and build the printable HR application template for the Wild Rose site.
-   Thread: 19f000c29bf83007
+1. **Deann Gibson** (thermalkitchen.com) — *12*
+   Subject: Prototype Website Updates
+   Last inbound: today
+   What they said: Checking in to see if all the updates from the feedback document have been made.
+   Project context: Launch locked for Monday 7/6, promos 7/8. Site 98% complete. Remaining work is copy corrections from feedback doc. Wednesday 7/1 review meeting upcoming.
+   Suggested next step: Reply with status on feedback doc implementation and confirm readiness for the 7/1 review meeting.
+   Thread: 19f138bf3fc2d813
 
-## Reply this week
-1. **Whitney Long** (iowastatefair.org) — *5*
-   Subject: Media Credentials Form - Spam
-   Last inbound: 2 days ago
-   What they said: The media credentials form on the ISF website is getting spammed with gibberish submissions. Nothing tracked in the spam filter. Asked "Is there any way we can prevent this?"
-   Project context: No project memory; verify before treating as known engagement.
-   Suggested next step: Investigate the Craft form spam and implement anti-spam measures (reCAPTCHA, honeypot field, or rate limiting).
-   Thread: 19f0539fd2ec64a0
+2. **Maggie Wyborny** (hatchdsm.com) — *8*
+   Subject: Iowa State Fair_New Website
+   Last inbound: today
+   What they said: The Fair approved the wireframe. Jon will start on design elements. Wants to schedule a call next week to discuss timeline. They want the site live before Thanksgiving; they're out most of August for reviews. Maggie is out through next Tuesday.
+   Project context: No project memory file; registered in clients.yaml under hatch-dsm/iowa-state-fair but no state tracking set up.
+   Suggested next step: Reply to confirm availability for a call next week and begin scoping the timeline working backward from Thanksgiving.
+   Thread: 19f14538c1ed42a3
 
-2. **Jeff Holden** (boardsi.com) — *0*
-   Subject: Board Inquiry Follow Up
-   Last inbound: 2 days ago
-   What they said: Following up from a conversation a few months back about finding Justin a board position. Shared a Calendly link for a 20-min call.
-   Project context: Unknown — domain not in clients.yaml; verify before treating as known contact.
-   Suggested next step: Decide whether board placement is worth pursuing right now; reply or dismiss.
-   Thread: 19f04428672127c7
+3. **Liz** (thetonequestreport@gmail.com) — *8*
+   Subject: TONEQUEST: All back issue Dropbox Link
+   Last inbound: today
+   What they said: Sent a direct Dropbox link to the complete back issue files (1999 through July/Aug 2026). Asked Justin to confirm access. Noted that volumes aren't calendar year (Vol I starts NOV99), some volume numbers are incorrect, and issue count per volume transitioned from 12 to 11 to 10.
+   Project context: Server-side paywall shipped 6/21. PDF ingest pipeline operational. Marker PDF Stage-0 replatform built 6/29, awaiting QA. Archive engine testing planned in year clusters.
+   Suggested next step: Confirm access to the Dropbox folder and acknowledge the volume/issue metadata notes for the archive import.
+   Thread: 19f13f27b1eeb819
+
+## Needs action (not a reply)
+- **Bounce notification** (Wild Rose / Krystal Light thread) — Justin's reply to klight@wildrosecorporate.com bounced (address not found). The correct address is krystal.light@wildrosecorporate.com. Resend the reply to the correct address. (0d)
 
 <!-- TODOS_JSON_START -->
 ```json
 {
-  "generated_at": "2026-06-28T16:05:00Z",
+  "generated_at": "2026-06-29T18:30:00Z",
   "todos": [
     {
       "id": "todo-a1b2c3d4",
       "type": "email_reply",
-      "summary": "Reply to Krystal Light re: HR Applications for Web",
-      "context": "Wild Rose redesign on track for July 13 go-live; open work includes building the HR printable PDF template. QA walkthrough planned week of 7/7.",
-      "thread_id": "19f000c29bf83007",
+      "summary": "Reply to Deann Gibson re: Prototype Website Updates",
+      "context": "Launch locked for Monday 7/6, promos 7/8. Site 98% complete. Copy corrections from feedback doc in progress. 7/1 review meeting upcoming.",
+      "thread_id": "19f138bf3fc2d813",
       "client_slug": "kirk-financial",
-      "project_slug": "wild-rose-redesign",
+      "project_slug": "thermal-kitchen",
       "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f000c29bf83007" },
+      "action_params": { "thread_id": "19f138bf3fc2d813" },
       "status": "open"
     },
     {
       "id": "todo-e5f6a7b8",
       "type": "email_reply",
-      "summary": "Reply to Whitney Long re: Media Credentials Form Spam",
-      "context": "No project memory; verify before treating as known engagement.",
-      "thread_id": "19f0539fd2ec64a0",
+      "summary": "Reply to Maggie Wyborny re: Iowa State Fair New Website",
+      "context": "No project memory file; registered in clients.yaml under hatch-dsm/iowa-state-fair but no state tracking set up.",
+      "thread_id": "19f14538c1ed42a3",
       "client_slug": "hatch-dsm",
       "project_slug": "iowa-state-fair",
       "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f0539fd2ec64a0" },
+      "action_params": { "thread_id": "19f14538c1ed42a3" },
       "status": "open"
     },
     {
       "id": "todo-c9d0e1f2",
       "type": "email_reply",
-      "summary": "Reply to Jeff Holden re: Board Inquiry Follow Up",
-      "context": "Unknown — domain not in clients.yaml; verify before treating as known contact.",
-      "thread_id": "19f04428672127c7",
-      "client_slug": null,
-      "project_slug": null,
+      "summary": "Reply to Liz re: ToneQuest back issue Dropbox link",
+      "context": "Server-side paywall shipped 6/21. PDF ingest pipeline operational. Marker PDF Stage-0 replatform built 6/29, awaiting QA. Archive testing planned in year clusters.",
+      "thread_id": "19f13f27b1eeb819",
+      "client_slug": "tonequest",
+      "project_slug": "tonequest-replatform",
       "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f04428672127c7" },
+      "action_params": { "thread_id": "19f13f27b1eeb819" },
       "status": "open"
     }
   ]
@@ -82,7 +84,7 @@ threads_needing_reply: 3
 <!-- STATE_UPDATES_JSON_START -->
 ```json
 {
-  "generated_at": "2026-06-28T16:05:00Z",
+  "generated_at": "2026-06-29T18:30:00Z",
   "proposals": []
 }
 ```

@@ -80,6 +80,16 @@ The questionnaire also defines **service normalizations** — variant wording ma
 
 **Slug oddity:** `trussservicesllc-com-com` looks like a slug-generation bug (TLD doubled). Worth a glance in the manager.
 
+## Relationship dynamics (updated 2026-06-29)
+
+**Investment freeze.** Jon Liebl told Justin (text + email, 2026-06-29) to hold off on further Terraplex site investments. Cherity gets high anxiety about cost increases and freezes about even asking for changes. Jon is managing by routing requests himself (his Terraplex email, not Cherity's). This is a sequencing change — Terraplex stays the proof-of-concept, but the BrandOS platform pricing conversation with Cherity is on ice.
+
+**Concrete ask within the freeze:** Jon wants more drone product info on the Terraplex site (dealers and customers can't find it). This is goodwill work within the existing relationship, not new investment.
+
+**Engagement model:** Justin works primarily with Cherity for day-to-day. Jon is CEO — added-budget blessing, carried by Cherity. But on cost-sensitive topics, route through Jon first. When talking to Cherity, lead with "this is covered" or "no additional cost."
+
+**Revolution as alternate entry point.** With Terraplex pricing frozen, Revolution / Russell Hedrick is now the near-term manufacturer-tier entry point for BrandOS. See [Revolution Drones](revolution-drones-project.md).
+
 ## What's already productized
 
 This platform is the productized BGD tier in everything but published packaging:
@@ -91,8 +101,8 @@ This platform is the productized BGD tier in everything but published packaging:
 - ✅ Hub data sync (questionnaire + archetypes)
 - ✅ 18-month recurring contracts via Bonsai
 - ✅ Monthly check-in cadence (Justin↔dealer)
-- ⚠️ Published pricing tiers on beardedgingerdesigns.com — TBD (priority #1 deliverable)
-- ⚠️ Channel-platform participation fee (Terraplex pays?) vs. dealer site build fee (dealer pays) — separation TBD per decision log entry 2026-05-02
+- ⚠️ Published pricing tiers on beardedgingerdesigns.com — TBD (priority #1 deliverable). **Note:** pricing conversation with Cherity frozen as of 2026-06-29.
+- ⚠️ Channel-platform participation fee (Terraplex pays?) vs. dealer site build fee (dealer pays) — separation TBD per decision log entry 2026-05-02. **On ice** pending Cherity thaw.
 - ⚠️ Trade-show support package (committed to Josh on 2026-05-01) — TBD
 - ⚠️ AI-generated marketing materials inside dealer portal — discussed with Jack & Josh, not yet built
 

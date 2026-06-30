@@ -61,16 +61,15 @@ Three phases. Priorities:
 - Project plan for the website development, broken into phases with timelines.
 - Form fix: require phone number on product request submissions.
 
-## Current status (2026-05-02)
+## Current status (2026-06-29)
 
-The project has been silent in email for 5+ weeks. Last contact:
+**Re-engaged.** Justin emailed Russell 2026-06-29 to restart the manufacturer website project. Jon Liebl independently nudging Russell the same day ("I'm going to connect with him this afternoon and urge him to get connected with you again"). Goal: get Russell on a call this week.
 
-- **Mar 24:** Justin emailed Russell ("back at it now and ready to get moving").
-- **No reply observed in Gmail since.**
+This is now the near-term BrandOS manufacturer-tier entry point. Terraplex's pricing conversation is frozen (Jon told Justin to hold off on further Terraplex investment 2026-06-29; Cherity has cost anxiety). Revolution entering from the top supplements the bottom-up dealer→distributor path.
 
-Russell is in Brazil per the May 1 Terraplex check-in. Expected back around Sunday May 3. New R-32 imagery is the immediate Brazil deliverable for the dealer network.
+**Prior silence:** ~3 months. Last contact was Justin's Mar 24 email ("back at it now and ready to get moving"). No reply. The ~May 8 async outreach was planned but never sent.
 
-**The manufacturer-website project is dormant pending Russell's deliverables.**
+**Framing for the call:** manufacturer website project (Phase 1 from the March kickoff), not the full BrandOS platform pitch. Let the website work demonstrate the platform thesis naturally.
 
 ## What's actionable without Russell
 
