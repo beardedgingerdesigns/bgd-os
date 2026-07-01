@@ -42,6 +42,7 @@ function pendingEmailPrompt(todo: PendingTodo): string {
   return [
     `Task: ${todo.summary}`,
     clientLine(todo),
+    todo.actionContext ? `Action context: ${todo.actionContext}\n` : '',
     notesBlock(todo),
     'Steps:',
     '1. Search Gmail for the relevant thread using mcp__claude_ai_Gmail__search_threads with keywords from the task summary.',
