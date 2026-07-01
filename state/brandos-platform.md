@@ -1,6 +1,6 @@
 # Project State: BrandOS
 
-**Updated:** 2026-06-29 | **Status:** On track (sequencing shift)
+**Updated:** 2026-07-01 | **Status:** On track (sequencing shift, pricing pivot in concept)
 
 ## Accomplishments (this session)
 
@@ -10,6 +10,8 @@
 - Published 5 GitHub issues as vertical slices in dependency order (#9–#13)
 
 ## Current Status
+
+- 2026-06-30: Jon confirmed (6/29): focus drone product pages on I-19 and R-40. R-32 is probably not going forward — Jon will confirm. (via triage)
 
 Dealer brand profile capture feature is designed, validated, and ready to build. Five issues published in strict dependency order — Slice 1 (schema + CRUD API) is unblocked and ready to start.
 
@@ -28,6 +30,7 @@ Dealer brand profile capture feature is designed, validated, and ready to build.
 ## Blockers
 
 - BrandOS platform pricing conversation with Cherity is frozen — don't push until Jon signals the thaw
+- Pricing pivot concept (not yet decided): BrandOS free for distributors (funnel), dealers pay for website builder (product). Handoff staged to `brandos/docs/wiki/raw/aios/2026-06-29-aios-sequencing-shift.md`
 
 ## Key Dates
 

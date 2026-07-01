@@ -142,3 +142,33 @@ Wiki lint pass triggered by OKF research session. Findings and fixes:
 - **Purged**: 67 bootstrap raw files (committed 2026-06-28 during wiki init conversion). All had been processed by ingest agent — API reference dumps, superseded AIOS UI plans v0-v3, overnight research sweeps already synthesized into curated research/ pages. 10 real dispatch drops (meeting transcripts, client-specific drops) retained as provenance.
 - **Fixed**: 2 orphan pages added to `index.md` — `identity/financials.md`, `strategy/site-manager.md`.
 - **Noted (not fixed)**: 16 client pages have no cross-refs to strategy/research; 10 pages contain stale "deferred"/"TODO" markers; `strategy/brandos-roadmap.md` at 490 lines could benefit from splitting. These are structural improvements, not urgent.
+
+## [2026-07-01] log | OKF research, wiki lint + purge, BrandOS pricing pivot handoff
+
+Research session covering Google's Open Knowledge Format, wiki health, and BrandOS strategy handoff.
+
+**OKF research:**
+- Google's Open Knowledge Format (v0.1, published 2026-06-12) formalizes the LLM-wiki pattern (Karpathy) into a portable spec: markdown files + YAML frontmatter, one required `type` field, `index.md` for progressive disclosure, `log.md` for history. Vendor-neutral, no SDK.
+- Justin's wiki methodology is a structural superset of OKF — same file format, same `index.md`/`log.md`, same cross-links. The one gap is YAML frontmatter (Justin's wikis use directory structure for typing instead). Decision: don't adopt OKF. Already past it. Add frontmatter only if 2RM hub project needs interoperability.
+- 2RM "hubs" concept surfaced: agency wants client knowledge bases as hosted wikis any associate can query. Recommended architecture: markdown in git + MkDocs Material for browsable site + optional AI chat layer (phase 2). OKF frontmatter earns its keep here for search quality.
+
+**Wiki lint + raw/ purge:**
+- Ran `/wiki lint` on AIOS wiki. 9 checks. Findings: 0 dead links, clean log formatting, 2 orphan pages, 50+ unprocessed raw files, 16 client pages with no cross-refs, 10 pages with stale deferred/TODO markers, 5 large pages (200+ lines).
+- Purged 67 bootstrap raw files (21K lines) — API reference dumps, superseded plans, overnight research sweeps already synthesized into curated pages. Retained 10 real dispatch drops as provenance.
+- Fixed 2 index orphans (`identity/financials.md`, `strategy/site-manager.md`).
+- Assessed remaining lint items: client page islands are fine as-is (useful self-contained briefs), stale TBDs are mostly legitimate wait-states or personal financial data only Justin can fill, large pages are appropriate reference documents.
+- Raw/ immutability discussion: Karpathy's rule protects provenance (meeting transcripts backing curated claims). But API docs, superseded plans, and already-curated session wraps aren't provenance — they're clutter. Rule refined: raw/ is immutable for source material that backs curated claims; bootstrap migration artifacts are safe to delete after ingest.
+
+**BrandOS pricing pivot handoff:**
+- Staged handoff to `brandos/docs/wiki/raw/aios/2026-06-29-aios-sequencing-shift.md`. Covers: Terraplex investment freeze, Jon's drone product ask (I-19/R-40), Revolution re-engagement as manufacturer-tier entry point.
+- Key addition: pricing pivot — BrandOS is free for distributors (the funnel), dealers pay for the website builder (the product). Flips revenue layer from distributor budget approval to dealer volume. Not yet a formal decision.
+
+**Bonsai MCP assessment:**
+- Invoice #1584 (ToneQuest, $450, scheduled 7/1) identified for cancellation — Bonsai MCP has no update/delete invoice action. Must cancel in Bonsai UI directly.
+- Recommended leveraging: wire `list_invoices` into `/brief` for live overdue/upcoming financials (replaces stale `context/financials.md` snapshots), use deal pipeline tools to track pipeline in Bonsai instead of prose in `priorities.md`.
+
+**Video research (2 videos screened):**
+- Eric Tech "Claude Knowledge Base + Scheduled Loop" — same raw/wiki pattern, nothing new. His scheduled self-improving loop is the one gap vs Justin's setup; assessed as premature for a solo operator.
+- Michele Torti "Claude Code Masterclass 4 Hours" — beginner content, nothing applicable.
+
+**Bug noted:** `/to-prd` skill (user-level, `~/.claude/skills/to-prd/`) not resolving in project sessions even when explicitly typed as `/to-prd`. Has `disable-model-invocation: true` (intentional), but explicit slash command should still load. Potential Claude Code bug — flagged for issue filing.
