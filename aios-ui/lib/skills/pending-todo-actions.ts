@@ -7,6 +7,19 @@ const DEFAULT_TIMEOUT_MS = 300_000
 export { type TodoActionResult }
 
 export function buildPendingActionPrompt(todo: PendingTodo): string {
+  // Prefer new delegation action type over legacy auto-detected type
+  if (todo.action) {
+    switch (todo.action) {
+      case 'draft-email':
+        return pendingEmailPrompt(todo)
+      case 'update-state':
+        return pendingUpdateStatePrompt(todo)
+      case 'stage-wiki':
+        throw new Error('stage-wiki action type is not yet supported')
+      case 'research':
+        throw new Error('research action type is not yet supported')
+    }
+  }
   switch (todo.actionType) {
     case 'email':
       return pendingEmailPrompt(todo)
@@ -38,6 +51,26 @@ function pendingEmailPrompt(todo: PendingTodo): string {
     '5. Print the draft body in your response so I can review.',
     '',
     'Rules: draft-only, never send. Match the voice. Keep it short.',
+  ].filter(Boolean).join('\n')
+}
+
+function pendingUpdateStatePrompt(todo: PendingTodo): string {
+  const slug = todo.client?.split('/')[0]?.trim()
+  return [
+    `Task: ${todo.summary}`,
+    clientLine(todo),
+    todo.actionContext ? `Action context: ${todo.actionContext}\n` : '',
+    notesBlock(todo),
+    'Steps:',
+    slug
+      ? `1. Read the current state file at state/${slug}.md.`
+      : '1. Identify which state file to update based on the task context.',
+    '2. Apply the changes described in the action context above.',
+    '3. Update the **Updated:** field to today\'s date.',
+    '4. Write the updated file.',
+    '5. Print a one-line summary of what changed.',
+    '',
+    'Rules: only modify the state file. Do not touch other files.',
   ].filter(Boolean).join('\n')
 }
 

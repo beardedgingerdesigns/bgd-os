@@ -1,5 +1,6 @@
 import { loadPendingTodos, resolvePendingTodo } from '@/lib/data/pending-todos'
 import { runPendingTodoAction, type TodoActionResult } from '@/lib/skills/pending-todo-actions'
+import { appendActivity } from '@/lib/data/activity-log'
 import { invalidationBus } from '@/lib/invalidation-bus'
 
 export const dynamic = 'force-dynamic'
@@ -17,8 +18,9 @@ export async function POST(
     return Response.json({ error: 'todo not found' }, { status: 404 })
   }
 
-  if (todo.actionType === 'generic') {
-    return Response.json({ error: 'Generic action type is not yet supported' }, { status: 400 })
+  const isActionable = todo.action || (todo.actionType !== 'generic')
+  if (!isActionable) {
+    return Response.json({ error: 'This item has no actionable delegation type' }, { status: 400 })
   }
 
   const stream = new ReadableStream({
@@ -51,8 +53,17 @@ export async function POST(
 
       send('done', { ...result, todoId: id })
 
+      const actionType = todo.action ?? (todo.actionType === 'email' ? 'draft-email' : 'draft-email')
+      const clientSlug = todo.client?.split('/')[0]?.trim() ?? 'aios'
+
       if (result.status === 'success') {
         await resolvePendingTodo(id, 'done')
+        const artifact = actionType === 'update-state'
+          ? `state/${clientSlug}.md`
+          : 'Gmail draft'
+        await appendActivity(actionType, clientSlug, todo.summary, artifact)
+      } else {
+        await appendActivity('bounced', clientSlug, todo.summary, result.error ?? 'Unknown error')
       }
 
       invalidationBus.publish({

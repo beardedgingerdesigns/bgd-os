@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { KebabMenu, Menu, kebabItemClass, kebabItemDestructiveClass } from '@/components/ui/kebab-menu'
 import { cn } from '@/lib/utils'
-import type { PendingTodo, TodoPriority } from '@/lib/types'
+import type { PendingTodo, TodoPriority, DelegationActionType } from '@/lib/types'
 
 type ResolveAction = 'done' | 'dismiss'
 
@@ -227,6 +227,15 @@ export function TodosView() {
     setRows(prev => ({ ...prev, [id]: { ...prev[id], [field]: !prev[id]?.[field] } }))
   }, [])
 
+  // Activity feed
+  const [activityEntries, setActivityEntries] = useState<ActivityEntry[]>([])
+  useEffect(() => {
+    fetch('/api/activity-log', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : { entries: [] })
+      .then((body: { entries: ActivityEntry[] }) => setActivityEntries(body.entries ?? []))
+      .catch(() => {})
+  }, [todos])
+
   // Filter + group
   const { activeTodos, snoozedCount } = useMemo(() => {
     const all = todos ?? []
@@ -235,12 +244,17 @@ export function TodosView() {
     return { activeTodos: active, snoozedCount: snoozed.length }
   }, [todos, showSnoozed])
 
-  const groups = useMemo(() => {
-    const map: Record<TodoPriority, PendingTodo[]> = { high: [], medium: [], low: [] }
-    for (const t of activeTodos) map[t.priority].push(t)
-    // Sort blocked last within each group
-    for (const p of PRIORITY_ORDER) map[p] = sortBlockedLast(map[p])
-    return map
+  const { delegationQueue, humanOnly } = useMemo(() => {
+    const delegation: PendingTodo[] = []
+    const human: PendingTodo[] = []
+    for (const t of activeTodos) {
+      if (t.action) delegation.push(t)
+      else human.push(t)
+    }
+    return {
+      delegationQueue: sortBlockedLast(delegation),
+      humanOnly: sortBlockedLast(human),
+    }
   }, [activeTodos])
 
   if (todos === null) {
@@ -273,39 +287,64 @@ export function TodosView() {
         <AllClear />
       ) : (
         <div className="flex flex-col gap-8">
-          {PRIORITY_ORDER.map(priority => {
-            const items = groups[priority]
-            if (items.length === 0) return null
-            return (
-              <section key={priority} aria-label={PRIORITY_LABEL[priority]}>
-                <div className="mb-3 flex items-center gap-2">
-                  <h2 className="text-sm font-semibold tracking-tight">
-                    {PRIORITY_LABEL[priority]}
-                  </h2>
-                  <Badge variant={priority === 'high' ? 'brand' : 'muted'} className="tabular-nums">
-                    {items.length}
-                  </Badge>
-                </div>
-                <div className="flex flex-col gap-3">
-                  {items.map(todo => (
-                    <TodoRow
-                      key={todo.id}
-                      todo={todo}
-                      state={rows[todo.id] ?? {}}
-                      onResolve={resolve}
-                      onDoIt={doIt}
-                      onAbortDoIt={abortDoIt}
-                      onSnooze={snooze}
-                      onUnsnooze={unsnooze}
-                      onBlock={block}
-                      onUnblock={unblock}
-                      onToggle={toggleRowState}
-                    />
-                  ))}
-                </div>
-              </section>
-            )
-          })}
+          {/* Delegation queue */}
+          {delegationQueue.length > 0 && (
+            <section aria-label="Delegation queue">
+              <div className="mb-3 flex items-center gap-2">
+                <h2 className="text-sm font-semibold tracking-tight">Delegation Queue</h2>
+                <Badge variant="brand" className="tabular-nums">{delegationQueue.length}</Badge>
+              </div>
+              <div className="flex flex-col gap-3">
+                {delegationQueue.map(todo => (
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    state={rows[todo.id] ?? {}}
+                    onResolve={resolve}
+                    onDoIt={doIt}
+                    onAbortDoIt={abortDoIt}
+                    onSnooze={snooze}
+                    onUnsnooze={unsnooze}
+                    onBlock={block}
+                    onUnblock={unblock}
+                    onToggle={toggleRowState}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Needs you (human-only) */}
+          {humanOnly.length > 0 && (
+            <section aria-label="Needs you" className="opacity-70">
+              <div className="mb-3 flex items-center gap-2">
+                <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">Needs You</h2>
+                <Badge variant="muted" className="tabular-nums">{humanOnly.length}</Badge>
+              </div>
+              <div className="flex flex-col gap-3">
+                {humanOnly.map(todo => (
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    state={rows[todo.id] ?? {}}
+                    onResolve={resolve}
+                    onDoIt={doIt}
+                    onAbortDoIt={abortDoIt}
+                    onSnooze={snooze}
+                    onUnsnooze={unsnooze}
+                    onBlock={block}
+                    onUnblock={unblock}
+                    onToggle={toggleRowState}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Activity feed */}
+          {activityEntries.length > 0 && (
+            <ActivityFeed entries={activityEntries} />
+          )}
         </div>
       )}
     </div>
@@ -375,7 +414,7 @@ function TodoRow({
   const isPending = Boolean(state.pending)
   const isBlocked = Boolean(todo.blockedOn)
   const isSnoozedNow = isSnoozed(todo)
-  const canDoIt = todo.actionType === 'email' || todo.actionType === 'calendar'
+  const canDoIt = Boolean(todo.action) || todo.actionType === 'email' || todo.actionType === 'calendar'
 
   return (
     <Card size="sm" className={cn('px-4', isBlocked && 'opacity-60')}>
@@ -384,6 +423,11 @@ function TodoRow({
           <p className="text-sm font-medium leading-snug">{todo.summary}</p>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+            {todo.action && (
+              <Badge variant="brand" className="text-[10px] uppercase tracking-wider">
+                {todo.action}
+              </Badge>
+            )}
             {todo.source && (
               <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
                 {todo.source}
@@ -588,6 +632,48 @@ function SnoozePicker({ todoId, onSnooze }: { todoId: string; onSnooze: (id: str
         </Button>
       )}
     </div>
+  )
+}
+
+interface ActivityEntry {
+  timestamp: string
+  actionType: string
+  clientSlug: string
+  summary: string
+  artifactPath: string
+}
+
+const ACTION_LABEL: Record<string, string> = {
+  'draft-email': 'Email drafted',
+  'update-state': 'State updated',
+  'stage-wiki': 'Staged to wiki',
+  'research': 'Research completed',
+  'bounced': 'Bounced',
+}
+
+function ActivityFeed({ entries }: { entries: ActivityEntry[] }) {
+  return (
+    <section aria-label="Recent activity">
+      <div className="mb-3 flex items-center gap-2">
+        <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">Recent Activity</h2>
+        <Badge variant="muted" className="tabular-nums">{entries.length}</Badge>
+      </div>
+      <div className="flex flex-col gap-1">
+        {entries.map((entry, i) => (
+          <div key={`${entry.timestamp}-${i}`} className="flex items-baseline gap-2 px-1 py-1 text-xs text-muted-foreground">
+            <span className="tabular-nums shrink-0">{entry.timestamp}</span>
+            <Badge
+              variant={entry.actionType === 'bounced' ? 'destructive' : 'muted'}
+              className="text-[9px] shrink-0"
+            >
+              {ACTION_LABEL[entry.actionType] ?? entry.actionType}
+            </Badge>
+            <span className="truncate">{entry.summary}</span>
+            <span className="shrink-0 text-[10px]">→ {entry.artifactPath}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 
