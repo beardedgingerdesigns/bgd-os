@@ -17,7 +17,7 @@ export function buildPendingActionPrompt(todo: PendingTodo): string {
       case 'stage-wiki':
         return pendingStageWikiPrompt(todo)
       case 'research':
-        throw new Error('research action type is not yet supported')
+        return pendingResearchPrompt(todo)
     }
   }
   switch (todo.actionType) {
@@ -92,6 +92,26 @@ function pendingStageWikiPrompt(todo: PendingTodo): string {
     '5. Print the file path you wrote to.',
     '',
     'Rules: write ONLY to raw/aios/ staging. Never write directly to curated wiki pages.',
+  ].filter(Boolean).join('\n')
+}
+
+function pendingResearchPrompt(todo: PendingTodo): string {
+  const slug = todo.client?.split('/')[0]?.trim()
+  return [
+    `Task: Research — ${todo.summary}`,
+    clientLine(todo),
+    todo.actionContext ? `Research question: ${todo.actionContext}\n` : '',
+    notesBlock(todo),
+    'Steps:',
+    '1. Research the topic described above. Use web search if available.',
+    '2. Synthesize findings into a concise markdown document with sections: Summary, Key Findings, Recommendations, Sources.',
+    slug
+      ? `3. Read clients.yaml to find docs_paths for client "${slug}". Write the research to {wiki}/raw/aios/ at the first wiki path.`
+      : '3. Write the research to docs/wiki/raw/research/ (no client specified).',
+    '4. Name the file descriptively with today\'s date, e.g. distributor-onboarding-patterns-2026-07-01.md.',
+    '5. Print the file path and a one-paragraph summary.',
+    '',
+    'Rules: write ONLY to raw/aios/ staging (or docs/wiki/raw/research/ for AIOS-level). Never write directly to curated wiki pages.',
   ].filter(Boolean).join('\n')
 }
 
