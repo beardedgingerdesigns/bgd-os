@@ -15,7 +15,7 @@ export function buildPendingActionPrompt(todo: PendingTodo): string {
       case 'update-state':
         return pendingUpdateStatePrompt(todo)
       case 'stage-wiki':
-        throw new Error('stage-wiki action type is not yet supported')
+        return pendingStageWikiPrompt(todo)
       case 'research':
         throw new Error('research action type is not yet supported')
     }
@@ -72,6 +72,26 @@ function pendingUpdateStatePrompt(todo: PendingTodo): string {
     '5. Print a one-line summary of what changed.',
     '',
     'Rules: only modify the state file. Do not touch other files.',
+  ].filter(Boolean).join('\n')
+}
+
+function pendingStageWikiPrompt(todo: PendingTodo): string {
+  const slug = todo.client?.split('/')[0]?.trim()
+  return [
+    `Task: ${todo.summary}`,
+    clientLine(todo),
+    todo.actionContext ? `Action context: ${todo.actionContext}\n` : '',
+    notesBlock(todo),
+    'Steps:',
+    '1. Read clients.yaml to find docs_paths for the client.',
+    slug
+      ? `2. Look for a wiki at the first docs_path for client "${slug}". Stage content to {wiki}/raw/aios/.`
+      : '2. Stage content to docs/wiki/raw/research/ (no client specified).',
+    '3. Write a markdown file with the content described in the action context.',
+    '4. Name the file descriptively with today\'s date, e.g. terraplex-meeting-notes-2026-07-01.md.',
+    '5. Print the file path you wrote to.',
+    '',
+    'Rules: write ONLY to raw/aios/ staging. Never write directly to curated wiki pages.',
   ].filter(Boolean).join('\n')
 }
 

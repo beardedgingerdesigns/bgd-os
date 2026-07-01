@@ -60,7 +60,11 @@ export async function POST(
         await resolvePendingTodo(id, 'done')
         const artifact = actionType === 'update-state'
           ? `state/${clientSlug}.md`
-          : 'Gmail draft'
+          : actionType === 'stage-wiki'
+            ? `{wiki}/raw/aios/`
+            : actionType === 'research'
+              ? `{wiki}/raw/aios/ or docs/wiki/raw/research/`
+              : 'Gmail draft'
         await appendActivity(actionType, clientSlug, todo.summary, artifact)
       } else {
         await appendActivity('bounced', clientSlug, todo.summary, result.error ?? 'Unknown error')
