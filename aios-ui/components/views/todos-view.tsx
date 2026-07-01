@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Check, X, Loader2, CheckCircle2, Play, Clock, PauseCircle, Eye, EyeOff,
+  AlertTriangle, RotateCcw, Pencil, ArrowDown,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,7 +23,7 @@ const PRIORITY_LABEL: Record<TodoPriority, string> = {
 }
 
 interface RowState {
-  pending?: ResolveAction | 'snooze' | 'unsnooze' | 'block' | 'unblock'
+  pending?: ResolveAction | 'snooze' | 'unsnooze' | 'block' | 'unblock' | 'demote' | 'edit-context'
   error?: string
   // Do It streaming
   acceptOutput?: string
@@ -34,6 +35,8 @@ interface RowState {
   // Block input
   showBlock?: boolean
   blockText?: string
+  // Edit context input
+  showEditContext?: boolean
 }
 
 function isSnoozed(todo: PendingTodo): boolean {
@@ -223,7 +226,39 @@ export function TodosView() {
     }
   }, [load])
 
-  const toggleRowState = useCallback((id: string, field: 'showSnooze' | 'showBlock') => {
+  const demote = useCallback(async (id: string) => {
+    setRows(prev => ({ ...prev, [id]: { pending: 'demote' } }))
+    try {
+      const res = await fetch(`/api/pending-todos/${encodeURIComponent(id)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'demote' }),
+      })
+      if (!res.ok) throw new Error('Demote failed')
+      await load()
+      setRows(prev => { const { [id]: _, ...rest } = prev; return rest })
+    } catch (e) {
+      setRows(prev => ({ ...prev, [id]: { error: e instanceof Error ? e.message : String(e) } }))
+    }
+  }, [load])
+
+  const editContext = useCallback(async (id: string, context: string) => {
+    setRows(prev => ({ ...prev, [id]: { pending: 'edit-context', showEditContext: false } }))
+    try {
+      const res = await fetch(`/api/pending-todos/${encodeURIComponent(id)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'edit-context', context }),
+      })
+      if (!res.ok) throw new Error('Edit context failed')
+      await load()
+      setRows(prev => { const { [id]: _, ...rest } = prev; return rest })
+    } catch (e) {
+      setRows(prev => ({ ...prev, [id]: { error: e instanceof Error ? e.message : String(e) } }))
+    }
+  }, [load])
+
+  const toggleRowState = useCallback((id: string, field: 'showSnooze' | 'showBlock' | 'showEditContext') => {
     setRows(prev => ({ ...prev, [id]: { ...prev[id], [field]: !prev[id]?.[field] } }))
   }, [])
 
@@ -307,6 +342,8 @@ export function TodosView() {
                     onUnsnooze={unsnooze}
                     onBlock={block}
                     onUnblock={unblock}
+                    onDemote={demote}
+                    onEditContext={editContext}
                     onToggle={toggleRowState}
                   />
                 ))}
@@ -334,6 +371,8 @@ export function TodosView() {
                     onUnsnooze={unsnooze}
                     onBlock={block}
                     onUnblock={unblock}
+                    onDemote={demote}
+                    onEditContext={editContext}
                     onToggle={toggleRowState}
                   />
                 ))}
@@ -404,12 +443,14 @@ interface TodoRowProps {
   onUnsnooze: (id: string) => void | Promise<void>
   onBlock: (id: string, text: string) => void | Promise<void>
   onUnblock: (id: string) => void | Promise<void>
-  onToggle: (id: string, field: 'showSnooze' | 'showBlock') => void
+  onDemote: (id: string) => void | Promise<void>
+  onEditContext: (id: string, context: string) => void | Promise<void>
+  onToggle: (id: string, field: 'showSnooze' | 'showBlock' | 'showEditContext') => void
 }
 
 function TodoRow({
   todo, state, onResolve, onDoIt, onAbortDoIt, onSnooze, onUnsnooze,
-  onBlock, onUnblock, onToggle,
+  onBlock, onUnblock, onDemote, onEditContext, onToggle,
 }: TodoRowProps) {
   const isPending = Boolean(state.pending)
   const isBlocked = Boolean(todo.blockedOn)
@@ -461,6 +502,37 @@ function TodoRow({
 
           {todo.notes && (
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{todo.notes}</p>
+          )}
+
+          {/* Review state — bounced action */}
+          {todo.reviewReason && (
+            <div className="mt-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
+              <div className="flex items-center gap-1.5 text-xs text-destructive">
+                <AlertTriangle className="size-3" />
+                <span className="font-medium">Bounced:</span>
+                <span>{todo.reviewReason}</span>
+              </div>
+              <div className="mt-2 flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => onDoIt(todo.id)} className="h-6 text-[10px]">
+                  <RotateCcw className="size-3 mr-1" />Retry
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => onToggle(todo.id, 'showEditContext')} className="h-6 text-[10px]">
+                  <Pencil className="size-3 mr-1" />Edit Context
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => onDemote(todo.id)} className="h-6 text-[10px]">
+                  <ArrowDown className="size-3 mr-1" />Demote
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Edit context input for review state */}
+          {state.showEditContext && (
+            <EditContextInput
+              todoId={todo.id}
+              currentContext={todo.actionContext ?? ''}
+              onEditContext={onEditContext}
+            />
           )}
 
           {/* Do It streaming output */}
@@ -674,6 +746,33 @@ function ActivityFeed({ entries }: { entries: ActivityEntry[] }) {
         ))}
       </div>
     </section>
+  )
+}
+
+function EditContextInput({ todoId, currentContext, onEditContext }: {
+  todoId: string; currentContext: string; onEditContext: (id: string, context: string) => void
+}) {
+  const [text, setText] = useState(currentContext)
+
+  return (
+    <div className="mt-3 flex flex-col gap-2">
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Updated action context..."
+        className="min-h-[60px] w-full rounded-md border border-input bg-background px-2 py-1 text-xs"
+        autoFocus
+      />
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => { if (text.trim()) onEditContext(todoId, text.trim()) }}
+        disabled={!text.trim()}
+        className="self-start"
+      >
+        <span className="text-xs">Save & Retry</span>
+      </Button>
+    </div>
   )
 }
 

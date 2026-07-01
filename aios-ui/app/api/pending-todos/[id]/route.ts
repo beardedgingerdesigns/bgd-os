@@ -4,6 +4,9 @@ import {
   unsnoozePendingTodo,
   blockPendingTodo,
   unblockPendingTodo,
+  clearReviewReason,
+  updateActionContext,
+  demoteTodo,
   type ResolveAction,
 } from '@/lib/data/pending-todos'
 import { invalidationBus } from '@/lib/invalidation-bus'
@@ -13,12 +16,14 @@ export const runtime = 'nodejs'
 
 const ALLOWED_ACTIONS = new Set<string>([
   'done', 'dismiss', 'snooze', 'unsnooze', 'block', 'unblock',
+  'clear-review', 'edit-context', 'demote',
 ])
 
 interface MutationBody {
   action?: string
   until?: string   // ISO date for snooze
   text?: string    // free text for block
+  context?: string // new action context for edit-context
 }
 
 export async function POST(
@@ -62,6 +67,18 @@ export async function POST(
       break
     case 'unblock':
       result = await unblockPendingTodo(id)
+      break
+    case 'clear-review':
+      result = await clearReviewReason(id)
+      break
+    case 'edit-context':
+      if (!body.context) return Response.json({ error: 'edit-context requires a "context" value' }, { status: 400 })
+      result = await updateActionContext(id, body.context)
+      // Also clear the review reason since we're retrying
+      if (result.ok) await clearReviewReason(id)
+      break
+    case 'demote':
+      result = await demoteTodo(id)
       break
     default:
       result = await resolvePendingTodo(id, action as ResolveAction)

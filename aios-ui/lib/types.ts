@@ -184,6 +184,7 @@ export interface PendingTodo {
   actionType: PendingTodoActionType // detected from summary keywords
   action?: DelegationActionType // explicit action from Action: metadata; undefined = human-only
   actionContext?: string        // freeform context for Claude to execute the action
+  reviewReason?: string         // set when an action bounced; shows what went wrong
 }
 
 export interface PendingTodosResult {

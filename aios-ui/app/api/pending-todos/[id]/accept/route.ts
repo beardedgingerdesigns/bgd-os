@@ -1,4 +1,4 @@
-import { loadPendingTodos, resolvePendingTodo } from '@/lib/data/pending-todos'
+import { loadPendingTodos, resolvePendingTodo, setReviewReason } from '@/lib/data/pending-todos'
 import { runPendingTodoAction, type TodoActionResult } from '@/lib/skills/pending-todo-actions'
 import { appendActivity } from '@/lib/data/activity-log'
 import { invalidationBus } from '@/lib/invalidation-bus'
@@ -67,6 +67,7 @@ export async function POST(
               : 'Gmail draft'
         await appendActivity(actionType, clientSlug, todo.summary, artifact)
       } else {
+        await setReviewReason(id, result.error ?? 'Action failed')
         await appendActivity('bounced', clientSlug, todo.summary, result.error ?? 'Unknown error')
       }
 
