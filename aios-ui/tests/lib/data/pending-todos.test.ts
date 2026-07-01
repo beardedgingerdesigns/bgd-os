@@ -37,6 +37,35 @@ Items persist until explicitly completed.
 
 - [ ] **Item with no metadata at all**
 
+- [ ] **Draft reply to Cherity about pricing** \`#email\`
+  - Added: 2026-06-20
+  - Source: skill:triage
+  - Client: terraplex
+  - Priority: high
+  - Action: draft-email
+  - Action-context: Reply to Cherity's 6/18 email. Confirm BrandOS pricing is unchanged. Tone: brief, reassuring.
+
+- [ ] **Research distributor onboarding patterns** \`#research\`
+  - Added: 2026-06-22
+  - Source: skill:dispatch
+  - Client: brandos
+  - Action: research
+  - Action-context: Find best practices for onboarding distributors to SaaS platforms in manufacturing/distribution verticals.
+
+- [ ] **Update Wild Rose state to live** \`#ops\`
+  - Added: 2026-06-25
+  - Source: manual
+  - Client: wild-rose
+  - Action: update-state
+  - Action-context: Set status to active, current_status to "Site live, monitoring post-launch."
+
+- [ ] **Stage meeting notes to TK wiki** \`#ops\`
+  - Added: 2026-06-26
+  - Source: skill:dispatch
+  - Client: thermal-kitchen
+  - Action: stage-wiki
+  - Action-context: Stage the 6/25 meeting notes about Behind the Label resource hub to the TK wiki.
+
 - [x] **Already done item should be ignored** \`#ops\`
   - Added: 2026-06-01
   - Priority: high
@@ -55,6 +84,7 @@ Archive for items moved from \`pending.md\` when marked \`[x]\`.
 interface Mod {
   loadPendingTodos: typeof import('@/lib/data/pending-todos').loadPendingTodos
   resolvePendingTodo: typeof import('@/lib/data/pending-todos').resolvePendingTodo
+  filterPendingTodos: typeof import('@/lib/data/pending-todos').filterPendingTodos
 }
 
 async function loadMod(): Promise<Mod> {
@@ -91,7 +121,7 @@ describe('pending-todos data layer', () => {
     expect(summaries).not.toContain('Already done item should be ignored')
     // Header/format-rules bullets must never be parsed as todos.
     expect(summaries).not.toContain('Each item starts with a checkbox')
-    expect(todos.length).toBe(4)
+    expect(todos.length).toBe(8)
   })
 
   it('extracts metadata, hashtag, and defaults priority to medium', async () => {
@@ -176,6 +206,51 @@ describe('pending-todos data layer', () => {
     const completed = await fs.readFile(completedPath, 'utf-8')
     expect(completed).toContain('## Completed')
     expect(completed).toContain(`- [x] **${target.summary}**`)
+  })
+
+  it('parses Action and Action-context metadata fields', async () => {
+    const { loadPendingTodos } = await loadMod()
+    const todos = await loadPendingTodos()
+    const byName = (s: string) => todos.find(t => t.summary === s)!
+
+    const email = byName('Draft reply to Cherity about pricing')
+    expect(email.action).toBe('draft-email')
+    expect(email.actionContext).toBe('Reply to Cherity\'s 6/18 email. Confirm BrandOS pricing is unchanged. Tone: brief, reassuring.')
+
+    const research = byName('Research distributor onboarding patterns')
+    expect(research.action).toBe('research')
+    expect(research.actionContext).toContain('best practices for onboarding distributors')
+
+    const updateState = byName('Update Wild Rose state to live')
+    expect(updateState.action).toBe('update-state')
+
+    const stageWiki = byName('Stage meeting notes to TK wiki')
+    expect(stageWiki.action).toBe('stage-wiki')
+  })
+
+  it('leaves action undefined for items without Action metadata', async () => {
+    const { loadPendingTodos } = await loadMod()
+    const todos = await loadPendingTodos()
+    const bare = todos.find(t => t.summary === 'Item with no metadata at all')!
+    expect(bare.action).toBeUndefined()
+    expect(bare.actionContext).toBeUndefined()
+
+    const manual = todos.find(t => t.summary === 'Revive scheduled-triage')!
+    expect(manual.action).toBeUndefined()
+  })
+
+  it('filters todos into actionable and human-only', async () => {
+    const { loadPendingTodos, filterPendingTodos } = await loadMod()
+    const todos = await loadPendingTodos()
+    const { actionable, humanOnly } = filterPendingTodos(todos)
+
+    expect(actionable.length).toBe(4)
+    expect(actionable.every(t => t.action !== undefined)).toBe(true)
+
+    expect(humanOnly.length).toBe(4)
+    expect(humanOnly.every(t => t.action === undefined)).toBe(true)
+
+    expect(actionable.length + humanOnly.length).toBe(todos.length)
   })
 
   it('leaves no temp files after a mutation', async () => {

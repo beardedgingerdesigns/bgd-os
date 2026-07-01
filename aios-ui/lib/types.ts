@@ -168,6 +168,8 @@ export type TodoPriority = 'high' | 'medium' | 'low'
 
 export type PendingTodoActionType = 'email' | 'calendar' | 'generic'
 
+export type DelegationActionType = 'draft-email' | 'update-state' | 'stage-wiki' | 'research'
+
 export interface PendingTodo {
   id: string                    // stable hash of summary + added date
   summary: string               // bold first-line text
@@ -180,6 +182,8 @@ export interface PendingTodo {
   snoozedUntil?: string         // ISO date; hidden from active list until then
   blockedOn?: string            // free text; visually muted, sorts below actionable
   actionType: PendingTodoActionType // detected from summary keywords
+  action?: DelegationActionType // explicit action from Action: metadata; undefined = human-only
+  actionContext?: string        // freeform context for Claude to execute the action
 }
 
 export interface PendingTodosResult {
