@@ -172,3 +172,24 @@ Research session covering Google's Open Knowledge Format, wiki health, and Brand
 - Michele Torti "Claude Code Masterclass 4 Hours" — beginner content, nothing applicable.
 
 **Bug noted:** `/to-prd` skill (user-level, `~/.claude/skills/to-prd/`) not resolving in project sessions even when explicitly typed as `/to-prd`. Has `disable-model-invocation: true` (intentional), but explicit slash command should still load. Potential Claude Code bug — flagged for issue filing.
+
+## [2026-07-01] log | retro (full JSONL), triage context sweep, nightshift fix, deployment blocks
+
+**Retro with full JSONL extraction (`retros/retro-2026-07-01.md`):**
+- First retro with complete interactive session data (prior 3 weeks were Cowork-sandbox-only). 999 messages across 15 repos. 13 ranked patterns.
+- #1 level-up candidate: `/draft-reply` as a shared invokable skill — all drafting surfaces (triage, AIOS console, any session) call one skill that loads project memory + voice.md + no-SERVD rule. Reframed from "user command" to "shared invokable" after grilling: Justin doesn't type the draft prompt — AIOS surfaces it via triage; the problem is voice rules not loading consistently.
+- Security flag: Shopify access token pasted in mr-gym session — recommend rotating.
+- Background agent idle-notification bug hit the retro itself — 8 of 9 analysis agents went idle without returning. Analyzed 3 major corpora inline.
+
+**Triage context sweep (`.claude/skills/daily-inbox-triage/SKILL.md`, Step 2.5):**
+- New step scans known-client threads since `last_run` for state signals even when Justin already replied. Bounded by `last_run` timestamp from `state/inbox-triage.md` frontmatter — on a 2x/day schedule, ~6 hour window. Feeds into Step 9 (state reconciliation) and a new "Context updates" section in the brief. Does NOT enter the reply queue or todos envelope.
+
+**Nightshift issue-closing bug fixed (`~/.claude/skills/nightshift/SKILL.md`):**
+- Root cause: Step 5 was spawning a full Claude subprocess (`claude --print --permission-mode bypassPermissions`) just to run `gh issue close`. That subprocess hits the same idle-notification bug — goes idle and never executes. Replaced with a direct `gh issue close` loop. No LLM needed to close an issue.
+
+**Deployment blocks added to project CLAUDE.md files:**
+- thermal-kitchen: dev URL, IP (24.199.116.250), SSH, rsync deploy command.
+- mr-gym: dev store, local dev, deploy, auth (with "never paste tokens" rule).
+- brandos already had full deployment docs. Convention: every project with manual deploys gets a `## Deployment` block in CLAUDE.md.
+
+**Decision: `/draft-reply` should be a shared invokable** — not a CLAUDE.md rule, not a new user-facing command. One skill, multiple callers. All drafting surfaces load the same voice/context rules. Flagged for `decisions/log.md`.

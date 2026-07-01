@@ -1,79 +1,51 @@
 ---
-last_run: 2026-06-29T18:30:00Z
-source: afternoon
-threads_needing_reply: 3
+last_run: 2026-07-01T12:15:00Z
+source: morning
+threads_needing_reply: 1
 ---
 
-# Inbox Triage — 2026-06-29
-**3 threads need a reply. 3 today, 0 this week.**
+# Inbox Triage — 2026-07-01 (Morning)
+**1 thread needs a reply. 1 today, 0 this week.**
 
 ## Reply today
-1. **Deann Gibson** (thermalkitchen.com) — *12*
-   Subject: Prototype Website Updates
-   Last inbound: today
-   What they said: Checking in to see if all the updates from the feedback document have been made.
-   Project context: Launch locked for Monday 7/6, promos 7/8. Site 98% complete. Remaining work is copy corrections from feedback doc. Wednesday 7/1 review meeting upcoming.
-   Suggested next step: Reply with status on feedback doc implementation and confirm readiness for the 7/1 review meeting.
-   Thread: 19f138bf3fc2d813
-
-2. **Maggie Wyborny** (hatchdsm.com) — *8*
-   Subject: Iowa State Fair_New Website
-   Last inbound: today
-   What they said: The Fair approved the wireframe. Jon will start on design elements. Wants to schedule a call next week to discuss timeline. They want the site live before Thanksgiving; they're out most of August for reviews. Maggie is out through next Tuesday.
-   Project context: No project memory file; registered in clients.yaml under hatch-dsm/iowa-state-fair but no state tracking set up.
-   Suggested next step: Reply to confirm availability for a call next week and begin scoping the timeline working backward from Thanksgiving.
-   Thread: 19f14538c1ed42a3
-
-3. **Liz** (thetonequestreport@gmail.com) — *8*
-   Subject: TONEQUEST: All back issue Dropbox Link
-   Last inbound: today
-   What they said: Sent a direct Dropbox link to the complete back issue files (1999 through July/Aug 2026). Asked Justin to confirm access. Noted that volumes aren't calendar year (Vol I starts NOV99), some volume numbers are incorrect, and issue count per volume transitioned from 12 to 11 to 10.
-   Project context: Server-side paywall shipped 6/21. PDF ingest pipeline operational. Marker PDF Stage-0 replatform built 6/29, awaiting QA. Archive engine testing planned in year clusters.
-   Suggested next step: Confirm access to the Dropbox folder and acknowledge the volume/issue metadata notes for the archive import.
-   Thread: 19f13f27b1eeb819
+1. **Liz Wilson** (gmail.com) — *8*
+   Subject: Fwd: Your payment to Bearded Ginger Designs will be automatically charged tomorrow
+   Last inbound: yesterday
+   What they said: "Ok, thanks for letting me know, Justin." (Closing acknowledgment -- billing pause confirmed.)
+   Project context: ToneQuest billing paused for 2 months. Marker pipeline merged into application. Batch ingest of 291 PDFs and website implementation next.
+   Suggested next step: No reply needed -- dismiss this thread.
+   Thread: 19f190252cbd758b
 
 ## Needs action (not a reply)
-- **Bounce notification** (Wild Rose / Krystal Light thread) — Justin's reply to klight@wildrosecorporate.com bounced (address not found). The correct address is krystal.light@wildrosecorporate.com. Resend the reply to the correct address. (0d)
+- **DigitalOcean** -- Failed payment for **Bearded Ginger Designs** (card ending 7039). $158.96 overdue balance. Update payment method to avoid service suspension. (today)
+- **DigitalOcean** -- Failed payment for **Global Ag Network** (card ending 9992). $143.64 overdue balance. Update payment method. (today)
+- **DigitalOcean** -- Failed card for **Hatch DSM** (card ending 2467), but payment went through on amex ending 1007 ($508.27). Card needs update but not urgent. (today)
+
+---
+
+**Override alerts:**
+
+- **ISF spam form thread (Whitney Long)** has 3 new inbound messages since marked "replied" on 6/29. Latest 6/30 at 3:45 PM: "Wondering if you've had a chance to look into the spam email submissions. Farmers Market deadline is approaching." She also added a second issue: Farmers Market Application form submissions. Thread 19f0539fd2ec64a0 -- clear the override to resurface.
+
+- **Thermal Kitchen (Deann Gibson)** has 2 new inbound messages since marked "replied" on 6/30. Latest 6/30 at 7:30 PM: "Just a couple of minor updates. Please see the attached." Deann sent prototype feedback with attachments and plans to share the prototype link with others tomorrow. Thread 19f138bf3fc2d813 -- clear the override to resurface. Note: Wednesday call with Deann is today.
+
+- **Wild Rose HR Applications (Krystal Light)** -- your reply bounced. `klight@wildrosecorporate.com` not found; her address is `krystal.light@wildrosecorporate.com`. Thread 19f000c29bf83007 -- resend to correct address.
 
 <!-- TODOS_JSON_START -->
 ```json
 {
-  "generated_at": "2026-06-29T18:30:00Z",
+  "generated_at": "2026-07-01T12:15:00Z",
   "todos": [
     {
-      "id": "todo-a1b2c3d4",
+      "id": "todo-c8f21a3b",
       "type": "email_reply",
-      "summary": "Reply to Deann Gibson re: Prototype Website Updates",
-      "context": "Launch locked for Monday 7/6, promos 7/8. Site 98% complete. Copy corrections from feedback doc in progress. 7/1 review meeting upcoming.",
-      "thread_id": "19f138bf3fc2d813",
-      "client_slug": "kirk-financial",
-      "project_slug": "thermal-kitchen",
-      "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f138bf3fc2d813" },
-      "status": "open"
-    },
-    {
-      "id": "todo-e5f6a7b8",
-      "type": "email_reply",
-      "summary": "Reply to Maggie Wyborny re: Iowa State Fair New Website",
-      "context": "No project memory file; registered in clients.yaml under hatch-dsm/iowa-state-fair but no state tracking set up.",
-      "thread_id": "19f14538c1ed42a3",
-      "client_slug": "hatch-dsm",
-      "project_slug": "iowa-state-fair",
-      "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f14538c1ed42a3" },
-      "status": "open"
-    },
-    {
-      "id": "todo-c9d0e1f2",
-      "type": "email_reply",
-      "summary": "Reply to Liz re: ToneQuest back issue Dropbox link",
-      "context": "Server-side paywall shipped 6/21. PDF ingest pipeline operational. Marker PDF Stage-0 replatform built 6/29, awaiting QA. Archive testing planned in year clusters.",
-      "thread_id": "19f13f27b1eeb819",
+      "summary": "Reply to Liz Wilson re: billing pause confirmation",
+      "context": "ToneQuest billing paused for 2 months. Marker pipeline merged. Batch ingest and website implementation next.",
+      "thread_id": "19f190252cbd758b",
       "client_slug": "tonequest",
       "project_slug": "tonequest-replatform",
       "suggested_action": "draft_reply",
-      "action_params": { "thread_id": "19f13f27b1eeb819" },
+      "action_params": { "thread_id": "19f190252cbd758b" },
       "status": "open"
     }
   ]
@@ -84,7 +56,7 @@ threads_needing_reply: 3
 <!-- STATE_UPDATES_JSON_START -->
 ```json
 {
-  "generated_at": "2026-06-29T18:30:00Z",
+  "generated_at": "2026-07-01T12:15:00Z",
   "proposals": []
 }
 ```

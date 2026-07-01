@@ -94,15 +94,13 @@ matched_projects:
 dispatch_to:
   - target: project-wiki
     path_hint: raw/gemini/
-  - target: aios-wiki
-    path_hint: raw/research/
 swept_at: {ISO timestamp}
 ---
 
 {full file content from Drive}
 ```
 
-The `dispatch_to` field tells `/dispatch` where to route: full content to the project wiki's `raw/gemini/`, and the file also stages to the AIOS wiki's `raw/research/` so AIOS gets the business-level context.
+The `dispatch_to` field tells `/dispatch` where to stage: full content to the project wiki's `raw/gemini/`. Business-level context is extracted by `/dispatch` during classification and written directly to the AIOS wiki via `/wiki log`.
 
 ### Step 6 -- Report
 

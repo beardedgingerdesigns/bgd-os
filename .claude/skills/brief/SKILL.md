@@ -15,6 +15,7 @@ Read these, synthesize a decision-ready dashboard in under 40 lines. No email fe
 - `aios-ui/.aios-cache/pending-state-updates.json` — triage-drafted state-update proposals awaiting review (read the `proposals` array; count only)
 - `todos/pending.md`
 - `decisions/log.md` — last 2-3 entries
+- `clients.yaml` `docs_paths` (directory entries = project wikis) — for each, count files in `raw/aios/` and `raw/gemini/` to find uningested drops. Count only (ignore dotfiles like `.gitkeep`); never read or move the files. Skip any path that doesn't exist or isn't readable — fail silently, one missing wiki never aborts the brief.
 - Google Calendar: today + next 3 days (skip silently if MCP unavailable)
 
 ## Sections (this order)
@@ -23,6 +24,7 @@ Read these, synthesize a decision-ready dashboard in under 40 lines. No email fe
 2. **In motion** — one line per project: status, next step, owner.
 3. **Blocked / waiting** — who owes what, since when.
 4. **The money line** — MRR vs quarter target and the gap.
+5. **Pending wiki ingestion** — projects whose wiki has files staged in `raw/aios/` or `raw/gemini/`, with per-project file count: "3 projects have uningested drops: brandos (34 files), wild-rose (4 files)." These are staged drops awaiting `/dispatch` / `/wiki ingest` — surface them so they don't rot silently. Omit this section entirely when every project is clean (no zero-count noise).
 
 End with calendar collisions or deadline pressure within 72h.
 

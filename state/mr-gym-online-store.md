@@ -1,33 +1,23 @@
-# Project State: Mr Gym Online Store
+# mr-gym-online-store
 
-**Updated:** 2026-06-12 | **Status:** On track
+**Updated:** 2026-07-01
+**Status:** build complete — pending QA
 
-## Accomplishments (this session)
+## Accomplishments
 
-- Clarified that POC is a static design reference, not directly Shopify-usable code, and locked the porting strategy: Dawn theme base + theme settings + custom CSS layer + Google Fonts + custom Liquid sections
-- Established the five-step build process: Partners account → dev store → local theme dev via Shopify CLI → review with Bradley → handover to his Basic plan
-- Created two decision documents (0017 & 0018) locking the implementation path (Dawn + custom sections) and build environment (BGD Partners account, free dev store, CLI-driven local dev)
-- Created session source document capturing the build process rundown and discrepancies discovered
-- Recovered missing POC homepage (`index.html`) from Netlify; verified POC is complete and ready to serve as design reference
+- Full v1 Dawn theme built via nightshift run 2026-07-01-0240
+- 6 issues (#2–#7), 18 commits on branch `nightshift/2026-07-01-0240`
+- Dawn 15.5.0 + After Hours design tokens, scroll-driven hero, manifesto band, lookbook grid, CRO PDP with sticky ATC, homepage assembly, static pages, collection styling, size guide, launch checklist
+- `shopify theme check` green throughout
 
 ## Current Status
 
-The POC is recovered and verified as the complete v4 design reference. The build path, development workflow, and account structure are fully locked. Ready to begin theme scaffolding and custom section development.
+Branch pushed to origin, issues open pending QA. Nothing visually verified — no dev store connected during AFK build.
 
 ## Next Steps
 
-- [ ] Create free Shopify Partners account for Bearded Ginger Designs
-- [ ] Spin up free development store from Partners dashboard
-- [ ] Install Shopify CLI and scaffold Dawn theme into repo
-- [ ] Port design tokens from `DESIGN.json` into theme: color scheme, 0px border-radius, shadows
-- [ ] Add Google Fonts (Big Shoulders Display, Archivo, Space Mono) to `theme.liquid`
-- [ ] Build custom Liquid sections for hero, manifesto band, lookbook grid
-- [ ] Load dev store with real product content (tee designs from `poc/assets/`)
-
-## Blockers
-
-None.
-
-## Key Dates
-
-- 2026-06-12: Build path and development environment locked; POC recovered and verified
+- [ ] QA: `shopify theme dev` against dev store — verify ALL sections visually
+- [ ] Close issues #2–#7 after QA
+- [ ] Execute LAUNCH-CHECKLIST.md (products, payments, shipping, discount code, nav, logo)
+- [ ] Code review custom sections before merge
+- [ ] Bradley TODO #8: domain choice

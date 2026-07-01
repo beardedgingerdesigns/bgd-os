@@ -20,6 +20,20 @@ Keep it terse. Future-you will thank present-you for capturing the *why*, not ju
 
 ---
 
+## 2026-06-29 — Refuge Sales proposal sent at $425/mo
+
+**Decision:** Sent Refuge Sales & Solutions LLC proposal via Bonsai at $425/mo, 18-month term ($7,650 total). No upfront fee, no Jon split (direct BGD engagement). Phase 1 marketing site in 3-4 weeks, Phase 2 e-commerce weeks 5-8. 36-month full refresh included.
+
+**Why:** Thomas is an existing satisfied client (Truss Services $250/mo). Scope is bigger than Truss (marketing site + e-commerce + deposit funnel + comparison tool + 4 vertical audiences). $425 is competitive with comparable BGD projects (ToneQuest $450, Inside Out $400) while reflecting that this is direct (no agency split).
+
+**Alternatives considered:**
+- *$450/mo (original recommendation).* Thomas is already a loyal client; $425 is a fair relationship price and still above Truss.
+- *$400/mo (Truss-level pricing).* Too low for the e-commerce scope.
+
+**Owner:** Justin
+
+---
+
 ## 2026-06-29 — BrandOS sequencing shift: Revolution is the near-term platform entry point, Terraplex pricing on ice
 
 **Decision:** The BrandOS platform pricing conversation with Cherity is frozen. Jon Liebl told Justin (text + email, 2026-06-29) to hold off on further Terraplex site investments — Cherity gets high anxiety about cost and freezes about asking for changes. This is a sequencing change, not a strategy change: Terraplex stays the proof-of-concept, but the upsell path is paused. Revolution / Russell Hedrick is now the near-term manufacturer-tier entry point. Justin re-engaged Russell the same day; Jon is independently nudging Russell to reconnect.

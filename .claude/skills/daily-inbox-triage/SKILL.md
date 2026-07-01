@@ -9,7 +9,7 @@ three-ms-attribution: |
 
 ## What this skill does
 
-Surfaces a ranked daily queue of **inbound client/contact threads Justin owes a reply on**, with project context attached so he can decide what to reply to first.
+Surfaces a ranked daily queue of **inbound client/contact threads Justin owes a reply on**, with project context attached so he can decide what to reply to first. Also runs a **context sweep** — scanning known-client threads since the last triage run for state-relevant signals (date changes, status shifts, blockers, decisions) even when Justin has already replied. The reply queue tells him what to act on; the context sweep keeps the AIOS current.
 
 Closes the stated top pain in `context/about-me.md` ("Replying to email — chronically behind") and the Capabilities + Cadence gaps from the AIOS audit baseline.
 
@@ -113,6 +113,40 @@ Some threads aren't replies but still need Justin to *do* something. Detect thes
 
 A muted thread (2.0b) is never surfaced here either. **Pure FYI is dropped, not surfaced** — payments *received*, maintenance notices, calendar accepts, auto-replies, newsletters, Gemini notes.
 
+#### 2.5 — Context sweep (since last triage)
+
+Captures state-relevant signals from known-client threads the reply-owed pipeline drops — threads where Justin already replied, archived threads, or threads where the content carries project intelligence but no reply is needed.
+
+**Window:** Read `last_run` from `state/inbox-triage.md` frontmatter. Convert the ISO-8601 timestamp to Unix epoch seconds for Gmail's `after:` parameter. If the file doesn't exist or has no `last_run`, fall back to `newer_than:1d`.
+
+Search query:
+
+```
+after:{last_run_epoch} -from:noreply -from:no-reply -from:notifications -from:hellobonsai.com -from:drive-shares-dm-noreply
+```
+
+`pageSize: 50`. No `in:inbox` restriction — threads may have been archived after Justin replied.
+
+**Filter pipeline:**
+
+1. **Dedup:** Remove any thread IDs already captured by the reply-owed pipeline (Steps 1–2.3). Those are already being processed.
+2. **Domain match:** Match each thread's sender against `clients.yaml` contact entries (exact address first, then `@domain.com` patterns — same resolution as Step 4). Drop threads from unknown domains.
+3. **Override/mute check:** Apply the same override file (2.0) and mute-list (2.0b) filters.
+4. **2RM exclusion:** Drop `*@2rm.com` / `*@tworivers.com` threads (same as rule 4).
+5. **Fetch:** For surviving threads, call `mcp__claude_ai_Gmail__get_thread(thread_id)`. Read only messages that arrived after `last_run` — older messages in the same thread were processed in a prior run.
+6. **State signal check:** Does any in-window message carry a state-relevant signal?
+   - Date or launch change (explicit, not inferred)
+   - Status shift (project advancing, pausing, or blocking)
+   - Blocker raised or cleared
+   - Decision made or confirmed
+   - Deliverable confirmed or rejected
+   - Scope change
+   - New contact introduced on a project
+
+   No signal → drop. The context sweep surfaces intelligence, not activity. A "sounds good, thanks" with no new fact is not a signal.
+
+Threads that survive become **context-update items**. They feed into Step 5 (output, as a separate section) and Step 9 (state reconciliation, alongside reply-owed threads). They do NOT enter the reply queue, scoring, or todos envelope.
+
 ### Step 3 — Score each qualifying thread
 
 Score = sum of:
@@ -168,7 +202,7 @@ Print a Markdown brief in chat:
 
 ```
 # Inbox Triage — {today}
-**{N} threads need a reply. {X} today, {Y} this week.**
+**{N} threads need a reply. {X} today, {Y} this week. {C} context updates.**
 
 ## Reply today
 1. **{Sender Name}** ({sender domain}) — *{score}*
@@ -184,9 +218,12 @@ Print a Markdown brief in chat:
 
 ## Needs action (not a reply)
 - {Sender / source} — {what needs doing} ({days}d)
+
+## Context updates (since last triage)
+- **{Sender}** ({project slug}) — {1-line: what changed — date shift, status, blocker, decision}
 ```
 
-`What they said` is the verbatim gist of the latest inbound message and is distinct from `Project context` (the memory snippet). Both appear on each reply-owed thread. Omit the `Needs action` section entirely when there are no action-needed signals. There is no FYI or Archive section.
+`What they said` is the verbatim gist of the latest inbound message and is distinct from `Project context` (the memory snippet). Both appear on each reply-owed thread. Omit the `Needs action` section entirely when there are no action-needed signals. Omit the `Context updates` section when the context sweep found no state signals. These sections are informational — they don't generate todos or draft-reply offers.
 
 ### Step 6 — Offer to draft a reply
 
@@ -253,6 +290,7 @@ The file should contain:
 last_run: {ISO-8601 timestamp}
 source: {morning | afternoon | manual}
 threads_needing_reply: {N}
+context_updates: {C}
 ---
 
 {Full Markdown brief from Step 5}
@@ -272,9 +310,10 @@ queue. You never edit `state/<slug>.md` directly, and you never hand-write the
 proposal store — you **emit** proposals as a `STATE_UPDATES_JSON` envelope
 (below) and the UI's reconcile step persists and dedupes them.
 
-For each thread that resolved a `project_slug` (Step 4) AND carries a
-state-relevant signal — a launch/date change, a status change, or a blocker
-raised or cleared — reconcile it against the project's state file:
+For each thread that resolved a `project_slug` — from **both** the reply-owed
+pipeline (Step 4) **and** the context sweep (Step 2.5) — that carries a
+state-relevant signal (a launch/date change, a status change, or a blocker
+raised or cleared), reconcile it against the project's state file:
 
 1. Read `/Users/justinlobaito/repos/claude-os/state/<slug>.md`. If it does not
    exist, skip and note it in the run summary (creating state files is
@@ -337,7 +376,7 @@ clobber guard) and never touches a project wiki (ADR 0004 / 0007).
 
 Every run produces:
 
-1. **One Markdown brief in chat** — ranked queue with project context attached.
+1. **One Markdown brief in chat** — ranked reply queue + context updates from the sweep, with project context attached.
 2. **The `TODOS_JSON` envelope** (Step 7) — feeds the dashboard todo cards. Markdown stays the canonical human-readable surface; the envelopes are the machine surface. (The `STATE_UPDATES_JSON` envelope is item 4.)
 3. **One file write to `state/inbox-triage.md`** (Step 8) — overwrites previous run. Single file, no accumulation. Any session can read the latest triage results.
 4. **A `STATE_UPDATES_JSON` envelope** in `state/inbox-triage.md` (Step 9) — drafted state-update proposals the UI's reconcile step persists to the Sync queue. Never edits `state/<slug>.md` or the proposal store directly.
@@ -353,7 +392,7 @@ No Gmail drafts created without confirmation. No sending — ever.
 4. **Don't surface 2RM (`*@2rm.com` / `*@tworivers.com`) threads as actionable.** 2RM is W-2 day-job, out of BGD scope per CLAUDE.md. Surface one only if it carries a hard deadline, under "Needs action"; otherwise drop it.
 5. **Don't surface internal Justin-to-Justin or system-generated email.** Bot exclusions in Step 1.
 6. **If zero threads qualify**, say so cheerfully — "Inbox is clean as of {time}." That's a real outcome, not a failure.
-7. **Stay under ~60s wall-clock.** Call `get_thread` only for threads that survive the filters (reply-owed candidates) — to confirm direction and summarize the latest inbound message (2.1). Never fetch bodies for dropped or muted threads.
+7. **Stay under ~90s wall-clock.** Call `get_thread` only for threads that survive the filters — reply-owed candidates (2.1) and context-sweep survivors (2.5). Never fetch bodies for dropped or muted threads. The context sweep's `last_run` window keeps its candidate set small; on a 2x/day schedule, expect ~6 hours of threads.
 8. **Never conflate two contacts by first name alone.** Different email addresses → different people, unless memory/clients.yaml explicitly says otherwise. No "same person, different project" framing without an evidence trail.
 9. **Render the actual sender name from the email header.** Don't substitute or "correct" a name based on what memory says the contact's name should be. If memory disagrees with the header, surface the discrepancy in the context line; don't silently overwrite.
 

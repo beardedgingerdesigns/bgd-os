@@ -10,9 +10,10 @@ New client as of 2026-06-24. Thomas Rindfuss (also owns Truss Services, existing
 
 ## Project overview
 
-Website build + e-commerce for Refuge Sales & Solutions LLC, official distributor of Agrilogix water restructuring technology. Thomas is one of only 2 US distributors. 18-month flat-rate BGD subscription model. Proposal due Friday 2026-06-27.
+Website build + e-commerce for Refuge Sales & Solutions LLC, official distributor of Agrilogix water restructuring technology. Thomas is one of only 2 US distributors. 18-month flat-rate BGD subscription model. Proposal sent 2026-06-29 via Bonsai.
 
-**Domain:** refugesolutions.com (requested, not yet registered by BGD).
+**Domain:** refugesolutions.com
+**Bonsai project:** REF-0093
 
 ## Product
 
@@ -34,8 +35,12 @@ Unit pricing: $7K–$35K range.
 
 ## Billing
 
-18-month flat-rate subscription (BGD standard model). No upfront fee. Monthly price TBD — higher than Truss ($400/mo) due to e-commerce scope. Verbal NDA in place.
+$425/mo, 18-month flat-rate subscription (BGD standard model). No upfront fee. Total contract value $7,650. Verbal NDA in place. Proposal sent 2026-06-29, awaiting signature.
+
+## Timeline
+
+Phase 1 (marketing site): 3-4 weeks from kickoff. Phase 2 (e-commerce): weeks 5-8.
 
 ## Status
 
-Not yet in `clients.yaml`. Needs `/register-prospect` or `/onboard-client`.
+In Bonsai (REF-0093) and clients.yaml. Proposal sent, awaiting Thomas's signature. Content collection is the critical path for the Phase 1 timeline.

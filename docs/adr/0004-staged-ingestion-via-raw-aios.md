@@ -84,3 +84,18 @@ The decision is hard to reverse in the "go direct to curated" direction because 
 - [wiki SKILL.md](file:///Users/justinlobaito/.claude/skills/wiki/SKILL.md) — canonical wiki structure and ingest workflow
 - Memory: [project-aios-ui-staged-ingestion](../../../../.claude/projects/-Users-justinlobaito-repos-claude-os/memory/project_aios_ui_staged_ingestion.md), [feedback-prefer-staged-ingestion](../../../../.claude/projects/-Users-justinlobaito-repos-claude-os/memory/feedback_prefer_staged_ingestion.md)
 - Plan: `/Users/justinlobaito/.claude/plans/wondrous-noodling-bonbon.md`
+
+---
+
+## Addendum — 2026-06-30: Own-repo direct writes
+
+**Refinement:** The "stage, never curate" rule in this ADR applies to **cross-repo writes only** — when a skill running in one repo (e.g., `/dispatch` in claude-os) writes into another repo's wiki. When a skill is running inside its own repo (e.g., `/wrap` finishing a session in the brandos repo), it writes directly to the wiki via `/wiki log`. The staging layer is unnecessary because the skill just did the work and is the curator in that context.
+
+**Core rule:** Write directly to your own repo's wiki. Stage to other repos' wikis.
+
+**What changed:**
+- `/wrap` no longer stages to `raw/aios/`. It invokes `/wiki log` to write directly to the current repo's curated wiki pages.
+- `/dispatch` writes AIOS wiki content directly via `/wiki log` (it runs in claude-os, so the AIOS wiki is its own wiki). It continues to stage to project wikis via `raw/aios/` and `raw/gemini/` (cross-repo writes).
+- `/gemini-sweep` remains a courier (Drive → `archives/raw/`). AIOS wiki routing hints removed from its `dispatch_to` frontmatter — that classification is `/dispatch`'s job.
+
+**Decision source:** PRD at [bgd-os#3](https://github.com/beardedgingerdesigns/bgd-os/issues/3), derived from a `/grill-me` session on 2026-06-29.

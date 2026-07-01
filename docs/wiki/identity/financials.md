@@ -87,12 +87,16 @@ This is a planning model, not a forecast. Share price won't appreciate linearly;
 
 ### 2. Bearded Ginger Designs (BGD)
 
-See `memory/project_bgd_mrr_2026-04.md` for the canonical breakdown.
+See `context/financials.md` for the operational snapshot (pulled live from Bonsai 2026-06-29).
 
-- **BGD-total MRR:** $4,600/month ($55,200/yr projection)
-- **Channel-platform-only MRR:** ~$1,950/month (Terraplex hub $600 + 6 dealer subs $1,350)
-- **Other BGD subscription clients:** ~$2,650/month (Wild Rose, ToneQuest, Inside Out, Iowa Everywhere, Kuberski, Co-Line, DIAJ, RD Partners)
-- **Project income beyond MRR:** TBD (Wild Rose had a $5K initial setup; ToneQuest is subscription-only). Need rough monthly average.
+- **BGD gross MRR:** $5,850/month (on months Kirk Financial's quarterly $750 hits)
+- **BGD normalized MRR:** $5,350/month (Kirk at $250/mo equivalent)
+- **BGD monthly average (annualized):** $5,517/month
+- **Projected MRR (with Refuge Sales $425 pending):** $5,942/month
+- **Recurring clients:** 18 (19 with Refuge Sales pending)
+- **Top clients:** Jon Liebl $1,000, Kirk Financial $750 (quarterly), Terraplex $600, ToneQuest $450, Refuge Sales $425 (pending), Kuberski $400, Inside Out $400
+- **Overdue receivables:** $4,075 (as of 2026-06-29, mostly Jon-billed)
+- **Annual run rate:** ~$66,200 (normalized + Kirk quarterly bumps)
 
 ---
 
@@ -152,14 +156,17 @@ This materially raises Justin's strategic risk tolerance. Decisions like product
 
 ## Trajectory
 
-- **Goal BGD MRR by end of 2026:** $10,000+/month
-- **Current BGD MRR:** $4,600/month
-- **Gap to close:** +$5,400/month over ~7-8 months
-- **Path to close (rough sketch):**
-  - 1-2 founding manufacturers at $1,500-3,000/mo each = +$3K-6K/mo
-  - 5-15 new dealer spokes at $250/mo each = +$1.25K-3.75K/mo
-  - 1-2 new direct subscription clients at $400-1,000/mo = +$0.4K-2K/mo
-  - Realistic mix gets there with 1 manufacturer landed + ~10 new dealer spokes by end of Q4
+- **Goal BGD MRR by end of 2026:** $10,000/month
+- **Current BGD MRR:** ~$5,500/month (normalized)
+- **Gap to close:** ~$4,500/month over 6 months
+- **Pipeline (as of 2026-06-29):**
+  - Refuge Sales (Thomas Rindfuss): $425/mo — proposal sent, awaiting signature
+  - Russell / Revolution (manufacturer site): $1,000+ — re-engaged 2026-06-29
+  - ISF renegotiation (Cooper at Hatch): $600-800/mo — need to pitch flat monthly
+  - Co-Line Manufacturing re-engagement: $300-400/mo — on todo list
+  - BrandOS dealer feature layer ($20/dealer): $120+ (grows) — concept stage
+  - Net-new clients (1-2): $400-1,000 — prospecting
+- **Pipeline total if closed:** ~$2,845-3,645/mo, putting BGD at $8,400-9,100 range. 1-2 net-new clients closes the gap to $10K.
 - **At $10K BGD MRR:** net BGD contribution ~$7,500-8,200/mo after scaled operating costs. Strategic milestone — "BGD is structurally serious" — not "I can survive without 2RM." With partner income, the latter bar is much lower than the former.
 - **Honest exit-from-2RM bar (revised with household context):** ~$8-12K/mo BGD MRR if partner carries primary household and her benefits can cover Justin/family healthcare. Could be lower if partner's coverage is comprehensive. The $20-25K/mo bar from earlier reasoning was too high — that assumed Justin's 2RM was sole household income.
 - **Target separation from 2RM:** even with household income reducing pressure, ESOP appreciation alone (~$130K/yr at planning rates) is a meaningful argument to stay through the $600/share window. Hybrid mode (2RM + BGD) is the right pattern for the next 2-4 years.

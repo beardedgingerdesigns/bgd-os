@@ -103,12 +103,13 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Priority: low
   - Notes: Concrete hedge against frontier-LLM (Claude) single-point dependency raised on the 6/19 call. Core BrandOS already degrades gracefully; this de-risks the AI-dependent features.
 
-- [ ] **Refuge Sales & Solutions: send project proposal by Friday** `#client`
+- [x] **Refuge Sales & Solutions: send project proposal by Friday** `#client`
   - Added: 2026-06-24
   - Source: triage (Talk shop Gemini notes)
   - Client: refuge-sales
   - Priority: high
   - Notes: Thomas Rindfuss new venture (Agrilogix water tech distributor). 18-month flat-rate contract agreed on call. Proposal + rough outline due by Fri 6/27. Product details email received same day.
+  - Completed: 2026-06-29. Sent via Bonsai at $425/mo. Bonsai project REF-0093 created.
 
 - [ ] **Schedule BrandOS dealer portal interview with Thomas (Truss)** `#brandos`
   - Added: 2026-06-24
@@ -159,3 +160,4 @@ Items persist until explicitly completed. Completed items are moved to `complete
   - Notes: Jon wants to see what Justin's been building. Show BrandOS progress but frame as "outside of Terraplex with applications" per the agreed positioning. Don't pitch new Terraplex spend.
 
 - [ ] QA nightshift run for tonequest-replatform — 7 implemented (#2,3,5,6,7,8,9), 1 needs-human (#4 spike), 4 follow-ups (#11-14) — branch: nightshift/2026-06-29-0219. Run #4 spike on Python 3.10+ venv, then a real PDF ingest through /admin; close the 7 issues after QA.
+- [ ] QA nightshift run for mr-gym-online-store — 6 completed, 0 need human — branch: nightshift/2026-07-01-0240

@@ -110,7 +110,7 @@ Resolved design from `/grill-me` session:
 - `progress.md` — cross-issue context. "What would help the next issue?" Not status.
 - `fix_plan.md` — discovered work outside current scope. Auto-filed as issues after the loop. (Origin: Ghuntley's Ralph + Anthropic's harness article.)
 
-**Delivery:** Commits to feature branch, no PR. You QA the branch next day shift. Bugs filed as new issues.
+**Delivery:** Commits to feature branch, no PR. Issues closed via direct `gh issue close` after push (fixed 2026-07-01 — was spawning a Claude subprocess that went idle; now uses `gh` directly). You QA the branch next day shift. Bugs filed as new issues.
 
 **Labels:** Matt's triage vocabulary — `ready-for-agent` (input), `needs-human` (failure), `in-progress` (active).
 
